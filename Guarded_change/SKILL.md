@@ -35,7 +35,11 @@ Then walk the loop:
    **automated** (true/false or numeric from instrumentation) **or** a **human-judged rubric**
    (named judge + written scale + pass definition) — see METHODOLOGY stage 1.5. **Mandatory.**
    If you cannot state checkable criteria in *either* form, stop and resolve with the user — the
-   loop may not pass stage 3 without them.
+   loop may not pass stage 3 without them. **If the change touches a position-sensitive
+   assembly (move/reorder/add/remove in a prompt, precedence list, pipeline), add a criterion
+   asserting the position-dependent *behavior* survives** (not just that the text does), and
+   require stage 8 to verify it by *executing* the isolating case, not inspecting the assembled
+   text — see METHODOLOGY "Information-preserving is not behavior-preserving".
 **2. Plan** — write `2-plan.md`: how, **plus** measurement, instrumentation (add to scope if a
    needed signal is absent), and severity→routing thresholds + which metrics are gating vs.
    advisory. A plan missing these is incomplete.
@@ -44,7 +48,7 @@ Then walk the loop:
    `redteam_context` paths. Charter it with the four lenses + evidence discipline from
    METHODOLOGY ("The red-team charter"): cite line/file or a concrete scenario, rank each finding
    (blocker/major/minor/nitpick), flag anything unverifiable, "no issue" per lens allowed; a
-   clean *factual* verdict needs source citations. Write `3-redteam-plan.md`.
+   clean *factual* verdict needs source citations. **If a position-sensitive assembly is touched (move/reorder/add/remove in a prompt, precedence list, pipeline — not ordinary code), test each affected element (including unchanged neighbors) for position/order sensitivity** — "all info still present" is not a clean verdict for a position-dependent element. Write `3-redteam-plan.md`.
 **4. Gate** — route by worst finding: **blocker → return to 1** (confirm direction first);
    **major → return to 2**; **minor → fix in place, proceed**; **nitpick → log, proceed**;
    **clean → build (5).** Bounded by the iteration cap (below).

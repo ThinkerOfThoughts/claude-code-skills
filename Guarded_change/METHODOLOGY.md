@@ -40,6 +40,20 @@ criteria** defined up front (mode 2).
   afterthought. (This is the rule that would have made missing telemetry impossible.)
 - **A bar, set first.** "Done" is defined as measurable acceptance criteria *before*
   implementation, so completion is verified, not declared.
+- **Information-preserving is not behavior-preserving.** In a **position-sensitive assembly**
+  — one where order or adjacency is itself semantic: prompt assembly, precedence/override
+  lists, middleware/pipeline stages, CSS-like last-wins rules — *not* ordinary code whose
+  behavior is name- not position-bound — a change can keep every piece of content and still
+  change behavior, when an element's effect depends on its *position* rather than its mere
+  presence (recency, precedence, "before/after some input," adjacency). A check that only asks
+  "is every piece still present?" passes such a change blind: the content survives, the
+  behavior does not. The trap is not only *moving* an element: **adding** one can displace the
+  element that worked *because it was last*, and **removing** one can change a neighbor's
+  adjacency to the input it governs — so a diff in which "nothing moved" is not exoneration.
+  (E.g. a directive whose compliance depends on appearing *before* the input it governs; a
+  block that works *because* it is last.) When a change moves, reorders, adds, or removes
+  anything in such an assembly, treat every affected element's *position* — including elements
+  that did not themselves change — as load-bearing until shown otherwise.
 - **"No issue found" is a valid result.** Reviewers are graded on precision, not body count.
   This removes the pressure to manufacture faults that makes aggressive review untrustworthy.
 
@@ -96,6 +110,20 @@ Criteria are the **conformance oracle** for stage 8 and are **mandatory** — wi
 either form) the loop refuses to proceed past stage 3, because completion would be
 unverifiable.
 
+**If the change touches a position-sensitive assembly** (moves, reorders, adds, or removes
+content — see *Information-preserving is not behavior-preserving*), at least one criterion must
+assert that the *behavior* which depended on the arrangement is preserved — not merely that
+the content still appears somewhere. "Every block's text still survives in the assembled
+output" is a content check; it cannot catch a position-sensitive element (see
+*Information-preserving is not behavior-preserving*). Name the behavior and how it's checked
+(e.g. "directive D still fires on the input class it governs," tested on a case that exercises
+*only* that path. The criterion must **require empirical execution on that case** (carried out at stage 8) — not
+satisfaction by re-inspecting the assembled text, which a reviewer can wrongly *reason* looks
+fine. Where the effect is probabilistic (recency/precedence usually shift a *rate*, not flip a
+switch), the criterion states the pass rate it expects and the number of runs that establishes
+it (treat as a human-judged rubric per above if no clean numeric floor exists), rather than
+relying on a single probe.
+
 **2 — Plan.** How to build it, complete only when it also names: how each criterion will be
 measured; what instrumentation must exist to measure it (and adds it to scope if absent); and
 the thresholds that map findings to loop routing.
@@ -144,6 +172,17 @@ Discipline that makes aggressive review trustworthy:
   cited file:lines / log rows actually exist and say what's claimed. Citations are the one
   guard defending the loop's founding failure; a fabricated citation would defeat it, so the
   guard itself must be spot-checked (cheap: verify a few, not all).
+- **If the change touches a position-sensitive assembly, test for position/order sensitivity**
+  (lens 4). This triggers only where order/adjacency is itself semantic — prompt assembly,
+  precedence/override lists, pipeline/middleware stages — *not* ordinary code whose behavior is
+  name- not position-bound (don't flag every rename or function-extraction). Within such an
+  assembly the trigger is *any* edit — move, reorder, **add, or remove** — and the elements to
+  test include ones that **did not themselves change** (an added tail block displaces the old
+  last element; a removal changes a neighbor's adjacency). For each such element ask: does its
+  effect depend on *where* it sits — relative to other content (recency, adjacency, precedence)
+  or to an input it governs (before/after)? If yes, "all the information is still present" is **not** a clean
+  verdict for that element; the finding is the *behavior* change, and it ranks by impact, not
+  by whether any text was lost.
 
 The reviewer is graded on **precision** (are its findings real?), not on how many it raises.
 
@@ -187,6 +226,14 @@ they were addressed rather than re-deriving. Without this, a hard disagreement c
 A net-new feature still gets **both**, aimed differently: conformance on the feature,
 regression on the surrounding system that already existed. A truly greenfield project (no
 prior version of anything) runs conformance-only.
+
+**Position-dependent criteria must be checked by execution, not inspection.** Any criterion
+written under *Information-preserving is not behavior-preserving* (stage 1.5) is satisfied only
+by **running its isolating case and observing the behavior occur** — never by re-reading the
+assembled prompt/config to confirm the text is present. Text-presence is the exact check that
+the position change defeats, so a harness that "verifies" such a criterion by inspection has
+not run it. This is the cheapest reliable catch for the whole class and is why the criterion is
+mandated up front: stage 3 reasons about it, but only stage 8 can prove it fired.
 
 **Regression must be measured on a comparable workload, or it is advisory only.** Global
 aggregate metrics (mean cost, mean tool-calls) computed over whatever happened to run will
