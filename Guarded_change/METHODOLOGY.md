@@ -40,6 +40,12 @@ criteria** defined up front (mode 2).
   afterthought. (This is the rule that would have made missing telemetry impossible.)
 - **A bar, set first.** "Done" is defined as measurable acceptance criteria *before*
   implementation, so completion is verified, not declared.
+- **A deferred gating criterion is not a met one.** "Done" requires every *gating* acceptance
+  criterion (1.5) to be **empirically verified first**, by exercising the path it governs. A
+  gating criterion that is postponed to "live/production," satisfied by a *proxy* that avoids
+  that path (a mocked dependency, a disabled flag, an input class that never triggers it), or
+  quietly dropped from the results, has **not** been met — deferral silently converts *proven*
+  done into *hoped* done. Advisory criteria may be deferred; gating ones may not.
 - **Information-preserving is not behavior-preserving.** In a **position-sensitive assembly**
   — one where order or adjacency is itself semantic: prompt assembly, precedence/override
   lists, middleware/pipeline stages, CSS-like last-wins rules — *not* ordinary code whose
@@ -110,6 +116,14 @@ Criteria are the **conformance oracle** for stage 8 and are **mandatory** — wi
 either form) the loop refuses to proceed past stage 3, because completion would be
 unverifiable.
 
+**Each criterion is labeled gating or advisory, and defaults to gating.** A **gating** criterion
+must be verified (by execution, stage 8) for the change to be accepted; an **advisory** one is
+surfaced but does not block. A criterion is advisory *only* by explicit choice with a stated
+reason — an unlabeled criterion is gating, so a forgotten label fails safe. (This is the
+criterion-level sibling of the gating-vs-advisory distinction drawn for regression *metrics*
+under "Regression must be measured on a comparable workload"; the weight there protects against
+false regressions, the weight here against unverified completion.)
+
 **If the change touches a position-sensitive assembly** (moves, reorders, adds, or removes
 content — see *Information-preserving is not behavior-preserving*), at least one criterion must
 assert that the *behavior* which depended on the arrangement is preserved — not merely that
@@ -172,6 +186,25 @@ Discipline that makes aggressive review trustworthy:
   cited file:lines / log rows actually exist and say what's claimed. Citations are the one
   guard defending the loop's founding failure; a fabricated citation would defeat it, so the
   guard itself must be spot-checked (cheap: verify a few, not all).
+- **Audit the criterion labels and the stage-8 verification table (the gating guard).** The
+  weight on each criterion is itself a claim to challenge, not a given:
+  • every criterion marked **advisory** must carry a legitimate reason — challenge any that looks
+    like a dodge to avoid verifying a real gate (relabelling a gating criterion advisory is the
+    deferral loophole in disguise);
+  • every gating `verified = yes` must have exercised the **path the criterion actually governs** —
+    challenge any verified against a proxy (a mocked dependency, a disabled flag, a
+    non-triggering input class);
+  • a route-(a) **"representative" pre-ship harness is a claim about representativeness** —
+    challenge whether it truly exercises the governed path (the Option-B smoke was *believed*
+    representative and was not);
+  • a route-(b) named risk-acceptance must actually be present in `decisions.md` where a gating
+    criterion is unverified.
+  A gating criterion whose label or verification cannot survive this challenge is treated as
+  unverified — the same as if it had been deferred.
+- **A clean label-audit must be earned, like a clean factual lens.** A "labels and table look
+  fine" verdict is valid only if the review shows, per gating criterion, which governed path it
+  confirmed was exercised and what evidence it checked. An unsubstantiated clean label-audit is
+  treated as un-run and re-run — the same guard the factual lens already carries above.
 - **If the change touches a position-sensitive assembly, test for position/order sensitivity**
   (lens 4). This triggers only where order/adjacency is itself semantic — prompt assembly,
   precedence/override lists, pipeline/middleware stages — *not* ordinary code whose behavior is
@@ -234,6 +267,39 @@ assembled prompt/config to confirm the text is present. Text-presence is the exa
 the position change defeats, so a harness that "verifies" such a criterion by inspection has
 not run it. This is the cheapest reliable catch for the whole class and is why the criterion is
 mandated up front: stage 3 reasons about it, but only stage 8 can prove it fired.
+
+**Every gating criterion must be verified by execution before "done" — no deferral, no proxy,
+no silent drop.** A gating criterion (1.5) is satisfied only by running a case that exercises
+*the actual path it governs* and observing the required behavior. Three dispositions that look
+like progress but are **not** satisfaction — each shipped a real regression in practice:
+- **Deferral** — "we'll confirm it live / in production." A gating criterion postponed past
+  acceptance is unverified; the run is not done.
+- **Proxy path** — verifying on a workload that *avoids* the governed path (a mocked dependency,
+  a disabled feature flag, an input class that never triggers the behavior). Exercising a
+  neighbor is not exercising the criterion. (Cf. *checked by execution, not inspection*, one
+  level out: executed, but on the wrong path.)
+- **Silent drop** — the criterion simply does not appear in the stage-8 results.
+
+If a gating criterion **genuinely cannot be checked before ship** (needs production, billing, or
+a live human/system), the loop has exactly two legal moves:
+  (a) **Build a representative pre-ship harness** that exercises the real path cheaply (e.g. a
+      scratch fixture asserting the behavior actually fires) and verify against it; or
+  (b) **Escalate for named risk-acceptance** — a human explicitly accepts *that specific
+      unverified criterion by name*, recorded in `decisions.md` as **"conditionally accepted —
+      KNOWN UNVERIFIED RISK: <criterion>."**
+Route (b) is the *only* way a gating criterion reaches ship unverified, and it is a conscious,
+attributed decision — never a silent fold into "done."
+
+`8-harness.md` therefore **must contain a per-criterion verification table**: one row per
+criterion with columns *criterion │ gating/advisory │ path exercised │ verified by execution?
+│ result*. Any **gating** row that is not `verified = yes` blocks "done" unless `decisions.md`
+carries the matching named risk-acceptance. (Inspection-only "verification" of a gating
+criterion counts as `verified = no`.) The table always lists every **gating** criterion;
+advisory criteria may be summarized in one line. A run with no gating criteria says so and the
+table is trivially short — the artifact scales to the change, not the reverse. For a
+probabilistic or human-judged-rubric criterion (see stage 1.5), the "verified" cell records the
+observed pass-rate over the stated number of runs (or the named judge's verdict), not a bare
+yes/no — reusing the rubric the criterion already declared.
 
 **Regression must be measured on a comparable workload, or it is advisory only.** Global
 aggregate metrics (mean cost, mean tool-calls) computed over whatever happened to run will
@@ -327,7 +393,9 @@ which gate, the worst finding's severity, the route taken, and — for any **hum
 name. A clean pass-through is a single line. This is not just audit: the **iteration cap
 depends on it** — counting "2 bounces at the same gate" and carrying prior findings forward
 requires the bounce history to persist. Human acceptance of a known regression is the entry
-that matters most ("why did we ship this?" gets a recorded answer).
+that matters most ("why did we ship this?" gets a recorded answer). At stage 8, the entry also
+records each **gating** criterion's disposition (verified / named risk-accepted) — a gating
+criterion may not pass through stage 8 absent from this log.
 
 Together these double as the audit trail and as context for reconstructing the work if lost.
 
@@ -339,6 +407,8 @@ The skill executes stages 1–7 autonomously (reason, spawn cold reviewers, writ
 code) and runs stage 8 if the config provides the check. It **stops for a human decision** at:
 - any **blocker** (the loop is about to restart — confirm direction first),
 - any **major** at stage 8 (regression-vs-tradeoff is a judgment call),
+- a **gating criterion that cannot be verified pre-ship** (the loop must build a representative
+  harness or obtain named risk-acceptance — never defer it silently),
 - **missing criteria or config** needed to proceed (it refuses rather than guesses).
 
 Everything else it routes automatically per the severity model, reporting what it did.

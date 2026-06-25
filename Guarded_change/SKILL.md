@@ -40,6 +40,9 @@ Then walk the loop:
    asserting the position-dependent *behavior* survives** (not just that the text does), and
    require stage 8 to verify it by *executing* the isolating case, not inspecting the assembled
    text — see METHODOLOGY "Information-preserving is not behavior-preserving".
+   **Label each criterion gating or advisory (default gating; advisory only with a stated
+   reason).** A gating criterion must be verified by execution at stage 8 — it may not be
+   deferred, proxied, or dropped (see METHODOLOGY "A deferred gating criterion is not a met one").
 **2. Plan** — write `2-plan.md`: how, **plus** measurement, instrumentation (add to scope if a
    needed signal is absent), and severity→routing thresholds + which metrics are gating vs.
    advisory. A plan missing these is incomplete.
@@ -60,6 +63,9 @@ Then walk the loop:
    **nitpick → log, proceed**; **clean → harness (8).**
 **8. Harness** — run the config's `measurement.check`. Then:
    - **Conformance (always):** measured behavior vs. `1.5-criteria.md`. Pass/fail per criterion.
+     **Every gating criterion must be verified by executing the path it governs** — deferral,
+     proxy-path, or silent drop ≠ pass (see METHODOLOGY "Every gating criterion must be verified
+     by execution"). Emit the per-criterion verification table `8-harness.md` requires.
    - **Regression (only if a stage-0 baseline exists):** measured vs. baseline on the config
      `metrics`, applying each metric's `direction` + `regression_threshold`.
    Apply each metric's gating-vs-advisory status (advisory metrics are surfaced, not bounced —
@@ -76,7 +82,8 @@ objection still counts). See METHODOLOGY "Iteration cap".
 ## Stop-for-human rules
 
 Pause and ask when: a **blocker** is about to restart the loop; a **major** appears at the
-harness; or **criteria/config are missing**. Refuse to guess project metrics or acceptance
+harness; **criteria/config are missing**; or a **gating criterion cannot be verified pre-ship**
+(build a representative harness or get named risk-acceptance — never defer silently). Refuse to guess project metrics or acceptance
 criteria — that's the exact failure this loop exists to prevent.
 
 ## Self-check / dogfooding
