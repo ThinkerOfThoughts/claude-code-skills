@@ -46,6 +46,15 @@ is a **falsifiable, executed bar** — not an assertion.
 - **Nothing self-certifies.** The author of a diagnostic artifact (a repro, a test, an instrument,
   a causal chain) never approves it. Review is done by a reviewer with *no shared context* (a cold
   subagent), so it doesn't inherit the author's blind spots.
+- **A conclusion is gated before it is presented, not after.** "Nothing self-certifies" applies to
+  the *hypothesis you hand the human*, not only to scripts and toggles. A hypothesis is an
+  author-produced artifact; until an independent cold pass has fired for it, it may be **ranked**
+  among candidates but never **presented as the leading / likely / probable / most-likely cause**,
+  nor as a conclusion to act on — the moment a conclusion is leaned on, the gate it implies must already have
+  fired (see *The gate-before-present rule* for which cold pass licenses which claim). Presenting an
+  ungated hypothesis as the answer is the founding failure — a self-certified conclusion acted on —
+  wearing the narrative instead of the code. Symmetrically, an artifact's *reading* is trusted only
+  once its triage is recorded passed: gating precedes trust, it does not audit it retroactively.
 - **Evidence over rhetoric.** Every conclusion cites a log row / file:line / observed result.
   "Seems like X" is not a finding; "line N logged Y, which only happens when Z" is.
 - **A representative test, or no test.** A diagnostic artifact is untrusted until a **control run
@@ -138,7 +147,13 @@ is insufficient.** This makes re-checking a deliberate, justified act rather tha
 **3 — Hypotheses.** A ranked list of candidate root causes, each **falsifiable**: it names the
 observation that would **confirm** it and the one that would **refute** it, and carries a status
 (open / confirmed / refuted). No hypothesis is held without a discriminating test that could
-distinguish it from its rivals.
+distinguish it from its rivals. Each hypothesis also carries a **gate-coverage marker**, distinct
+from that status: `ungated` → `test-passed` (its stage-4/5 discriminating test has run and been
+cold-reviewed — which certifies the *test*, not yet the causal story) → `cold-red-teamed` (its
+stage-7 causal chain has passed a cold pass). The marker records, as a fact rather than a memory,
+what independent challenge has actually fired for this hypothesis; it gates **how the hypothesis may
+be presented to the human** (see *The gate-before-present rule*), and the stage-7 **"confirmed"**
+verdict requires `cold-red-teamed`.
 
 **4 — Discriminating test.** Design a test or instrument that *splits* the live hypotheses (rules
 at least one in or out). Before it is run it passes the **representativeness gate** and the
@@ -148,6 +163,11 @@ confabulation before it runs.
 
 **5 — Run & record.** Run the test; record the result in the observation ledger; update hypothesis
 statuses; cite the evidence. A confirmed/refuted status is a claim — it cites the run that earned it.
+Stage 4 already requires an artifact's triage to pass before it is *run*; the ordering rule extends
+that to *consumption* — a result may not be consumed by a later stage (to eliminate a hypothesis,
+advance the gate marker, or inform what the human is told) until the producing artifact's triage is
+**recorded as passed** in `decisions.md`. Consuming a reading before its cold review is recorded is
+the trust-before-gate slip; the triage is a precondition of trust, not a later audit.
 
 **6 — Convergence gate.** Are we narrowing (eliminating hypotheses)? The **iteration cap** bounds
 the hunt: after **N** cycles with no hypothesis eliminated, or **N** re-examinations of one area,
@@ -163,7 +183,9 @@ without a convergence stop. This is the defense against token-burning thrash.
 3. **A toggle** — flipping the suspected cause makes the symptom appear/disappear *predictably*.
    The toggle is what proves causality rather than correlation.
 A **cold red-team** challenges the causal chain (is it confabulated? does it actually follow from
-the cited evidence?). The toggle is a diagnostic artifact → triage.
+the cited evidence?). Passing it sets the hypothesis's gate marker to **`cold-red-teamed`** — a
+precondition of the "confirmed" verdict *and* of presenting it to the human as the root cause (see
+*The gate-before-present rule*). The toggle is a diagnostic artifact → triage.
 
 **8 — Handoff.** Emit the **diagnosis artifact**: root cause, the evidence and causal chain, the
 representative repro, and the recommended fix. Hand to **guarded-change** for the fix. Dragonfly
@@ -209,6 +231,39 @@ symptom is known to have occurred** (replayed against a recorded failing trace, 
 fire on a forced/seeded instance of the condition) before any reading it produces is trusted. An
 instrument never shown to capture an actual occurrence is treated exactly like a test whose control
 did not exhibit the symptom: rejected and redesigned.
+
+---
+
+## The gate-before-present rule (mandatory)
+
+A hypothesis may be **formed and ranked freely** — the agent thinks out loud in its working notes
+and keeps a ranked candidate list. What is gated is **how a hypothesis is presented to the human**,
+and the gate has tiers matching what has actually been independently challenged:
+
+- **`ungated`** (no cold pass yet): present it only as a **"candidate, ungated."** Never as the
+  leading / likely / probable / most-likely cause, and never as a conclusion to act on.
+- **`test-passed`** (its stage-4/5 discriminating test has run and been cold-reviewed): that cold
+  pass certifies the **test artifact** — that it is representative and un-confabulated and ruled a
+  rival in or out — **not** the hypothesis's causal story. So it may be presented as the
+  **"leading / best-supported candidate so far,"** but must carry that its **causal chain has not
+  yet been independently red-teamed** — it is not yet "the cause."
+- **`cold-red-teamed`** (its stage-7 causal chain has passed a cold pass): only now may it be
+  presented as **the root cause** ("confirmed" additionally needs the stage-7 three-part bar —
+  reproduce-on-demand + cited chain + toggle).
+
+**Rank is not endorsement.** Showing the ranked candidate list, and saying which is most *plausible
+so far*, is allowed and expected. The forbidden move is calling an **ungated** hypothesis the cause,
+or presenting any hypothesis as a **conclusion to act on** before its tier permits. The motivating
+slip: a hypothesis was presented as the "leading" cause with no cold red-team, no repro, no
+toggle — and the cold pass, when finally run, refuted it as dead code.
+
+**Trust-before-gate ordering.** The same precedence governs artifacts. Stage 4 already requires the
+triage (representativeness gate + cold review) to pass **before** an artifact is run; the ordering
+rule makes it explicit and auditable that the artifact's output may not be **consumed by a later
+stage** — to eliminate a hypothesis, advance a gate marker, or inform what the human is told —
+until that triage is **recorded as passed** in `decisions.md`. Gate first, then consume; the triage
+is a precondition of trust, not a later audit. (The motivating secondary slip: a search script's
+output was consumed before its cold review was recorded.)
 
 ---
 
@@ -335,7 +390,8 @@ One folder per hunt, e.g. `hunts/<slug>/`:
 ```
 symptom-ledger.md     frozen numbered symptoms (S#) + repro steps (R#), original + restatement
 observation-ledger.md append-only record of everything examined (what/observation/citation/rules)
-hypotheses.md         ranked falsifiable hypotheses with confirm/refute predictions + status
+hypotheses.md         ranked falsifiable hypotheses: confirm/refute prediction, status
+                      (open/confirmed/refuted), + gate marker (ungated/test-passed/cold-red-teamed)
 diagnosis.md          (stage 8) root cause, causal chain, evidence, repro, recommended fix
 decisions.md          append-only gate log (gates, severities, routes, human overrides, cap counts)
 ```
@@ -377,3 +433,9 @@ discriminating tests, spawn cold reviewers, maintain the ledgers) and **stops fo
 - the **convergence gate** firing (iteration cap reached),
 - **stage 9b live verification** (the user is the final authority on "resolved"),
 - **missing config** needed to proceed (it refuses rather than guesses).
+
+It also **never presents an ungated hypothesis to the human as the likely/leading cause**: a
+hypothesis is "candidate, ungated" until a cold pass is recorded for it, a "leading candidate" only
+once its discriminating test is cold-reviewed (`test-passed`), and "the root cause" only once its
+stage-7 causal chain is `cold-red-teamed` (see *The gate-before-present rule*). Ranking the
+candidate list is always fine.

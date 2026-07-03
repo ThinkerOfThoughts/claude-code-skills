@@ -48,11 +48,18 @@ for any human override. Then walk the loop:
    re-examine an area without first recording why the prior finding is insufficient.**
 **3. Hypotheses** — in `hypotheses.md`, a ranked list, each **falsifiable**: the observation that
    would confirm it AND the one that would refute it; status open/confirmed/refuted. No hypothesis
-   without a discriminating test.
+   without a discriminating test. Each also carries a **gate marker**
+   (`ungated → test-passed → cold-red-teamed`). **While `ungated`, present it only as a "candidate,
+   ungated"; call it the leading *candidate* only once its discriminating test is cold-reviewed
+   (`test-passed` — flag that its causal chain is not yet challenged); call it *the cause* only once
+   `cold-red-teamed`.** Ranking the candidate list is always fine. See METHODOLOGY "The
+   gate-before-present rule".
 **4. Discriminating test (gated)** — design a test/instrument that splits the live hypotheses.
    Before running it: pass the **representativeness gate** and the **triage**.
 **5. Run & record** — run; record the result in the observation ledger; update hypothesis statuses;
-   cite the evidence.
+   cite the evidence. A result may not be **consumed** by a later stage (eliminate a hypothesis,
+   advance the gate marker, or inform the user) until the producing artifact's triage is **recorded
+   passed** in `decisions.md` — gate before trust.
 **6. Convergence gate** — are we eliminating hypotheses? **Iteration cap**: after `N` cycles with
    no hypothesis eliminated (or `N` re-examinations of one area), **stop and escalate to a human**.
    `N` comes from the config (Layer-1 default **3**); if no `N` is resolvable, refuse to start.
@@ -108,7 +115,10 @@ the severity model.
 Stop and ask when: the **0a restatement needs confirmation**; a **blocker** is about to restart the
 loop; the **convergence gate fires**; **stage 9b live verification** is needed (the user is the
 final authority on "resolved"); or **config is missing**. Refuse to invent project specifics —
-that is the failure this loop exists to prevent.
+that is the failure this loop exists to prevent. And **never describe a hypothesis as the root
+cause** without its stage-7 `cold-red-teamed` pass, nor as the **leading candidate** before its
+discriminating test is cold-reviewed (`test-passed`); an ungated hypothesis is presented only as a
+candidate (see METHODOLOGY "The gate-before-present rule").
 
 ## Self-check / dogfooding
 
