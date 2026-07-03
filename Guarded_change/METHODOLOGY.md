@@ -60,6 +60,18 @@ criteria** defined up front (mode 2).
   block that works *because* it is last.) When a change moves, reorders, adds, or removes
   anything in such an assembly, treat every affected element's *position* — including elements
   that did not themselves change — as load-bearing until shown otherwise.
+- **Shared state has more than one accessor.** When a change **introduces a new unsynchronized
+  accessor, or a new read→slow-work→write window, over shared mutable state whose atomicity an
+  existing transaction/lock does not already enforce**, correctness depends on *every* accessor
+  of that state, not just the one being written. A guard (lock, transaction, queue, CAS) is only
+  as strong as its **scope** — the set of accessors it actually covers; a *different*, lock-free
+  accessor whose write interleaves in the gap is silently lost (lost update / torn write). This
+  is the same blind spot as *Information-preserving is not behavior-preserving*, one level out: a
+  review that only asks "is this guard correct?" passes the change, because the defect lives in an
+  accessor it never **enumerated**. A guard's mere existence does not settle "already enforced" —
+  its scope must be enumerated, not assumed; when it is unclear whether a guard covers *every*
+  accessor, treat the state as unguarded. Triggers only where the change alters the concurrency
+  structure over shared state — *not* ordinary single-threaded or already-serialized code.
 - **"No issue found" is a valid result.** Reviewers are graded on precision, not body count.
   This removes the pressure to manufacture faults that makes aggressive review untrustworthy.
 
@@ -138,9 +150,30 @@ switch), the criterion states the pass rate it expects and the number of runs th
 it (treat as a human-judged rubric per above if no clean numeric floor exists), rather than
 relying on a single probe.
 
+**If the change introduces a new accessor or read-modify-write window over shared mutable state**
+(see *Shared state has more than one accessor*), at least one criterion must assert the
+**atomicity / no-lost-update** property under a concurrent interleaving — a write by one accessor
+is not silently clobbered by another. Name the interleaving and how it is checked (e.g. "an append
+by accessor B during accessor A's read→write window survives"). Because real races are
+**non-deterministic**, the criterion must be checked **deterministically** — by *injecting* the
+competing mutation into the middle of the guarded window (not hoping a live thread race lands
+there) — or, where only a live race is possible, over a **stated number of runs with a pass-rate
+floor** (treat as the probabilistic rubric above). And, like any representative harness, the
+interleaving test must **fail against the unguarded version**; a test that passes with and without
+the guard proves nothing. Reasoning that "the lock covers it" is not satisfaction — only the
+executed interleaving is.
+
 **2 — Plan.** How to build it, complete only when it also names: how each criterion will be
 measured; what instrumentation must exist to measure it (and adds it to scope if absent); and
 the thresholds that map findings to loop routing.
+
+**If the change introduces a new accessor or read-modify-write window over shared mutable state**
+(see *Shared state has more than one accessor*), the plan is incomplete until it **enumerates
+every concurrent accessor (reader and writer) of that state and names which the guard covers and
+which it does not** — an *accessor │ reader/writer │ synchronized by │ covered by the guard?*
+table is the natural form. The gap between "accessors that exist" and "accessors the guard
+covers" is where the lost update hides; naming it at plan time (per *Instrument before you build*)
+is the cheapest place to catch it — cheaper than the red-team, far cheaper than production.
 
 **3 / 6 — Red-team.** See charter below. Stage 3 reviews spec+criteria+plan; stage 6 reviews
 code against criteria+plan.
@@ -216,6 +249,17 @@ Discipline that makes aggressive review trustworthy:
   or to an input it governs (before/after)? If yes, "all the information is still present" is **not** a clean
   verdict for that element; the finding is the *behavior* change, and it ranks by impact, not
   by whether any text was lost.
+- **If the change introduces a new accessor or a new read-modify-write window over shared mutable
+  state, map the accessors and challenge the guard's scope** (lens 4). This fires only where the
+  change *alters* concurrency over shared state — not ordinary single-threaded or
+  already-serialized code. Do two things: **(1) enumerate every concurrent reader and writer of
+  that state** — including ones the change did not touch (a pre-existing lock-free appender, a
+  background tick, a crash-recovery path); **(2) treat the guard's scope as a claim to
+  challenge** — not "is the lock correct?" but "*which* accessors does this guard cover, and which
+  does it leave out?" A guard's existence is not coverage: an unenumerated lock-free (or
+  differently-guarded) accessor of the same state, or a read and write that straddle a slow
+  operation during which another accessor can mutate the state, is the finding — ranked by the
+  impact of the lost/torn write, not by whether the guarded path itself looks correct.
 
 The reviewer is graded on **precision** (are its findings real?), not on how many it raises.
 
@@ -267,6 +311,15 @@ assembled prompt/config to confirm the text is present. Text-presence is the exa
 the position change defeats, so a harness that "verifies" such a criterion by inspection has
 not run it. This is the cheapest reliable catch for the whole class and is why the criterion is
 mandated up front: stage 3 reasons about it, but only stage 8 can prove it fired.
+
+**Concurrency criteria must be checked by executing an interleaving, not by inspecting the
+guard.** Any criterion written under *Shared state has more than one accessor* (stage 1.5) is
+satisfied only by **running a concurrent interleaving and observing the write survive** — never by
+re-reading the lock/transaction code and reasoning it looks sufficient. Inspecting the guard is
+the exact check the scope gap defeats: the guard *is* correct for the accessors it covers. Prefer
+a deterministic harness that injects the competing mutation into the read→write window (a live
+thread race need not be reproduced by luck); a pure-inspection "verification" of such a criterion
+counts as `verified = no`.
 
 **Every gating criterion must be verified by execution before "done" — no deferral, no proxy,
 no silent drop.** A gating criterion (1.5) is satisfied only by running a case that exercises

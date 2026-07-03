@@ -43,15 +43,23 @@ Then walk the loop:
    **Label each criterion gating or advisory (default gating; advisory only with a stated
    reason).** A gating criterion must be verified by execution at stage 8 — it may not be
    deferred, proxied, or dropped (see METHODOLOGY "A deferred gating criterion is not a met one").
+   **If the change introduces a new accessor or read-modify-write window over shared mutable
+   state, add a criterion asserting no-lost-update under a concurrent interleaving, and require
+   stage 8 to verify it by *executing* that interleaving — injected deterministically (or over a
+   stated pass-rate) and failing against the unguarded version — see METHODOLOGY "Shared state
+   has more than one accessor".**
 **2. Plan** — write `2-plan.md`: how, **plus** measurement, instrumentation (add to scope if a
    needed signal is absent), and severity→routing thresholds + which metrics are gating vs.
-   advisory. A plan missing these is incomplete.
+   advisory. A plan missing these is incomplete. **If the change introduces a new accessor or
+   read-modify-write window over shared mutable state, the plan must enumerate every concurrent
+   accessor and state which the guard covers vs. leaves out (METHODOLOGY "Shared state has more
+   than one accessor").**
 **3. Red-team the plan** — spawn a **cold subagent** (no shared context; `general-purpose` or
    `Explore`). Give it read access to `{1-spec, 1.5-criteria, 2-plan}` AND the priority-ordered
    `redteam_context` paths. Charter it with the four lenses + evidence discipline from
    METHODOLOGY ("The red-team charter"): cite line/file or a concrete scenario, rank each finding
    (blocker/major/minor/nitpick), flag anything unverifiable, "no issue" per lens allowed; a
-   clean *factual* verdict needs source citations. **If a position-sensitive assembly is touched (move/reorder/add/remove in a prompt, precedence list, pipeline — not ordinary code), test each affected element (including unchanged neighbors) for position/order sensitivity** — "all info still present" is not a clean verdict for a position-dependent element. Write `3-redteam-plan.md`.
+   clean *factual* verdict needs source citations. **If a position-sensitive assembly is touched (move/reorder/add/remove in a prompt, precedence list, pipeline — not ordinary code), test each affected element (including unchanged neighbors) for position/order sensitivity** — "all info still present" is not a clean verdict for a position-dependent element. **If a change introduces a new accessor or read-modify-write window over shared mutable state, enumerate every concurrent reader/writer and challenge the guard's scope (which accessors it covers vs. leaves out) — "the lock looks correct" is not a clean verdict when an unenumerated lock-free accessor can mutate the same state.** Write `3-redteam-plan.md`.
 **4. Gate** — route by worst finding: **blocker → return to 1** (confirm direction first);
    **major → return to 2**; **minor → fix in place, proceed**; **nitpick → log, proceed**;
    **clean → build (5).** Bounded by the iteration cap (below).
