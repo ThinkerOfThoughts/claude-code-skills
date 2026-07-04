@@ -313,3 +313,20 @@ pre-registered outcomes).
   `b5e122ef…9a2527`; freeze pins verified intact post-resume.
 - **Route: DONE → commit PATH-SCOPED to `Dragonfly/` + push** (exclude
   `Guarded_change/guarded-change.companion.md`). Live install stands (== source).
+
+## ADDENDUM — round-3 confirmation pass (owner-requested, 2026-07-04, post-close)
+- After the run closed at `1227cfa`, the owner asked for a belt-and-braces pass on the
+  final (post-fix-in-place) 8-retrodiction.md, which no reviewer had seen. Not required
+  by the severity model; run because cheap. Reviewer `general-purpose`/`claude-fable-5`,
+  cold; full provenance + verbatim output: `8-retrodiction-litepass-round3.md`.
+- **Verdict: worst severity NITPICK — the scored C8 PASS STANDS.** 6/6 round-2 findings
+  genuinely resolved ("none reworded around"); no adjudication weakened; both greps + all
+  spot-checked citations + all hashes independently re-verified; three-way reviewer hash
+  agreement on the pinned fixtures across rounds.
+- **3 nitpicks LOGGED, not fixed** (run closed+committed; reviewer's own classification:
+  "imprecision, not regression" / "not load-bearing"): (1) the Verdict section's blanket
+  "all five … as pre-registered" drops the (v) qualifier stated 6 lines up; (2) the
+  "none identified" counterfactual in the (v) flag is contestable (a subprocess-locus
+  shared assumption is plausibly nameable) — not load-bearing; (3) emphasis added inside
+  the 0-audit-findings.md:115 quote, unmarked.
+- C8 evidentiary state after three rounds: PASS, unchanged.
