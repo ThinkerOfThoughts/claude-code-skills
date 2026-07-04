@@ -92,3 +92,26 @@
   vs round-3 vs park) → then gate 4 freeze → stage 5 build per 2-plan.md §A-§C →
   stage 6 (with the added fix-verification task if fold route) → gate 7 → stage 8 arms
   per §C-§E → conditional §F flip → 9-report → commit.
+
+## Owner tie-break RESOLVED: stage-3 ROUND 3 (2026-07-04, eve)
+- **Owner decision (verbatim rationale):** "I want it done. But I want it done properly.
+  I don't want to assume everything is perfect and then try to use the tool and waist an
+  entire day because of a skipped step. Do stage 3 round 3." → the rigor route: a
+  dedicated cold review of the 12 applied fixes BEFORE gate-4 freeze; fold-into-stage-6
+  rejected (it would freeze unreviewed fix text and dilute the stage-6 charter; this
+  run's own history — the F-1 fix spawning R2-4 — argues fixes deserve their own pass).
+- **Execution DEFERRED (same message thread, usage 80%):** owner directed "do any
+  remaining cheap steps, and then pause." A ~100K-token cold pass is not a cheap step →
+  round 3 is the FIRST RESUME ACTION, not run now.
+- **RESUME POINT (supersedes the prior pause entry's): spawn stage-3 round 3.** Charter
+  shape = round 2's (same closed set + `3-redteam-plan-round2.md` + this decisions.md);
+  tasks: (1) resolution check of all 12 round-2 findings (R2-1..R2-8, N-1..N-4 —
+  fix-by-fix, quoted); (2) fresh four-lens pass on the revised set, esp. re-walk the five
+  edge cases under §D's two new precedence lines, and independently re-measure §F's
+  rewrap arithmetic. Then: gate 4 freeze (criteria + prompts + §D/§E + transcript def +
+  phasing; sha256s) → stage 5 build (§A-§C) → stage 6 built-fixture review → gate 7 →
+  stage 8 (P1 conformance → phased arms per §C [baselines FIRST, dragonfly install
+  parked] → P7 checks → 6 verifiers → P4 → score P3) → conditional §F flip → 9-report →
+  final gate → commit.
+- No tokens spent on arms; nothing built; criteria still UNFROZEN (round 3 sees the
+  as-committed docs).
