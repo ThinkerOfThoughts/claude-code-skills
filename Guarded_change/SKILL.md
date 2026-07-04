@@ -16,6 +16,10 @@ proven against an explicit measurable bar.**
 - **A project config** (Layer 2). Look for one (e.g. `guarded-change.*.{md,yaml}` in or near
   the working dir). If none exists and the loop needs stage 0/8, ask for it or help author it
   against the config contract in `METHODOLOGY.md`. Do not invent project metrics.
+  **Validate every path a cold reviewer will be handed** (config `redteam_context`, spec
+  touched-files, fixtures) — at run start, and again at any later reviewer spawn for paths new
+  since; record the result in `decisions.md` (gate 4 cannot pass without it) and surface dead
+  paths to the human (METHODOLOGY "Paths are validated, not assumed").
 
 ## Procedure
 
@@ -31,6 +35,7 @@ Then walk the loop:
    Run it, store metrics in `0-baseline.md`. Otherwise note "greenfield / no baseline → stage 8
    conformance-only" and skip.
 **1. Spec** — write `1-spec.md`: the problem, why, constraints. Rich enough to derive the rest.
+   Declare the expected **touched files** — the list joins every cold reviewer's context.
 **1.5. Criteria** — write `1.5-criteria.md`: a *checkable* accept bar. Each criterion is either
    **automated** (true/false or numeric from instrumentation) **or** a **human-judged rubric**
    (named judge + written scale + pass definition) — see METHODOLOGY stage 1.5. **Mandatory.**
@@ -59,21 +64,34 @@ Then walk the loop:
    `redteam_context` paths. Charter it with the four lenses + evidence discipline from
    METHODOLOGY ("The red-team charter"): cite line/file or a concrete scenario, rank each finding
    (blocker/major/minor/nitpick), flag anything unverifiable, "no issue" per lens allowed; a
-   clean *factual* verdict needs source citations. **If a position-sensitive assembly is touched (move/reorder/add/remove in a prompt, precedence list, pipeline — not ordinary code), test each affected element (including unchanged neighbors) for position/order sensitivity** — "all info still present" is not a clean verdict for a position-dependent element. **If a change introduces a new accessor or read-modify-write window over shared mutable state, enumerate every concurrent reader/writer and challenge the guard's scope (which accessors it covers vs. leaves out) — "the lock looks correct" is not a clean verdict when an unenumerated lock-free accessor can mutate the same state.** Write `3-redteam-plan.md`.
+   clean *factual* verdict needs source citations. **If a position-sensitive assembly is touched (move/reorder/add/remove in a prompt, precedence list, pipeline — not ordinary code), test each affected element (including unchanged neighbors) for position/order sensitivity** — "all info still present" is not a clean verdict for a position-dependent element. **If a change introduces a new accessor or read-modify-write window over shared mutable state, enumerate every concurrent reader/writer and challenge the guard's scope (which accessors it covers vs. leaves out) — "the lock looks correct" is not a clean verdict when an unenumerated lock-free accessor can mutate the same state.** Write `3-redteam-plan.md` as a **verbatim record** per METHODOLOGY "Provenance is part of the review record": embed the charter given (core verbatim + task additions quoted), the exact context list (closed set: stage artifacts + config `redteam_context` + spec touched-files + carried findings), the reviewer's verbatim output, its agent type/model, and its reported context-file hashes — missing any ⇒ the review is un-run. Require the **coverage challenge**: the reviewer names behaviors the change could alter that no criterion observes (explicit "none found" allowed); no such section ⇒ lens 4 un-run.
 **4. Gate** — route by worst finding: **blocker → return to 1** (confirm direction first);
    **major → return to 2**; **minor → fix in place, proceed**; **nitpick → log, proceed**;
-   **clean → build (5).** Bounded by the iteration cap (below).
+   **clean → build (5).** Bounded by the iteration cap (below). Route on the **reviewer's**
+   severities — contest only via a logged entry; demoting a blocker/major needs the human
+   tie-break (METHODOLOGY "The reviewer's severity routes"). On route-to-build: **freeze
+   `1.5-criteria.md`** and record its sha256 (or a verbatim copy) in `decisions.md`
+   (METHODOLOGY "Criteria freeze").
 **5. Build** — implement per the plan, including any instrumentation the plan added.
 **6. Red-team the code** — spawn a fresh **cold subagent** with the code diff/files + `{1.5, 2}` +
    `redteam_context`. Same charter, aimed at code-vs-plan/criteria. Spot-verify a sample of the
-   reviewer's cited file:lines actually exist (guards fabricated citations). Write `6-redteam-code.md`.
+   reviewer's cited file:lines actually exist (guards fabricated citations). Generate the
+   reviewed diff **mechanically** (`git diff <recorded-base>`; record the command) — hand-curated
+   ⇒ un-run for the omitted scope. Write `6-redteam-code.md` as a verbatim record (same
+   provenance duties as step 3).
 **7. Gate** — **blocker/major → return to build (5)**; **minor → fix in place, proceed**;
-   **nitpick → log, proceed**; **clean → harness (8).**
+   **nitpick → log, proceed**; **clean → harness (8).** Route on the reviewer's severities (as
+   at gate 4); record any in-place fix diff in `decisions.md`.
 **8. Harness** — run the config's `measurement.check`. Then:
    - **Conformance (always):** measured behavior vs. `1.5-criteria.md`. Pass/fail per criterion.
      **Every gating criterion must be verified by executing the path it governs** — deferral,
      proxy-path, or silent drop ≠ pass (see METHODOLOGY "Every gating criterion must be verified
-     by execution"). Emit the per-criterion verification table `8-harness.md` requires.
+     by execution"). Emit the per-criterion verification table `8-harness.md` requires — its
+     **evidence** column: every gating PASS cites its raw output (rubric rows: named judge +
+     verdict location); no evidence pointer ⇒ `verified = no`. Any executable check born after
+     stage 6 gets a targeted cold check before its results count (METHODOLOGY "An unreviewed
+     check is not a check"); a fix-in-place here re-runs the criteria its diff could invalidate,
+     diff recorded. Verify `1.5-criteria.md` still matches the frozen version.
    - **Regression (only if a stage-0 baseline exists):** measured vs. baseline on the config
      `metrics`, applying each metric's `direction` + `regression_threshold`.
    Apply each metric's gating-vs-advisory status (advisory metrics are surfaced, not bounced —
@@ -98,5 +116,9 @@ criteria — that's the exact failure this loop exists to prevent.
 
 This skill can be run on its own artifacts: treat `METHODOLOGY.md` + `SKILL.md` as the thing
 under review, and execute a stage-3 red-team on them (cold subagent, four lenses, evidence
-discipline). That is the cheapest validation the methodology gets and is encouraged after any
-edit to either file.
+discipline). Skill-file edits are edits to a **position-sensitive assembly** (these documents
+are prompts), so the position lens applies. **Non-trivial edits take the full loop**, not a
+stage-3 pass alone. Standing self-check criteria for any such run: live copy == source copy
+(`diff`); SKILL.md ↔ METHODOLOGY.md consistency on every rule both state; a
+behavior-preservation criterion for anything moved or removed. A stage-3 red-team remains the
+cheap check encouraged after any edit, however small.

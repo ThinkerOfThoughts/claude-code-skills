@@ -112,7 +112,9 @@ place to catch a regression. Stages 6 and 8 are backstops.
 runs conformance-only.
 
 **1 — Spec.** A rich problem definition: what's wrong / wanted, why, constraints, prior art.
-Deep enough that the plan and criteria can be derived from it without guessing intent.
+Deep enough that the plan and criteria can be derived from it without guessing intent. The spec
+also **declares the expected touched files** — that list joins every cold reviewer's context
+(see the charter's closed set).
 
 **1.5 — Criteria.** The bar against which "done" is checked. Each criterion must be
 **checkable**, by one of two means:
@@ -163,6 +165,16 @@ interleaving test must **fail against the unguarded version**; a test that passe
 the guard proves nothing. Reasoning that "the lock covers it" is not satisfaction — only the
 executed interleaving is.
 
+**Criteria freeze.** When gate 4 routes to build, `1.5-criteria.md` **freezes** and its hash
+(or a verbatim copy) is recorded in `decisions.md`. The freeze binds to the route-to-build
+version, which must equal the version the stage-3 reviewer read — except for gate-4 in-place
+fixes, each traceable to a logged finding, with the criteria diff recorded in `decisions.md`.
+Stage 8 verifies the file still matches the recorded version; a divergence is a post-freeze
+edit → the affected criteria's PASSes are invalid unless the edit carries a `decisions.md`
+entry (change + reason) and a targeted re-red-team of the edited criteria. Any **weakening**
+(gating→advisory, a loosened threshold, a narrowed scope) is audited exactly like an advisory
+relabel under the charter's label-audit — it needs a legitimate reason or the original stands.
+
 **2 — Plan.** How to build it, complete only when it also names: how each criterion will be
 measured; what instrumentation must exist to measure it (and adds it to scope if absent); and
 the thresholds that map findings to loop routing.
@@ -176,7 +188,9 @@ covers" is where the lost update hides; naming it at plan time (per *Instrument 
 is the cheapest place to catch it — cheaper than the red-team, far cheaper than production.
 
 **3 / 6 — Red-team.** See charter below. Stage 3 reviews spec+criteria+plan; stage 6 reviews
-code against criteria+plan.
+code against criteria+plan. At stage 6 the reviewed diff is generated **mechanically**
+(`git diff` against the recorded base, or an equivalent captured command), the command recorded
+in `6-redteam-code.md` — a hand-curated file set = the review is un-run for the omitted scope.
 
 **4 / 7 — Gates.** Route by the worst finding's severity (see severity model).
 
@@ -219,6 +233,26 @@ Discipline that makes aggressive review trustworthy:
   cited file:lines / log rows actually exist and say what's claimed. Citations are the one
   guard defending the loop's founding failure; a fabricated citation would defeat it, so the
   guard itself must be spot-checked (cheap: verify a few, not all).
+- **Provenance is part of the review record.** Every cold-review record, wherever in the run it
+  occurs (stage 3/6, a targeted post-6 check, a harness-embedded reviewer arm), embeds: (i) the
+  verbatim charter/prompt given, (ii) the exact context path list given, (iii) the reviewer's
+  verbatim output (the author's summary lives in `decisions.md`, separately), (iv) the
+  reviewer's agent type + model, and (v) the reviewer-reported sha256 of each context file it
+  read (the charter instructs the reviewer to report these). The charter given is the
+  METHODOLOGY charter **core** verbatim — the four lenses + the unconditional discipline
+  bullets, plus the coverage-challenge bullet for stage-3 reviews and any conditional lens
+  (position / concurrency) whose trigger fires — with task-specific additions quoted
+  as such. Reviewer input is a **closed set**: the named stage artifacts + the config's
+  `redteam_context` + the spec's touched-files list + carried-forward findings from
+  `decisions.md`; any supplementary author-authored context must be quoted in the record as
+  such. A record missing any of these = the review is treated as **un-run**. In A/B harness
+  arms, author-authored supplementary context is prohibited outright — a leak is a confound
+  (see the concurrency-lens C3 attempt-1 record).
+- **Challenge criteria coverage (stage 3).** Name the behaviors the change could plausibly
+  alter that **no criterion observes** — each named gap needs a concrete scenario and ranks by
+  impact. The finding is unmeasured blast radius, not "write more criteria"; precision
+  discipline is unchanged. A stage-3 review with no coverage-challenge section (an explicit
+  "none found" counts) is incomplete on lens 4 and treated as un-run for that lens.
 - **Audit the criterion labels and the stage-8 verification table (the gating guard).** The
   weight on each criterion is itself a claim to challenge, not a given:
   • every criterion marked **advisory** must carry a legitimate reason — challenge any that looks
@@ -277,6 +311,13 @@ The reviewer is graded on **precision** (are its findings real?), not on how man
 The severity threshold is what stops the loop from thrashing on marginal findings. A
 borderline regression that's an acceptable tradeoff is a **human decision**, not an automatic
 restart — the loop surfaces it ranked; a person rules.
+
+**The reviewer's severity routes.** For findings originating from a cold review (gates 4 and
+7; at stage 8, findings from a targeted post-6 check), the gate routes on the **reviewer's**
+stated severity — harness measurements at stage 8 route by the table as before. The author may
+contest a severity only via a logged `decisions.md` entry; demoting a **blocker or major**
+additionally requires the human tie-break (the same authority that breaks iteration-cap ties).
+A silent unilateral demotion is a gate violation: the reviewer's routing stands.
 
 **Iteration cap (anti-livelock).** A blocker/major that routes *backward* is bounded: after
 **2 bounces at the same gate on the same finding class**, the loop **stops and a human breaks
@@ -343,9 +384,23 @@ a live human/system), the loop has exactly two legal moves:
 Route (b) is the *only* way a gating criterion reaches ship unverified, and it is a conscious,
 attributed decision — never a silent fold into "done."
 
+**An unreviewed check is not a check.** Any new or modified executable check whose results
+stage 8 will trust, created after the stage-6 review (the harness itself, a route-(a)
+representative fixture, a rebuilt probe), gets a **targeted cold check before its results
+count** — for representativeness, and, where the check guards a fix, that it fails against the
+unguarded version; until then its results are `verified = no`. A defective check found this
+way is discarded and rebuilt in place (logged in `decisions.md`), not a loop restart; findings
+it raises about the change itself route via the gate-8 severity row. In-place fix diffs at
+gates 7/8 are recorded in `decisions.md`, and a stage-8 fix-in-place re-runs the criterion
+checks its diff could have invalidated.
+
 `8-harness.md` therefore **must contain a per-criterion verification table**: one row per
 criterion with columns *criterion │ gating/advisory │ path exercised │ verified by execution?
-│ result*. Any **gating** row that is not `verified = yes` blocks "done" unless `decisions.md`
+│ evidence │ result*. The **evidence** cell of every gating `verified = yes` row cites where
+the raw output lives (the command run + an output file/excerpt); for a human-judged-rubric
+criterion the pointer is the named judge + where the verdict is recorded. A gating PASS row
+with no evidence pointer counts as `verified = no`, and the consumer's citation spot-verify
+extends to a sample of evidence cells. Any **gating** row that is not `verified = yes` blocks "done" unless `decisions.md`
 carries the matching named risk-acceptance. (Inspection-only "verification" of a gating
 criterion counts as `verified = no`.) The table always lists every **gating** criterion;
 advisory criteria may be summarized in one line. A run with no gating criteria says so and the
@@ -415,6 +470,13 @@ Rules:
 - **`redteam_context` is priority-ordered.** Because a cold subagent can't exhaustively read a
   large codebase, list the most relevant entrypoints first with a short note on what to check
   there. This keeps "independence" from degrading into "skimmed whatever fit in context."
+- **Paths are validated, not assumed.** Mechanically check every path handed to a cold
+  reviewer (`redteam_context`, the spec's touched files, fixture paths) exists and is readable
+  — at run start for paths that exist then, and at each cold-reviewer spawn for any path not
+  yet validated. Gate 4 may not pass until the run-start validation result is recorded in
+  `decisions.md`. A missing/empty path is surfaced to the human before proceeding (fix the
+  config, or record a named degraded-review acceptance in `decisions.md`) — a reviewer handed
+  dead paths silently degrades to docs-only reasoning, the loop's founding failure.
 - **Acceptance criteria (1.5) are per-change**, authored in the change's spec — *not* in this
   config. The config holds standing measurement/regression setup that's stable across changes.
 - **Criteria are mandatory; baseline is optional.** No criteria → the loop won't pass stage 3.
@@ -439,6 +501,11 @@ One folder per change, e.g. `changes/<slug>/`:
 8-harness.md        conformance + regression results, verdict
 decisions.md        append-only gate log (see below)
 ```
+
+The review docs (`3-redteam-plan.md`, `6-redteam-code.md`, and any targeted post-6 check
+record) are **verbatim records** — each embeds the charter given, the exact context list, and
+the reviewer's raw output per the charter's provenance rule; the author's interpretation
+belongs in `decisions.md`.
 
 **`decisions.md` — the gate log (append-only).** Each gate (4, 7, 8) appends one entry:
 which gate, the worst finding's severity, the route taken, and — for any **human override**
