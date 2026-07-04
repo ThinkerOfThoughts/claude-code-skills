@@ -88,7 +88,8 @@ is a **falsifiable, executed bar** — not an assertion.
                       proceeding
      0b FREEZE        record original wording + confirmed restatement into the append-only
                       SYMPTOM LEDGER (a file; never silently dropped)
-1    REPRODUCTION     turn R# into a reliable, REPRESENTATIVE repro BEFORE hypothesizing.
+1    REPRODUCTION     turn R# into a reliable, REPRESENTATIVE repro BEFORE hypothesizing
+                      (escape for bugs unreproducible blind: see stage-1 detail).
                       A repro that doesn't reproduce isn't one. Intermittent → instrument to
                       capture (with its own evidentiary bar). (Repro artifact → triage.)
 2    OBSERVATION      append-only OBSERVATION LEDGER (a file): everything examined + citation +
@@ -138,6 +139,11 @@ un-reproducible bug routes to **instrument-to-capture** — but that path carrie
 bar (see the gate); "label it intermittent" is not an escape. The repro is a diagnostic artifact →
 triage — and the triage routes it through guarded-change/lite, **which is where its cold red-team
 happens** (this is the stage-1 red-team named in the charter below).
+**Repro-ordering escape (an exception to the ordering above, recorded):** when a faithful repro
+cannot be built blind (intermittent / load-dependent / emergent), hypotheses MAY be formed first
+to inform repro/instrument design, PROVIDED the inversion is recorded in `decisions.md` **naming
+the infeasibility class**, and every such hypothesis stays `ungated`; the representativeness gate
+still binds the resulting repro/instrument before any conclusion — legal only recorded + tier-bound.
 
 **2 — Observation ledger.** An **append-only** file recording everything examined: what was
 checked, the observation, a citation (file:line / log row), and what it rules in or out. The
@@ -173,7 +179,17 @@ the trust-before-gate slip; the triage is a precondition of trust, not a later a
 the hunt: after **N** cycles with no hypothesis eliminated, or **N** re-examinations of one area,
 **stop and escalate to a human**. `N` has a **Layer-1 default of 3** and may be overridden by the
 Layer-2 config; if no `N` is resolvable at all, Dragonfly **refuses to start** rather than run
-without a convergence stop. This is the defense against token-burning thrash.
+without a convergence stop. A **cycle** = one discriminating test **run and recorded** — a
+completed stage-4→5 lap; the cycle count and per-area re-examination tally are appended to
+`decisions.md` at each stage-6 pass (cap countable from the log; an uncounted pass is a gate
+violation). Multiple `S#` threads count convergence **per-thread** (same unit; a test
+discriminating across threads increments each thread whose hypotheses it splits); a thread
+hitting the cap **escalates alone**; threads may split into separate hunts at any gate with a
+recorded reason — global counting may not mask per-thread thrash. Each pass also records which
+mechanism **classes** the live hypotheses cover, which are ruled out, and **what assumption the
+live set shares** (explicit "none identified" counts) — cold passes aim at the shared assumption
+too, one found false ranks by impact; a pass missing this record is a **gate violation**, like an
+uncounted cycle. The cap is the defense against token-burning thrash.
 
 **7 — Root-cause confirmation.** "Found" requires **all three**, conjunctively (two-of-three is not
 "found"):
@@ -181,17 +197,42 @@ without a convergence stop. This is the defense against token-burning thrash.
 2. **A cited causal chain** root → symptom — each link cites evidence (file:line / log row), not
    reasoning alone.
 3. **A toggle** — flipping the suspected cause makes the symptom appear/disappear *predictably*.
-   The toggle is what proves causality rather than correlation.
+   The toggle is what proves causality rather than correlation. For a rate-based/intermittent
+   symptom the toggle criterion states the **expected rate shift and run count** up front
+   (guarded-change's probabilistic rubric, by reference); a single flip does not satisfy it.
 A **cold red-team** challenges the causal chain (is it confabulated? does it actually follow from
 the cited evidence?). Passing it sets the hypothesis's gate marker to **`cold-red-teamed`** — a
 precondition of the "confirmed" verdict *and* of presenting it to the human as the root cause (see
 *The gate-before-present rule*). The toggle is a diagnostic artifact → triage.
+**Depth check (root or relay?).** The root = the **deepest node the project can act on**. For the
+claimed root, ask "why does this node produce the next?" ONE level down; "found" requires
+recording that this why-down is (a) **answered** with cited evidence, (b) **explicitly out of
+scope** (model property / third-party / not actionable — named), or (c) **not load-bearing** for a
+fix targeting the cause, not the mechanism's surface. The stage-7 cold pass explicitly challenges
+"**root or relay?**" — "explains the symptom" at a relay does not satisfy stage 7.
+**Evidence-coverage sweep.** Before "found": every observation-ledger row tied to the `S#` is
+either **explained by the confirmed chain** (cite how) or recorded as a **residual** (named
+secondary contributor / open sub-hypothesis, ranked), carried in `diagnosis.md` + the stage-8
+handoff, struck only with a recorded reason. "**Found (primary), with named residuals**" is legal;
+**silent absorption is not** — an unexplained row without a residual entry blocks "found".
+Only with the depth check and coverage sweep recorded is "found" declarable — all three bar items
++ both records + the chain's cold-red-team pass (gate marker `cold-red-teamed`), conjunctively.
 
-**8 — Handoff.** Emit the **diagnosis artifact**: root cause, the evidence and causal chain, the
-representative repro, and the recommended fix. Hand to **guarded-change** for the fix. Dragonfly
-does **not** author the fix.
+**"Characterized, not found" — the only other legal terminal verdict.** A hunt may end short of
+"found" ONLY as "characterized," requiring ALL of: (a) what IS established, each claim cited and
+cold-red-teamed like any conclusion; (b) which hypotheses were refuted, with evidence; (c) WHY the
+full bar is unreachable — a named reason (model property / cost bound / needs-live-data), not
+vague; (d) **explicit human sign-off**; (e) presentation tier stays "characterization" — never
+"the cause." Mitigation directions may ride the handoff **marked as such** (stage-9-verified on
+symptom evidence only — no cause-resolution claim). Missing **any** of (a)–(e) → not a legal stop.
+
+**8 — Handoff.** Emit the **diagnosis artifact**: root cause, the evidence and causal chain with
+**each level's depth-check status**, the **named residuals**, the representative repro, and the
+recommended fix. Hand to **guarded-change** for the fix. Dragonfly does **not** author the fix.
 
 **9 — Fix verification.** Verify the **root cause is resolved**, not merely the symptom suppressed.
+(For a **characterized** handoff there is no stage-7 chain+toggle to use: stage 9 verifies the
+marked mitigations on **symptom evidence only** — no cause-resolution claim is made or verified.)
 
 - **9a — Local** (if locally testable): using the stage-7 causal chain + toggle, check **both**
   (i) the diagnosed root-cause condition no longer holds, **and** (ii) the symptom is
@@ -208,6 +249,11 @@ does **not** author the fix.
   live (the user is the final authority).
   - **User confirms resolved** → **done**.
   - **User says not resolved** → record + back to **stage 0** with the new information.
+
+For a rate-based/intermittent symptom, 9a/9b define their **observation window up front** from the
+symptom's observed ledger frequency (e.g. ~1/session over 5 sessions → 9b window ≥ 5 sessions,
+pass = 0 occurrences); a single clean run or an unstated window does not satisfy them. Stage 9
+also re-checks the **residuals list**: killing the primary does not close an unexplained residual.
 
 A failed verification is never discarded: it is recorded as a new symptom so the next lap starts
 from fact, not from scratch.
@@ -231,6 +277,14 @@ symptom is known to have occurred** (replayed against a recorded failing trace, 
 fire on a forced/seeded instance of the condition) before any reading it produces is trusted. An
 instrument never shown to capture an actual occurrence is treated exactly like a test whose control
 did not exhibit the symptom: rejected and redesigned.
+
+**The detector/readout is itself a diagnostic artifact.** Anything that *decides* "the symptom
+occurred" (a classifier, a grep, a threshold rule) is a detector, subject to this gate and the
+triage: BEFORE any reading it produces is consumed, it must be shown to **fire on a known-true
+instance AND stay silent on a known-clean one**, evidenced by an observation-ledger row (the
+silent-on-clean half is a deliberate, strictly stronger duty; an artifact that merely captures
+data for later reading carries only the instrument-to-capture bar above). An unvalidated
+detector's readings are untrusted — rejected like a control that doesn't exhibit the symptom.
 
 ---
 
@@ -269,8 +323,8 @@ output was consumed before its cold review was recorded.)
 
 ## Diagnostic-artifact triage (which guarded-change form)
 
-Every repro / test / instrument / toggle Dragonfly produces runs through guarded-change before it
-is trusted. The triage decides which form, **in priority order**:
+Every repro / test / instrument / toggle / detector/readout Dragonfly produces runs through
+guarded-change before it is trusted. The triage decides which form, **in priority order**:
 
 1. **Consumes usage credits/tokens to run** (spawns an agent/CLI, hits an LLM API, otherwise burns
    budget) → **full guarded-change**, regardless of size. *(Highest-priority rule, overrides size.)*
@@ -287,7 +341,11 @@ unchanged stage-3/6 reviewer charter (four lenses + evidence discipline) — aga
 + a checkable "does exactly X and exercises path P" criterion → fix → run.* It keeps that charter
 verbatim and drops the surrounding scaffolding (spec / criteria / plan / baseline / regression) —
 the review without the full doc set. Full cases invoke the guarded-change skill directly. Lite
-carries a pointer back to guarded-change as the source of truth for the charter.
+carries a pointer back to guarded-change as the source of truth for the charter. **The provenance
+record is not scaffolding** — lite keeps the charter AND the provenance record (charter section
+below), dropping only the five-item doc set above. A lite pass records, minimally: the artifact,
+the one-line intent + criterion, the verdict, and where the verbatim output lives, in
+`decisions.md`; unrecorded = treated as not having happened (artifact untrusted).
 
 ---
 
@@ -324,6 +382,21 @@ not fork it. The diagnosis-specific aiming:
   challenge — the #1 failure)
 - **Are any identifiers, paths, or calls confabulated?** (the variable-that-doesn't-exist failure)
 - **Does the causal chain actually follow from the cited evidence**, or is it asserted? (stage 7)
+- **Root or relay — is the claimed root the deepest node the project can act on?** (stage 7)
+- **What assumption does the live hypothesis set share, and is it true?** (aimed at the set)
+
+**Provenance (inherited, unconditional).** Guarded-change's provenance rule applies to **every
+dragonfly cold pass** — direct stage-7 AND the triage's guarded-change/lite passes at stages 1/4:
+the record carries the verbatim charter, the exact context list, the reviewer's verbatim output,
+the agent type + model, and the reviewer-reported context hashes; it lives in, or is pointed to
+from, the hunt folder (a full-GC triage run keeps its own `changes/<slug>/` record, nested or
+external, with a pointer in the hunt's `decisions.md`). Missing any element = the pass is
+**un-run** — its reading may not be consumed. Cold passes inherit ALL of guarded-change's
+**unconditional** discipline bullets (those with no stage or trigger scope of their own),
+provenance included. The stage-3 coverage-challenge bullet does NOT apply to dragonfly's **direct
+stage-7 and lite passes** (neither is a stage-3 review; the analog is the shared-assumption aim
+above) — but a **full guarded-change triage run keeps ALL of guarded-change's own stage duties,
+including its stage-3 coverage challenge**: dragonfly narrows nothing inside a full-GC run.
 
 The four lenses (factual / logical / missed-opportunity / unstated-assumptions), the
 "cite-or-it-doesn't-count" rule, the "a clean factual lens must be earned with citations" rule, and
@@ -380,6 +453,10 @@ Rules:
   to check there, so independence doesn't degrade into "skimmed whatever fit in context."
 - **`N` defaults to 3** if omitted; if no `N` is resolvable at all the loop refuses to start.
 - **Ledgers are files** under `ledgers.dir`; they must survive a session restart.
+- **Path validation at hunt start:** every config path (`redteam_context` entries,
+  `reproduction.logs`, `ledgers.dir`) is mechanically checked to exist/be readable BEFORE stage 0
+  proceeds — no hunt on unvalidated paths. Invalid-but-adaptable → adapt + record it as its own
+  `decisions.md` entry (what changed, why) + proceed; dead/unresolvable → **stop for the human**.
 
 ---
 
@@ -392,7 +469,8 @@ symptom-ledger.md     frozen numbered symptoms (S#) + repro steps (R#), original
 observation-ledger.md append-only record of everything examined (what/observation/citation/rules)
 hypotheses.md         ranked falsifiable hypotheses: confirm/refute prediction, status
                       (open/confirmed/refuted), + gate marker (ungated/test-passed/cold-red-teamed)
-diagnosis.md          (stage 8) root cause, causal chain, evidence, repro, recommended fix
+diagnosis.md          (stage 8) root cause, causal chain (per-level depth-check status), evidence,
+                      repro, recommended fix, named residuals; characterized: (a)–(c) instead
 decisions.md          append-only gate log (gates, severities, routes, human overrides, cap counts)
 ```
 
@@ -431,8 +509,10 @@ discriminating tests, spawn cold reviewers, maintain the ledgers) and **stops fo
 - the **0a confirmation checkpoint** (the symptom restatement must be confirmed),
 - any **blocker** about to restart the loop,
 - the **convergence gate** firing (iteration cap reached),
+- a **characterized-verdict ending** (its explicit human sign-off — requirement (d)),
 - **stage 9b live verification** (the user is the final authority on "resolved"),
-- **missing config** needed to proceed (it refuses rather than guesses).
+- **missing config** needed to proceed (it refuses rather than guesses),
+- **dead/unresolvable config paths** at hunt start (≠ missing config; adaptable ones proceed).
 
 It also **never presents an ungated hypothesis to the human as the likely/leading cause**: a
 hypothesis is "candidate, ungated" until a cold pass is recorded for it, a "leading candidate" only
