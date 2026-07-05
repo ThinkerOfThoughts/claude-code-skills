@@ -210,3 +210,21 @@ Two kinds of dragonfly→guarded-change reference exist (grep of `Dragonfly/{SKI
   logged, not fixed.
 - **GATE 7 PASSES.** Next: stage 8 — the full 38-arm A/B battery + 6 blind graders (C2), plus
   the mechanical C1/C3/C4/C5/C6 checks against the built files, then install + commit.
+
+## Stage-8 gate — CONFORMS (C2 no-regression + named risk-acceptance) (2026-07-06)
+- C2 A/B battery (44 agents, ~2.1M tokens, blind-graded; workflow `wf_80b57558-7e3`):
+  **NEW ≥ OLD on all 12 triggered rule-cells — zero behavior regression** (12/12 NEW 3/3 vs
+  OLD 2/2). Broken-rule controls **non-discriminating** (every BROKEN variant still fired the
+  rule 2/2 — capable arms apply each rule regardless of the doc text; the flagship-probe
+  lesson). 1 invalid situation (SIT-4·FRZ never triggered — untested, situation defect).
+  Full table + interpretation in `8-harness.md`.
+- **Stage-8 human decision — OWNER ThinkerOfThoughts ACCEPTS (route b, named risk-acceptance):
+  KNOWN UNVERIFIED RISK (C2 behavioral detection power)** — the battery found no regression
+  but couldn't demonstrate it would *catch* a dropped rule (controls non-discriminating). That
+  specific risk is independently closed by **C1** (stage-6: every rule verbatim in its correct
+  stage files). Preservation rests on C1 (content) + the clean no-regression A/B. Rebuilding a
+  stronger control judged futile for a capable subject ("even Fable-5 had trouble out-thinking
+  Opus"). C3(b) per-stage-loading-in-practice folded in as an unmeasured residual; C3(a) load
+  reduction stands. Recorded per METHODOLOGY stage-8 "conditionally accepted — KNOWN UNVERIFIED
+  RISK."
+- Mechanical criteria: C1 PASS (stage-6), C3(a) PASS (loads ≤263), C5 PASS, C6 PASS. C4 below.
