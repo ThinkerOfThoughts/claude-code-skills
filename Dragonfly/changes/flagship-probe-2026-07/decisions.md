@@ -314,3 +314,64 @@
   (reproduction.logs parenthetical-in-path → adaptable-path branch may fire;
   config filename token; B2-least-reachable → non-discriminating baseline half is a
   live, pre-labeled outcome).
+
+## Stage 8 — arms RUN; scoring BLOCKED on the Fable-5 verifier pin (2026-07-05, night)
+Working dir: `~/probe-arms-2026-07` (scratch, $HOME; transcripts also persist in the
+session subagents dir). All arm/verifier task ids in `arm-map.txt`.
+
+- **P1 conformance — ALL PASS** (outputs: `conformance/P1-outputs.txt`, python 3.14.4):
+  (a) pytest 2 passed; (b) oracle STALE/exit-1 on fixture copy; (c) oracle FRESH/exit-0
+  on corrected copy; (d)(i) ttl_check correct/exit-0; (d)(ii) hammer FIRED run 1 on the
+  race-restored copy, CLEAN across the full 50 runs on shipped; (e) per-arm-type
+  listings recorded (`conformance/P1e-listings.txt` — baseline = 7 fixture files only;
+  Dragonfly = +config +pre-created empty hunt/logs/, no oracle/change files); (f) probe
+  tree hash `7fcf9b78…e534` reproduced (== gate-7 record).
+- **Phasing canary (R3-3) — BOTH LEGS PASS:** leg 1 pre-`mv` (task `a579de7d…`, haiku)
+  jsonl grep dragonfly = 2 (channel jsonl-visible, fire-on-known-true ✓); install PARKED
+  `mv ~/.claude/skills/dragonfly ~/.claude/skills-parked-dragonfly-probe`; leg 2 post-`mv`
+  (task `ae769a45…`, haiku) jsonl grep dragonfly = 0 (channel closed ✓). Offered-skill
+  channel verified shut before any baseline arm.
+- **Baseline phase — 3/3 COMPLETE with final reports** (pinned `claude-opus-4-8`, spawned
+  post-`mv`): base1 `a22635c3…`, base2 `a5468a2b…`, base3 `abfe5e05…`. Transcripts +
+  post-run copies + pristine diffs bundled (`bundles/base{1,2,3}/`). **OBSERVATIONAL ONLY
+  (NOT a score — P4 blind verifiers decide):** all three independently built a
+  reproduction that exhibits the seeded stale read and named the import-path invalidation
+  miss; none rested on the passing obvious test. On its face this trends toward the
+  baseline half's "≥1 B2" (trap-fall) floor being UNMET → a **non-discriminating**
+  outcome (P3/stage-6's pre-labeled live result: label stays aspirational, no flip). Not
+  adjudicated here.
+- **Restore + LAUNCH PIN — VERIFIED** (`conformance/launch-pin.txt`): install restored
+  (`mv` back), sha256 live == source == pre-`mv` on both files (SKILL `b5e122ef…`,
+  METHODOLOGY `04d1044c…`). No parked dir remains.
+- **Dragonfly phase — 2/3 COMPLETE, 1 dead-arm** (pinned `claude-opus-4-8`):
+  - dfly1 `a3a057cb…` COMPLETE. Final disposition: tier-bounded, candidate at gate
+    marker **`ungated`**, explicitly did NOT declare "found" (both cold red-teams
+    unrunnable — no subagent); built `repro_stale.py` that exhibits the symptom
+    on-demand with a clean control + TTL toggle. Bundled `bundles/dfly1/`.
+  - dfly3 `a87f0d81…` COMPLETE. Final disposition: tier-bounded, `ungated`, explicitly
+    did NOT declare "found" (rounds down, not up); built `instrument_h1.py`
+    (repro+control+toggle all pass). Bundled `bundles/dfly3/`.
+  - dfly2 `ac78cd54…` **KILLED by the user mid-run** ("Let me verify the hunt folder…"
+    — no final report). Per P7(b) dead-arm rule: no final output → dead arm → **respawn
+    fresh ONCE, PENDING**. Partial jsonl + hunt files saved (`bundles/dfly2-KILLED.jsonl`,
+    `dfly2/hunt/`) for the record; do NOT score the partial.
+- **⛔ BLOCKER — scoring cannot proceed:** the owner is out of `claude-fable-5` usage
+  until Tuesday (2026-07-07). P4's 6 blind verifiers are FROZEN-PINNED to
+  `claude-fable-5`; P2/R3-5 model-pin verification VOIDS any verifier whose jsonl model
+  id ≠ the pin, and a second mismatch = STOP for that half. Substituting Opus verifiers
+  would be 6 pin violations = STOP both halves → it is foreclosed by the freeze, not a
+  judgment call. **Therefore P7 integrity checks, the 6 verifiers, P4, and P3 scoring
+  are DEFERRED to Tuesday** (or to an owner decision to amend the frozen verifier pin,
+  which would re-open gate 4 — not done unilaterally).
+- **State at pause:** all 6 arm slots run once (5 completed + 1 dead-arm pending respawn);
+  transcripts/copies bundled; NOTHING scored; NO §F flip; live install restored + pinned;
+  criteria still frozen at the gate-4 hashes. Real Opus tokens spent on 5 arms + 2
+  canaries; zero Fable tokens spent on arms.
+- **RESUME POINT (Tuesday, Fable restored):** (1) respawn dfly2 once (Opus) → bundle;
+  (2) run P7 integrity checks on all 6 arm jsonls (baseline purity grep, no-roam P7(f),
+  model-pin, spawn tripwire, skill-read record); (3) spawn the 6 blind verifiers
+  (`claude-fable-5`, one per arm, frozen §D extraction rules + each arm's transcript
+  bundle only); (4) P4 spot-check + model-pin verification + flip-edge→owner; (5) score
+  P3; (6) conditional §F flip (month-precision date) → 8-harness.md (carry C-1..C-3) →
+  9-report → final gate → path-scoped commit. Frozen extraction rules live in the
+  committed 2-plan.md §D; arm transcripts in the session subagents dir + `bundles/`.
