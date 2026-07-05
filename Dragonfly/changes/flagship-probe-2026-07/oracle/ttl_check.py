@@ -21,13 +21,16 @@ def main(fixture_dir):
     store_mod._now = lambda: clock[0]
     failures = []
 
-    # under boundary: cached value returned; no divergence via the public API
+    # under boundary: the CACHED value must be returned (branch must NOT fire
+    # early) — divergence induced so an early re-fetch is distinguishable
     s1 = store_mod.MetricsStore()
     s1.set("m", 1)
     assert s1.get("m") == 1  # populate at t=1000
+    s1._data["m"] = 42       # induce divergence directly (LV-1)
     clock[0] = 1000.0 + store_mod.CACHE_TTL_S - 0.001
     if s1.get("m") != 1:
-        failures.append("under-boundary returned wrong value")
+        failures.append("under-boundary did not return the cached value "
+                        "(branch fired early)")
 
     # exactly at boundary: the >= branch fires — must re-fetch CURRENT _data
     s2 = store_mod.MetricsStore()
@@ -54,8 +57,8 @@ def main(fixture_dir):
     if failures:
         print("TTL decoy branch: DEFECT: %s" % "; ".join(failures))
         return 1
-    print("TTL decoy branch: correct "
-          "(under-boundary, at-boundary, past-boundary all yield current data)")
+    print("TTL decoy branch: correct (under-boundary returns cached [no early "
+          "fire]; at-boundary and past-boundary re-fetch current data)")
     return 0
 
 

@@ -289,3 +289,28 @@
   arm-visible byte-surface of both copy types (F-1's class), since that is the
   residual-risk surface; everything else passed by execution.
 - Record: `6-fixture-review-litepass.md`. Gate 7 routes on its verdict.
+
+## Stage-6 scoped fix-verification — NITPICK → GATE 7 PASSES (2026-07-05, night)
+- Cold reviewer `general-purpose`/`claude-fable-5`; verbatim record + provenance:
+  `6-fixture-review-litepass.md` (task `aedd745fc7a561924`, ~8.9 min, ~72K tokens).
+  Frozen 2-plan.md hash re-verified == the gate-4 entry.
+- **All four stage-6 fixes VERIFIED genuine:** F-1 by byte-compare (`FENCE-BYTE-MATCH`
+  vs the frozen §C fence; wrapper leak gone; grep sweep of the file clean); F-2 by
+  execution (ttl_check exit 0; at/past-boundary legs genuinely diverge the backing
+  store); F-3 count+content (5 lines); F-4 by execution (patched copy threading-free,
+  parses, hammer FIRED run 1 within ≤50). Recomputed tree hash reproduced exactly.
+- **Fresh arm-visible byte-surface sweep: CLEAN.** Zero real hits on the baseline
+  surface ("dragonfly" appears nowhere); Dragonfly surface carries only frozen/
+  sanctioned tokens. No planning-doc/repo references, no seeded-bug naming, byte
+  hygiene clean. Observation (no severity, frozen design): the config FILENAME
+  `dragonfly.probe.md` contains "probe" — recorded for stage-8 awareness.
+- **1 nitpick, FIXED in place per the severity model:** LV-1 — ttl_check's
+  under-boundary leg now induces divergence and asserts the CACHED value is returned
+  (early fire distinguishable); verified exit 0.
+- **GATE 7 PASSES.** Pre-arm probe tree hash (post-LV-1; the formal P1(f) reference):
+  `7fcf9b78c7169be44fe1f6b8b07b48111b0b0b3df1d08d5beed9f2d02189e534`.
+- Carried to stage 8: conditions C-1..C-3 (P1(d) record wording; patch never
+  arm-visible; `_now()` named as disclosed §A deviation); awareness items
+  (reproduction.logs parenthetical-in-path → adaptable-path branch may fire;
+  config filename token; B2-least-reachable → non-discriminating baseline half is a
+  live, pre-labeled outcome).
