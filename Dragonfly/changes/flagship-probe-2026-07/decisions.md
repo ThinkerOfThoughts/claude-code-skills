@@ -245,3 +245,47 @@
 - Next: stage-6 cold review of the BUILT artifacts — frozen-doc conformance (§A–§C,
   P1 shapes), trap fairness, "does the fixture test the thing," lock-held-across-full-
   read-through check (round-2 L-9 condition), and the P1(d) adjudication above.
+
+## Stage-6 gate — MAJOR → fixes applied → scoped fix-verification (2026-07-04/05 night)
+- Cold reviewer `general-purpose`/`claude-fable-5`; verbatim record + provenance:
+  `6-fixture-review.md` (task `ae8512e62d36cde70`, ~13 min, 29 tool uses, ~75K tokens).
+  Freeze integrity PASS (all three frozen-doc hashes == the gate-4 entry). Conformance
+  walk 2(a)–(g) PASS with citations; trap-fairness + second-bug audit clean ("the only
+  staleness mechanism in the arm-visible copy is the seeded import path"); oracle,
+  hammer (fire-on-known-true run 1 + 50-run clean), pytest, TTL check all re-run by the
+  reviewer on scratch copies.
+- **P1(d) adjudication (pre-committed question): SATISFIES-WITH-CONDITIONS.** The
+  yield-exposed race-restore satisfies the frozen bar: the copy IS lock-removed; the
+  yield forces the exact guarded interleaving (METHODOLOGY:281-284 sanctions forced
+  instances); the staleness detected is real staleness through unmodified store
+  operations; the redesign was P1(d)'s own pre-committed failure branch, disclosed and
+  pre-flagged. **Conditions carried to stage 8:** C-1 — 8-harness.md's P1(d) record
+  states the augmentation explicitly (may NOT read as "bare lock-removed"); C-2 —
+  race-restore.patch stays oracle-side, never arm-visible (P1(e) enforces); C-3 — the
+  shipped store's `_now()` indirection is named in 8-harness.md as a disclosed §A
+  deviation.
+- **Findings: F-1 MAJOR** — the built config template carried arm-visible wrapper text
+  beyond the frozen §C fence (title naming "flagship-probe arm copy" + a comment naming
+  2-plan.md and gate 4): probe-framing leak, pass-inflating (demand characteristics) +
+  invites the exact roam P7(f) voids. **F-2 minor** — no shipped TTL unit-check
+  instrument for P1(d)(i). **F-3/F-4 nitpicks** — README 6 lines vs frozen "5 lines";
+  race-restore.patch left `import threading` unused. Observations (frozen text /
+  pre-labeled outcomes, no severity): `reproduction.logs` parenthetical-in-path →
+  stage-8 awareness (adaptable-path branch may fire; arm records the adaptation);
+  B2-least-reachable → a "non-discriminating" baseline half is a live outcome P3
+  already labels honestly.
+- **Fixes applied (all four; frozen docs untouched):** F-1 — template reduced to a
+  neutral header + the frozen YAML fence, byte-identical fence preserved; F-2 —
+  `oracle/ttl_check.py` shipped (stubbed `_now()`; under/at/past boundary all must
+  yield current data; verified exit 0); F-3 — README now 5 lines, content unchanged;
+  F-4 — race-restore.patch regenerated with `import threading` dropped in the patched
+  file (verified: parses, hammer still FIRES run 1). **Tree hash recomputed:**
+  `d4f0fd9b404a58e7a6fa723fd9b6f30370fc87c7578befd73ee9e32690a04e43` (supersedes the
+  build entry's reference hash; cause: F-1 template + F-2 new oracle file + F-3 README
+  + F-4 patch).
+- **Routing (first bounce at this gate — no cap fire):** severity model = bounce + a
+  fresh review round on the changed surface. Scoped fix-verification pass (the shape
+  the owner sanctioned at stage 3): verify the four fixes + a fresh sweep of the FULL
+  arm-visible byte-surface of both copy types (F-1's class), since that is the
+  residual-risk surface; everything else passed by execution.
+- Record: `6-fixture-review-litepass.md`. Gate 7 routes on its verdict.

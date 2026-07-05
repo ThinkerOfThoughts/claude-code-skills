@@ -1,7 +1,4 @@
-# Dragonfly project config — metrics-store (flagship-probe arm copy)
-
-<!-- Template: `<project path>` is instantiated per arm copy at stage 8.
-     Content is byte-frozen via 2-plan.md §C (gate 4). -->
+# Dragonfly project config — metrics-store
 
 ```yaml
 project: metrics-store

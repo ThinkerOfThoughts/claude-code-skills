@@ -1,11 +1,11 @@
 --- a/store.py
 +++ b/store.py
-@@ -5,14 +5,31 @@
+@@ -5,14 +5,30 @@
  CACHE_TTL_S are re-fetched on access.
  """
  
+-import threading
 +import random
- import threading
  import time
  
  CACHE_TTL_S = 300  # cached entries older than this are re-fetched on access
@@ -33,7 +33,7 @@
      return time.monotonic()
  
  
-@@ -20,7 +37,7 @@
+@@ -20,7 +36,7 @@
      def __init__(self):
          self._data = {}
          self._cache = {}  # key -> (value, cached_at)
