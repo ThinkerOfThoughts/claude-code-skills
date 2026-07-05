@@ -375,3 +375,31 @@ session subagents dir). All arm/verifier task ids in `arm-map.txt`.
   P3; (6) conditional §F flip (month-precision date) → 8-harness.md (carry C-1..C-3) →
   9-report → final gate → path-scoped commit. Frozen extraction rules live in the
   committed 2-plan.md §D; arm transcripts in the session subagents dir + `bundles/`.
+
+## FINAL GATE — run CLOSED as NON-DISCRIMINATING (owner Option 2, 2026-07-05)
+- **Owner decision:** close now without the formal blind grading. Rationale (verbatim
+  sense): a grade from a model the owner would not use for a real bug hunt is not worth
+  having, and the outcome is already a clear non-PASS. Option 1 (swap verifiers to
+  Sonnet) rejected on that ground; Option 3 (park) not chosen.
+- **Outcome: NON-DISCRIMINATING → no PASS → no label flip.** The baseline half has 0
+  trap-falls (all 3 controls reproduced the seeded symptom and named the passing test
+  non-representative — B1(b), not B2); the half needs ≥1 B2, so it fails its floor. Per
+  the frozen P3 that is non-discriminating regardless of the Dragonfly half. SKILL.md
+  UNCHANGED — flagship label stays "aspirational" (verified: live == source ==
+  `b5e122ef…`, grep confirms the label). This is the honest, pre-registered result.
+- **Recorded deviation:** the P4 blind scoring (6 verifiers pinned `claude-fable-5`) was
+  NOT run — Fable economically unavailable + owner close. Replaced by an author read in
+  `arm-outcomes.md`, transparently in the conservative (no-overclaim) direction; the
+  full transcripts are preserved for any later blind re-grade. Blinding exists to prevent
+  author-inflated PASSes; this close is a non-PASS, so the deviation does not risk that.
+- **dfly2** (killed mid-run) NOT respawned — moot to the outcome; partial state preserved.
+- **Records written:** `arm-outcomes.md` (per-arm dispositions + author read),
+  `8-harness.md` (P1/canary/launch-pin evidence + C-1..C-3 disclosures; P4/P3 marked not
+  run), `9-report.md` (plain-English owner report + the "trap not sticky enough" lesson +
+  future-hardening follow-up). Review records for all gates persisted
+  (`3-redteam-plan{,-round2,-round3,-round3-litepass}.md`, `6-fixture-review{,-litepass}.md`).
+- **Standing artifact:** the probe (fixture + oracle + hammer + patches + config + frozen
+  criteria) is built, reviewed, and committed — replayable by a future run with a
+  stickier trap / weaker baseline / trusted grader, no rebuild needed.
+- Live install restored + pinned; scratch run evidence under `~/probe-arms-2026-07/`.
+  **Run complete.**
