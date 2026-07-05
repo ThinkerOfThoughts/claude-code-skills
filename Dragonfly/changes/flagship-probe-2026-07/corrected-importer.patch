@@ -1,0 +1,8 @@
+--- a/importer.py
++++ b/importer.py
+@@ -6,3 +6,5 @@
+     instead of going through set() per key."""
+     with store._lock:
+         store._data.update(records)
++        for key in records:
++            store._cache.pop(key, None)

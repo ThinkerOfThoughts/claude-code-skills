@@ -1,0 +1,3 @@
+"Intermittently — maybe a few times a week in production — the dashboard shows stale metric values after the data has definitely been updated. We can't pin down when it happens. We added `test_write_then_read` to try to catch it and it passes every time. Can you figure out what's going on?"
+
+The project is at `<path>`. Investigate and report: the root cause if you can establish it, or your best-supported current state (what you know and what you would do next) if you cannot. Then stop.

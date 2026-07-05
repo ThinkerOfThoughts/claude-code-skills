@@ -204,3 +204,44 @@
   stage 6 cold review of the BUILT artifacts → gate 7 → stage 8 (P1 conformance →
   canary + phased arms → P7 checks → 6 verifiers → P4 → score P3) → conditional §F flip
   → 9-report → final gate → path-scoped commit.
+
+## Stage 5 — BUILD complete (2026-07-04, late eve)
+- Built per frozen §A–§C: `fixture/` (7 files — store.py [lock-guarded read-through
+  cache + TTL decoy + `_now()` clock indirection], importer.py [the seeded bug:
+  `_data.update` under the lock, no `_cache` invalidation], sync.py, dashboard.py,
+  test_store.py [the 2 obvious tests], README.md, upstream_records.json); `oracle/`
+  (repro.py [STALE/exit-1 on symptom, FRESH/exit-0 silent-on-clean], hammer.py,
+  race-restore.patch); `corrected-importer.patch`; `dragonfly.probe.md.template`
+  (contract-conformant, METHODOLOGY:430-449); `arm-prompts/{baseline,dragonfly}-arm.txt`
+  (byte-copies of the frozen §C texts, `<path>` instantiated per copy at stage 8).
+- Build-time smoke (informal; formal P1 runs at stage 8, output quoted in 8-harness.md):
+  pytest 2 passed; oracle STALE/exit-1 on fixture copy; FRESH/exit-0 on corrected copy;
+  hammer FIRED (run 1, trial 1) on the race-restored copy; hammer CLEAN across the full
+  50 runs on the shipped copy.
+- **BUILD-TIME REDESIGN (P1(d)'s own "any failure = redesign before arms" path —
+  flagged for stage-6 adjudication):** the first-cut hammer NEVER fired on a purely
+  lock-removed copy. Measured cause: CPython 3.14.4's eval-breaker granularity puts a
+  thread switch inside the read-through populate window ~3e-6 per traversal (6 hits /
+  2M probed) — the race is REAL but unobservable-by-preemption within any feasible run
+  bound; no free-threaded interpreter available on this VM. Redesign: (a) the shipped
+  store gains an idiomatic `_now()` clock indirection, called exactly inside the two
+  cache-populate windows (semantics unchanged; tests + oracle unaffected); (b)
+  `oracle/race-restore.patch` = lock → `_NullLock` PLUS `_now()` carries a jittered
+  0–200µs scheduling yield — the interleaving the lock used to guard becomes observable
+  through UNMODIFIED store operations (the patch says so in its docstring); (c) the
+  hammer barrier-syncs its 3 threads (thread wake latency otherwise serializes the tiny
+  loops entirely — measured: writer finished before the readers' first get) and paces
+  its writer at 100µs/set so the writer's run spans the readers' activity —
+  harness-side scheduling only. Measured fire rate on the race-restored copy: 80/200
+  trials (~40%/trial → fires in run 1 w.h.p.; bound stays ≤50 runs).
+  **Pre-committed stage-6 question: does the yield-exposed race-restore satisfy the
+  frozen P1(d)/§B.4 "race-restored (lock-removed) copy"?** Build's position:
+  "race-restored" is the operative term — lock removal restores the race in principle
+  but not its observability on this interpreter; the yield exposes the same
+  interleaving without touching what the store's operations DO.
+- Probe tree hash (build-time reference; formal P1(f) recording at stage 8):
+  `f43de7e11f8c238405c0f1e52f1e74e6044c0df10ba55e1f689d697693c18ecd`
+  (fixture/ + oracle/ + config template + corrected-copy patch).
+- Next: stage-6 cold review of the BUILT artifacts — frozen-doc conformance (§A–§C,
+  P1 shapes), trap fairness, "does the fixture test the thing," lock-held-across-full-
+  read-through check (round-2 L-9 condition), and the P1(d) adjudication above.

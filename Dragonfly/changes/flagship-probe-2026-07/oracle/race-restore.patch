@@ -1,0 +1,44 @@
+--- a/store.py
++++ b/store.py
+@@ -5,14 +5,31 @@
+ CACHE_TTL_S are re-fetched on access.
+ """
+ 
++import random
+ import threading
+ import time
+ 
+ CACHE_TTL_S = 300  # cached entries older than this are re-fetched on access
+ 
+ 
++class _NullLock:  # race-restored: mutual exclusion removed
++    def __enter__(self):
++        return self
++
++    def __exit__(self, *exc):
++        return False
++
++
+ def _now():
+-    """Clock indirection (kept separate so tests can stub time)."""
++    """Clock indirection (kept separate so tests can stub time).
++
++    Race-restored variant: the clock read inside the read-through window
++    carries a jittered scheduling yield so the interleaving the lock used
++    to guard is observable within the hammer's pre-stated run bound
++    (measured: CPython 3.14's eval-breaker makes the bare window
++    ~3e-6 per traversal — real but unobservably rare by preemption alone).
++    """
++    time.sleep(random.random() * 0.0002)
+     return time.monotonic()
+ 
+ 
+@@ -20,7 +37,7 @@
+     def __init__(self):
+         self._data = {}
+         self._cache = {}  # key -> (value, cached_at)
+-        self._lock = threading.Lock()
++        self._lock = _NullLock()
+ 
+     def set(self, key, value):
+         """Write a metric value and drop any cached copy of it."""
