@@ -161,3 +161,52 @@ Two kinds of dragonfly→guarded-change reference exist (grep of `Dragonfly/{SKI
   (memory `owner-questions-cost-benefit`). C2 updated to Tier 3; the battery (scenarios,
   arm protocol, blind grading) is designed in `2-plan.md` and frozen at gate 4. Big spend
   lands at stage 8 (battery execution), well behind gates 4 and 7.
+
+## GATE 4 — CRITERIA + PLAN FROZEN (2026-07-06)
+- Owner confirmed the FULL 38-arm battery (over trim / defer). Freezing for build.
+- **FROZEN (any later change = a new stage-3 gate):**
+  - `1-spec.md` — sha256 `7fc2ee6a87c8a3d9ce68f92b64df5065e47c29f6d4466ed83aeec9d316803f59`
+  - `1.5-criteria.md` (133 lines, C1–C8) — sha256 `11dcf7add8bc50b558338f5b681f91b9c21690285e0cddd05bfc3b08d41420fd`
+  - `2-plan.md` (182 lines — file set §A incl. shared charter.md; the 6-situation / 38-arm /
+    6-grader battery §B; thresholds §D) — sha256 `9b86654d369489978337ac407930bedea3b779bc008294d7d252f5bc61941e16`
+  - `2-rule-oracle.md` (175 lines — the C1 ground-truth rule→stage map + build-notes) —
+    sha256 `3e7b1bb405b93ec68b9481c855cc98fad82eff0d94d5759cd081aa4f3f992eca`
+- Path validation (re-confirmed at freeze): all reviewer-context paths exist/readable ✓.
+- Base for the stage-6 mechanical diff: skills repo `main` = `999e056`.
+- **Next: stage 5 build** — SKILL.md (router) + `stages/stage-{0,1,1.5,2,3,4,5,6,7,8}.md` +
+  `stages/charter.md` (shared, ref by 3/6) + slimmed METHODOLOGY.md + the C1 mapping table
+  (oracle-row → new-file[s]), following the frozen oracle. Behavior-preserving; verbatim rule
+  wording where possible.
+
+## Stage 5 — BUILD complete (2026-07-06)
+- Build agent `general-purpose`/`claude-opus-4-8` (task `ac88f281036b10210`), executing the
+  frozen oracle+plan. Files: SKILL.md 73 (router, was 124); METHODOLOGY.md 193 (slim, was
+  534); `stages/charter.md` 78 (shared); `stages/stage-{0..8}.md` (19/17/129/58/102/83/12/72/57/189);
+  `5-build-mapping.md` (C1 evidence). Total gc content 658→1082 lines (C8 advisory — repetition
+  by design).
+- **Self-check (author, light — stage 6 is the real check):** C3(a) loads all ≤263 —
+  max stage-8 = 262 (1-line margin, tight), stage-3 = 253 (+charter), stage-1.5 = 202.
+  Description front-matter byte-unchanged. Mechanical diff base = `999e056`.
+- **Build-flagged judgment calls (for stage-6 adjudication):** JC-1 — CP6/CP7 (position/
+  concurrency principles) rendered FULL at their authoring homes (1.5, 2) but as
+  core-sentence + pointer at review/harness stages (3/6/8), because the full operative lens
+  there is the charter's CH11/CH12 (stage 3/6) and H3/H4 (stage 8), and inlining the full
+  principle paragraphs pushes stage-3/8 over the 263 line cap. Build flags a C1 grader could
+  read this as "reworded." JC-2 CH10 trailing "above" dropped (stale pointer). JC-3/4 CFG3 +
+  SK-IN split router/stage-file. JC-5 METHODOLOGY 193 vs ~170 soft target (not in hot path).
+- Next: stage-6 cold review (built files vs frozen oracle/criteria/plan; verbatim fidelity;
+  JC adjudication) → gate 7.
+
+## Stage-6 gate — MINOR → gate 7 CLEARS (2026-07-06)
+- Cold reviewer `general-purpose`/`claude-opus-4-8`; verbatim record `6-redteam-code.md`
+  (task `abff1ac30f0a94672`). **Behavior-preserving at the operative level:** every triggering
+  rule, gate table, freeze/cap/gate-log rule, and the charter core present + verbatim in every
+  governing file; charter.md byte-identical to source; 3≠6 asymmetry correct; all stages ≤263;
+  router resolves; HIL correctly not-at-7. Frozen-spec hashes verified.
+- **F-1 [MINOR]:** CP6 example + CP7 cross-ref sentence dropped skill-wide (rationale layer;
+  trigger+instruction survived). **FIXED in place** — restored verbatim at authoring homes
+  s1.5 (both) + s2 (CP7); grep-confirmed; loads s1.5=207/s2=134/s8=262 all ≤263. JC-1..JC-5
+  adjudicated (pattern accepted; F-1 was the one real defect). N-1 nitpick (ID-tag delimiter)
+  logged, not fixed.
+- **GATE 7 PASSES.** Next: stage 8 — the full 38-arm A/B battery + 6 blind graders (C2), plus
+  the mechanical C1/C3/C4/C5/C6 checks against the built files, then install + commit.

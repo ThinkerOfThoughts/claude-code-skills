@@ -5,10 +5,10 @@ description: A gated change loop where no AI artifact is accepted without an ind
 
 # Guarded Change
 
-Execute the gated change loop defined in `METHODOLOGY.md` (read it in full before running —
-it is the authoritative spec; this file is the operating procedure). The loop's purpose:
-**no AI-produced artifact reaches "accepted" without an independent challenge, and "done" is
-proven against an explicit measurable bar.**
+The gated change loop's purpose: **no AI-produced artifact reaches "accepted" without an
+independent challenge, and "done" is proven against an explicit measurable bar.** This file is
+the **router**: each stage's full procedure + the rules that govern it live in `stages/`.
+`METHODOLOGY.md` is the orientation/reference spec (why it exists, the config contract).
 
 ## Inputs
 
@@ -19,106 +19,55 @@ proven against an explicit measurable bar.**
   **Validate every path a cold reviewer will be handed** (config `redteam_context`, spec
   touched-files, fixtures) — at run start, and again at any later reviewer spawn for paths new
   since; record the result in `decisions.md` (gate 4 cannot pass without it) and surface dead
-  paths to the human (METHODOLOGY "Paths are validated, not assumed").
+  paths to the human (METHODOLOGY "Paths are validated, not assumed"; stage-3/4/6 files carry
+  the operative rule).
 
-## Procedure
+## Loop
 
-Create a change folder `changes/<slug>/` and produce one doc per stage (names in
-METHODOLOGY "What a run produces"). **Step numbers below are the canonical stage numbers used
-everywhere (METHODOLOGY loop, severity table, decisions.md).** At every **gate (stages 4, 7,
-8)**, append a line to `changes/<slug>/decisions.md`: gate (by stage number), worst severity,
-route taken, and a rationale+name for any human override. The iteration cap reads this log to
-count same-gate bounces (keyed by stage number) and carry prior findings into the next review.
-Then walk the loop:
+Create a change folder `changes/<slug>/` and produce one doc per stage (names in METHODOLOGY
+"What a run produces"). **Step numbers below are the canonical stage numbers used everywhere**
+(loop, severity table, decisions.md). At every **gate (stages 4, 7, 8)**, append a line to
+`decisions.md` (gate by stage number, worst severity, route, rationale+name for any override) —
+the iteration cap reads this log. Walk the loop; **at each stage, read that stage's file for
+the full procedure + the rules it must apply:**
 
-**0. Baseline** — only if a prior version exists *and* the config defines `measurement.baseline`.
-   Run it, store metrics in `0-baseline.md`. Otherwise note "greenfield / no baseline → stage 8
-   conformance-only" and skip.
-**1. Spec** — write `1-spec.md`: the problem, why, constraints. Rich enough to derive the rest.
-   Declare the expected **touched files** — the list joins every cold reviewer's context.
-**1.5. Criteria** — write `1.5-criteria.md`: a *checkable* accept bar. Each criterion is either
-   **automated** (true/false or numeric from instrumentation) **or** a **human-judged rubric**
-   (named judge + written scale + pass definition) — see METHODOLOGY stage 1.5. **Mandatory.**
-   If you cannot state checkable criteria in *either* form, stop and resolve with the user — the
-   loop may not pass stage 3 without them. **If the change touches a position-sensitive
-   assembly (move/reorder/add/remove in a prompt, precedence list, pipeline), add a criterion
-   asserting the position-dependent *behavior* survives** (not just that the text does), and
-   require stage 8 to verify it by *executing* the isolating case, not inspecting the assembled
-   text — see METHODOLOGY "Information-preserving is not behavior-preserving".
-   **Label each criterion gating or advisory (default gating; advisory only with a stated
-   reason).** A gating criterion must be verified by execution at stage 8 — it may not be
-   deferred, proxied, or dropped (see METHODOLOGY "A deferred gating criterion is not a met one").
-   **If the change introduces a new accessor or read-modify-write window over shared mutable
-   state, add a criterion asserting no-lost-update under a concurrent interleaving, and require
-   stage 8 to verify it by *executing* that interleaving — injected deterministically (or over a
-   stated pass-rate) and failing against the unguarded version — see METHODOLOGY "Shared state
-   has more than one accessor".**
-**2. Plan** — write `2-plan.md`: how, **plus** measurement, instrumentation (add to scope if a
-   needed signal is absent), and severity→routing thresholds + which metrics are gating vs.
-   advisory. A plan missing these is incomplete. **If the change introduces a new accessor or
-   read-modify-write window over shared mutable state, the plan must enumerate every concurrent
-   accessor and state which the guard covers vs. leaves out (METHODOLOGY "Shared state has more
-   than one accessor").**
-**3. Red-team the plan** — spawn a **cold subagent** (no shared context; `general-purpose` or
-   `Explore`). Give it read access to `{1-spec, 1.5-criteria, 2-plan}` AND the priority-ordered
-   `redteam_context` paths. Charter it with the four lenses + evidence discipline from
-   METHODOLOGY ("The red-team charter"): cite line/file or a concrete scenario, rank each finding
-   (blocker/major/minor/nitpick), flag anything unverifiable, "no issue" per lens allowed; a
-   clean *factual* verdict needs source citations. **If a position-sensitive assembly is touched (move/reorder/add/remove in a prompt, precedence list, pipeline — not ordinary code), test each affected element (including unchanged neighbors) for position/order sensitivity** — "all info still present" is not a clean verdict for a position-dependent element. **If a change introduces a new accessor or read-modify-write window over shared mutable state, enumerate every concurrent reader/writer and challenge the guard's scope (which accessors it covers vs. leaves out) — "the lock looks correct" is not a clean verdict when an unenumerated lock-free accessor can mutate the same state.** Write `3-redteam-plan.md` as a **verbatim record** per METHODOLOGY "Provenance is part of the review record": embed the charter given (core verbatim + task additions quoted), the exact context list (closed set: stage artifacts + config `redteam_context` + spec touched-files + carried findings), the reviewer's verbatim output, its agent type/model, and its reported context-file hashes — missing any ⇒ the review is un-run. Require the **coverage challenge**: the reviewer names behaviors the change could alter that no criterion observes (explicit "none found" allowed); no such section ⇒ lens 4 un-run.
-**4. Gate** — route by worst finding: **blocker → return to 1** (confirm direction first);
-   **major → return to 2**; **minor → fix in place, proceed**; **nitpick → log, proceed**;
-   **clean → build (5).** Bounded by the iteration cap (below). Route on the **reviewer's**
-   severities — contest only via a logged entry; demoting a blocker/major needs the human
-   tie-break (METHODOLOGY "The reviewer's severity routes"). On route-to-build: **freeze
-   `1.5-criteria.md`** and record its sha256 (or a verbatim copy) in `decisions.md`
-   (METHODOLOGY "Criteria freeze").
-**5. Build** — implement per the plan, including any instrumentation the plan added.
-**6. Red-team the code** — spawn a fresh **cold subagent** with the code diff/files + `{1.5, 2}` +
-   `redteam_context`. Same charter, aimed at code-vs-plan/criteria. Spot-verify a sample of the
-   reviewer's cited file:lines actually exist (guards fabricated citations). Generate the
-   reviewed diff **mechanically** (`git diff <recorded-base>`; record the command) — hand-curated
-   ⇒ un-run for the omitted scope. Write `6-redteam-code.md` as a verbatim record (same
-   provenance duties as step 3).
-**7. Gate** — **blocker/major → return to build (5)**; **minor → fix in place, proceed**;
-   **nitpick → log, proceed**; **clean → harness (8).** Route on the reviewer's severities (as
-   at gate 4); record any in-place fix diff in `decisions.md`.
-**8. Harness** — run the config's `measurement.check`. Then:
-   - **Conformance (always):** measured behavior vs. `1.5-criteria.md`. Pass/fail per criterion.
-     **Every gating criterion must be verified by executing the path it governs** — deferral,
-     proxy-path, or silent drop ≠ pass (see METHODOLOGY "Every gating criterion must be verified
-     by execution"). Emit the per-criterion verification table `8-harness.md` requires — its
-     **evidence** column: every gating PASS cites its raw output (rubric rows: named judge +
-     verdict location); no evidence pointer ⇒ `verified = no`. Any executable check born after
-     stage 6 gets a targeted cold check before its results count (METHODOLOGY "An unreviewed
-     check is not a check"); a fix-in-place here re-runs the criteria its diff could invalidate,
-     diff recorded. Verify `1.5-criteria.md` still matches the frozen version.
-   - **Regression (only if a stage-0 baseline exists):** measured vs. baseline on the config
-     `metrics`, applying each metric's `direction` + `regression_threshold`.
-   Apply each metric's gating-vs-advisory status (advisory metrics are surfaced, not bounced —
-   see METHODOLOGY "Regression must be measured on a comparable workload"). Write `8-harness.md`
-   with a verdict. **Blocker → return to 1.** A **major** is a human call — restart at 1 *or*
-   re-plan at 2 (tradeoff vs. revision); surface it ranked, don't auto-route. **Minor → fix,
-   proceed; clean → done.**
+| # | Stage — one-line purpose | Read |
+|---|---|---|
+| **0** | Baseline: snapshot current behavior (only if a prior version + config baseline exist; else skip → conformance-only) | → `stages/stage-0.md` |
+| **1** | Spec: rich problem definition; declare the expected touched files | → `stages/stage-1.md` |
+| **1.5** | Criteria: the checkable, labeled (gating/advisory) accept bar — mandatory | → `stages/stage-1.5.md` |
+| **2** | Plan: how + measurement + instrumentation + thresholds | → `stages/stage-2.md` |
+| **3** | Red-team the plan: cold review of {1, 1.5, 2} — the assumption-catcher | → `stages/stage-3.md` (+ `stages/charter.md`) |
+| **4** | Gate: route by worst finding; freeze criteria on route-to-build | → `stages/stage-4.md` |
+| **5** | Build: implement per the plan | → `stages/stage-5.md` |
+| **6** | Red-team the code: cold review of code vs {1.5, 2}; mechanical `git diff` | → `stages/stage-6.md` (+ `stages/charter.md`) |
+| **7** | Gate: route by worst finding | → `stages/stage-7.md` |
+| **8** | Harness: measure → conformance (always) + regression (if baseline) → verdict | → `stages/stage-8.md` |
 
-**Iteration cap (all gates):** after **2 bounces at the same gate (same stage number) on the
-same finding class**, stop and a human breaks the tie. "Same finding class" = same gate + same
-targeted artifact section, regardless of wording (so a rephrased or relocated-but-equivalent
-objection still counts). See METHODOLOGY "Iteration cap".
+The **most important gate is stage 3**, not 6 or 8 — the plan-red-team catches a missing
+measurement plan or an un-instrumented change *before a line of code is written*. Stages 3 and 6
+share the red-team charter in `stages/charter.md` (stage 3 adds the coverage-challenge + label
+audit; stage 6 adds the mechanical-diff duty). Gates 4/7/8 each carry the full severity table.
+The **iteration cap** (all gates): after 2 bounces at the same gate on the same finding class,
+stop and a human breaks the tie (see the gate files).
 
-## Stop-for-human rules
+## Stop-for-human
 
 Pause and ask when: a **blocker** is about to restart the loop; a **major** appears at the
-harness; **criteria/config are missing**; or a **gating criterion cannot be verified pre-ship**
-(build a representative harness or get named risk-acceptance — never defer silently). Refuse to guess project metrics or acceptance
-criteria — that's the exact failure this loop exists to prevent.
+harness (stage 8); **criteria/config are missing**; or a **gating criterion cannot be verified
+pre-ship** (build a representative harness or get named risk-acceptance — never defer silently).
+Refuse to guess project metrics or acceptance criteria — that's the exact failure this loop
+exists to prevent. (Full text in `stages/stage-1.5.md`, `stages/stage-4.md`,
+`stages/stage-8.md`.)
 
 ## Self-check / dogfooding
 
-This skill can be run on its own artifacts: treat `METHODOLOGY.md` + `SKILL.md` as the thing
-under review, and execute a stage-3 red-team on them (cold subagent, four lenses, evidence
-discipline). Skill-file edits are edits to a **position-sensitive assembly** (these documents
-are prompts), so the position lens applies. **Non-trivial edits take the full loop**, not a
-stage-3 pass alone. Standing self-check criteria for any such run: live copy == source copy
-(`diff`); SKILL.md ↔ METHODOLOGY.md consistency on every rule both state; a
-behavior-preservation criterion for anything moved or removed. A stage-3 red-team remains the
-cheap check encouraged after any edit, however small.
+This skill can be run on its own artifacts: treat `METHODOLOGY.md` + `SKILL.md` + the `stages/`
+files as the thing under review, and execute a stage-3 red-team on them (cold subagent, four
+lenses, evidence discipline). Skill-file edits are edits to a **position-sensitive assembly**
+(these documents are prompts), so the position lens applies. **Non-trivial edits take the full
+loop**, not a stage-3 pass alone. Standing self-check criteria for any such run: live copy ==
+source copy (`diff`); SKILL.md ↔ METHODOLOGY.md ↔ stage-file consistency on every rule stated in
+more than one place; a behavior-preservation criterion for anything moved or removed (see
+`stages/stage-1.5.md`). A stage-3 red-team remains the cheap check encouraged after any edit,
+however small.

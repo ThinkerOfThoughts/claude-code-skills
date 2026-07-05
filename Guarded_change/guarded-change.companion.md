@@ -8,16 +8,18 @@ project: companion-emergence
 
 redteam_context:          # PRIORITY ORDER — read top-down; a cold subagent can't read the
                           # whole brain tree, so each entry says what to check there first.
-  - path: "~/.local/share/companion-emergence/personas/Phoebe/chat_usage.jsonl"
-    note: "Ground truth for cost/cache/num_turns claims. Check fields exist before trusting a metric (e.g. there is NO background/foreground marker on generate rows)."
-  - path: "~/.local/share/companion-emergence/personas/Phoebe/tool_invocations.log.jsonl"
-    note: "Ground truth for tool/file behavior. Note: only request_id groups rows; no session_id, no reply-boundary field — confirm before treating request_id as 'one reply'."
-  - path: "/usr/lib/Companion Emergence/python-runtime/lib/python3.13/site-packages/brain"
-    note: "The REAL running code (bundled runtime). Start at bridge/provider.py and chat/{prompt,engine,tool_loop}.py for prompt/caching/tool claims."
+                          # UPDATED 2026-07-01: the packaged install was removed; the git clone
+                          # below is now THE source of truth (was "assumed byte-identical").
+                          # Testing runs from the clone (uv sync + claude CLI + KINDLED_HOME
+                          # sandbox) — there is no live bridge on this VM.
+  - path: "~/Desktop/companion-emergence/brain"
+    note: "THE source of truth — the git clone (local main, currently == hanamorix/main v0.0.41). Start at bridge/provider.py and chat/{prompt,engine,tool_loop}.py for prompt/caching/tool claims. Replaces the deleted /usr/lib install; no longer 'assumed byte-identical' — it IS the code."
+  - path: "~/Downloads/Phoebe/chat_usage.jsonl"
+    note: "STALE READ-ONLY snapshot (frozen ~2026-06; no live bridge here → no fresh rows) of cost/cache/num_turns data. HARD RULE: read only, never drive Phoebe. Check fields exist before trusting a metric (no background/foreground marker on generate rows). For a FRESH baseline, generate turns on a throwaway sandbox persona from the clone instead."
+  - path: "~/Downloads/Phoebe/tool_invocations.log.jsonl"
+    note: "STALE READ-ONLY snapshot of tool/file behavior. Only request_id groups rows; no session_id, no reply-boundary field — confirm before treating request_id as 'one reply'. Read only."
   - path: "~/companion-token-trace/"
-    note: "Prior investigation docs (caching-implementation-plan.md, bug reports) — context/priors, not authority. Verify their claims against the code/logs above, don't inherit them."
-  - path: "~/Downloads/companion-emergence-main/brain"
-    note: "Repo checkout, ASSUMED byte-identical to the bundled runtime but NOT verified — prefer the bundled path above for any behavior claim."
+    note: "Prior investigation docs (caching-implementation-plan.md, bug reports) — context/priors, not authority. Verify their claims against the clone/logs above, don't inherit them."
 
 measurement:
   baseline:               # capture the CURRENT version's behavior before a change
