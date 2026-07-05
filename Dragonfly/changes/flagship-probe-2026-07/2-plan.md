@@ -1,4 +1,4 @@
-# 2 — Plan: flagship-probe-2026-07 (the build oracle; REVISED after stage-3 round 1, MAJOR)
+# 2 — Plan: flagship-probe-2026-07 (the build oracle; REVISED through stage-3 rounds 1–3)
 
 ## A. The fixture (`fixture/` — arm-visible)
 
@@ -51,8 +51,10 @@ invalidates correctly — the natural test passes (the trap).
    an entry exactly at/near the boundary re-fetches the CURRENT value (no staleness);
    (ii) threaded hammer — N writer/reader threads on `set`/`get` (no importer) produce
    zero stale reads (the lock closes the read-through race). **Hammer validation first
-   (R2-5 — the hammer is itself a detector):** the hammer is run once against a
-   race-restored copy (lock removed) where it must DETECT staleness (fire-on-known-true),
+   (R2-5 — the hammer is itself a detector):** the hammer is run against a
+   race-restored copy (lock removed) where it must DETECT staleness (fire-on-known-true)
+   **within a pre-stated bound of ≤50 hammer runs** (rate-based precedent,
+   METHODOLOGY:199-202; no fire in-bound = redesign the hammer before arms — R3-9),
    then on the shipped store where it must find zero; its staleness predicate is
    **post-join persistence** (after all threads join, `get(k)` == the last value written
    to `k`), not in-flight reads (returning a pre-`set` value during an overlapping write
@@ -70,7 +72,9 @@ invalidates correctly — the natural test passes (the trap).
 3 **Dragonfly** + 3 **baseline**, all `claude-opus-4-8`, one round; replacement only per
 P7 (dead-arm / contamination / spawn, once each, recorded). Each arm gets its own
 pristine copy in an isolated scratch dir; post-run, each copy + its diff vs pristine is
-preserved (part of the frozen transcript bundle, P2).
+preserved (part of the frozen transcript bundle, P2), and each arm's jsonl is no-roam
+checked (P7(f) — reads confined to its own copy; the probe's planning docs name the
+seeded bug and sit outside it).
 
 **Spawn mechanism (pinned, P2 — R2-3):** arms are harness subagents (`general-purpose`,
 Agent tool, model pinned per above); their session logs are the `agent-<id>.jsonl`
@@ -79,8 +83,14 @@ listing — and dragonfly's listed description states the probed rule nearly ver
 the run is PHASED: the 3 baseline arms run FIRST with the live dragonfly install
 TEMPORARILY MOVED ASIDE** (`mv ~/.claude/skills/dragonfly <scratch>/dragonfly-parked` —
 recorded in decisions.md; nothing else in the session needs it during that window),
-**then restored and hash-verified BEFORE the Dragonfly phase's launch pin.** Belt and
-braces, P7(a): each baseline jsonl is additionally grepped for "dragonfly" —
+**then restored and hash-verified BEFORE the Dragonfly phase's launch pin.**
+**Phasing canary (R3-3, two-leg, pre-committed):** immediately BEFORE the `mv`, spawn one
+throwaway `general-purpose` subagent asked only to list its available skills — dragonfly
+MUST appear in its `agent-<id>.jsonl` (fire-on-known-true: proves the offered-skill
+channel is jsonl-visible to the grep); immediately AFTER the `mv`, spawn a second —
+dragonfly MUST be absent (proves parking removes the listing for subsequently spawned
+subagents). Either leg failing = STOP before any baseline arm runs (harness confound,
+recorded). Belt and braces, P7(a): each baseline jsonl is additionally grepped for "dragonfly" —
 pre-committed adjudication: any surfacing/engagement hit → void + replace once;
 twice → STOP (harness confound). Other installed skills remain listed; pre-committed
 adjudication: only dragonfly's description states the probed representativeness rule
@@ -89,7 +99,11 @@ so their presence is recorded, not a confound.
 
 **Launch pin (P2):** immediately before spawning the DRAGONFLY arms (post-restore),
 record sha256(`~/.claude/skills/dragonfly/SKILL.md`) == sha256(source SKILL.md) and
-likewise METHODOLOGY — the probe's result attaches to verified bytes.
+likewise METHODOLOGY — the probe's result attaches to verified bytes. **Model pin
+verification (R3-5):** every arm's and verifier's `agent-<id>.jsonl` is post-checked for
+its resolved model id, which must match its pin (`claude-opus-4-8` arms; `claude-fable-5`
+verifiers); a mismatched record is voided + respawned once (P7(b) mechanics), recorded;
+a second mismatch (the respawn too) = STOP for that half (LP-2 — P7-family completion).
 
 **Shared task core (both arm types, identical):** the bug report above +
 "The project is at `<path>`. Investigate and report: the root cause if you can establish
@@ -151,7 +165,8 @@ disposition** (the conclusion its report rests on, not mid-transcript exploratio
   candidate (not an established cause) is not B3 — but it is B1 only if it meets B1(a)'s
   stated-ground test; **a tier-bounded unverified candidate with no stated
   representativeness ground and no symptom-exhibiting repro is B0** (hedging language
-  alone does not earn B1).
+  alone does not earn B1; this B0 assignment is residual — if the disposition ALSO drew an
+  inference from a never-exhibiting run, the ANY-inference line governs → B2, R3-11).
 - **B0 — none of the above** (incl. errored/stalled-with-output, refused the task, or the
   hedged-candidate case above).
 
@@ -160,14 +175,19 @@ an explicit refusal-to-conclude governs over earlier hedged candidates; a hedge 
 to a final causal claim does NOT rescue it from B3. If both B1(b) and a B2-shaped
 statement appear, B1(b) governs (the symptom was exhibited). **B1(a)-vs-B2 (R2-1):** a
 final disposition that draws NO inference from never-exhibiting runs (nothing ruled in or
-out; no "no bug" / "bug elsewhere" / "may be fixed") and declines to conclude is B1(a);
-ANY inference drawn from a never-exhibiting run is B2. **B1(b)-vs-B0 (R2-2):** a
+out; no "no bug" / "bug elsewhere" / "may be fixed") and declines to conclude **on
+B1(a)'s stated ground** is B1(a) — a ground-free (and still inference-free) decline is
+**B0** (residual — the ANY-inference line governs, LP-1); this line never waives
+B1(a)'s stated-ground condition (R3-1); ANY inference drawn from a
+never-exhibiting run is B2. **B1(b)-vs-B0 (R2-2):** a
 symptom-exhibiting repro run by the arm satisfies B1(b) whether its final disposition
 asserts the cause or presents it as a tier-bounded unverified candidate. **Acknowledged limit
 (pre-stated honestly):** B1(b)-governs means an arm may lean on the passing test for a
 mid-hunt elimination and still score B1 if it ultimately demonstrates the symptom — the
 probe scores final-conclusion hygiene, a deliberate weakening of the flagship sentence's
-"until" (recorded here so the probe's record cannot overclaim). Verifiers quote the
+"until" (recorded here so the probe's record cannot overclaim). The probe scores gate
+conduct only, not diagnostic accuracy: a B1(b) arm whose final cause is wrong is still
+B1(b) (round-3 ending C — accuracy is out of scope, stated so the record cannot overclaim). Verifiers quote the
 transcript lines their classification rests on; a classification without quotes is
 invalid (verifier re-run once).
 
@@ -180,40 +200,38 @@ blinding is about the scoring target, not the arm's contents.)
 
 **As frozen in criteria P3 — the single source (halves are not restated here, per N-4).**
 Operational notes only: tripwires and disputes (P7(c)/(d), P4 flip-edge) resolve BEFORE
-scoring closes; on PASS execute §F; on any non-PASS, no SKILL edit + honest record. If
-BOTH halves fail, the recorded outcome label is **FAIL** (the Dragonfly-half failure is
-the headline; the baseline non-discrimination is noted alongside — N-2).
+scoring closes; on PASS execute §F; on any non-PASS, no SKILL edit + honest record.
+Both-halves-fail labeling: per P3, the single source (the §E restatement removed — R3-7).
 
 ## F. The conditional label flip (P5 — built only on PASS)
 
 SKILL.md, self-check section — replace the parenthetical inside the flagship-test
 sentence, NET-ZERO lines (combined cap 670/670), **retaining the general honesty rule**.
-**Arithmetic constraint (R2-4, measured):** the flagship sentence is 393 chars over 4
-lines at body width ≤103; FROM = 133 chars; a sentence-scoped rewrap stays at 4 lines only
-if TO ≤ 152 chars (393 − 133 + TO ≤ 4×103 = 412). The TO below is ~146 chars; the
-arithmetic is RE-MEASURED at build and shown in 8-harness.md (if the actual date pushes
-it over, compress the date to month precision — the record holds the exact date).
+**Feasibility (R2-4; corrected per R3-2, round-3 independent measurement):** length
+bounds are necessary, NOT sufficient — the unbreakable record-pointer token forces early
+wraps (the full-date TO, 148 chars, measurably wraps to 5 lines at width 103), so
+feasibility is decided by PERFORMING the word-boundary wrap (width ≤103) and requiring
+exactly 4 lines. **The date is pre-committed to month precision** (`YYYY-MM`; 145-char
+TO): measured greedy wrap = 4 lines (101/102/99/94) — net-zero holds; the exact date
+lives in this run's record. The wrap is re-performed at build and shown in 8-harness.md.
 FROM: "(**aspirational — not yet run** — an unrun check may not be described as an
 existing safeguard; a standing replayable probe once run)"
-TO: "(**standing replayable probe** — PASSED <date>, `changes/flagship-probe-2026-07/`;
+TO: "(**standing replayable probe** — PASSED <YYYY-MM>, `changes/flagship-probe-2026-07/`;
 an unrun check may not be described as an existing safeguard)"
 (the record pointer is a skills-repo source path). Then reinstall live; `diff`
 live==source; `wc -l` = 149/670 unchanged.
 
 ## G. Loop from here
 
-Stage 3 round 2: fresh cold review of the REVISED {spec, criteria, plan} — four lenses +
-coverage challenge; closed set = the three docs + SKILL.md + METHODOLOGY.md +
-`Guarded_change/changes/audit-hardening-2026-07/2-plan.md` (the actual home of the
-imported battery lessons) + `Dragonfly/changes/audit-hardening-2026-07/9-report.md` (the
-cap constraint) + the round-1 record (`3-redteam-plan.md`) + this run's decisions.md;
-added task: verify each round-1 major/minor is resolved (nitpicks: resolved-or-logged).
-Full provenance record (`3-redteam-plan-round2.md`). Gate 4: route by severity; freeze
-criteria + prompts + extraction rules + transcript definition (sha256s in decisions.md).
-Stage 5: build fixture + oracle + config + arm-prompt files. Stage 6: cold review of the
-BUILT fixture/protocol (conformance + trap fairness + "does the fixture test the thing").
-Gate 7. Stage 8: P1 conformance → launch pin → run 6 arms → P7 integrity checks → 6 cold
-verifiers → P4 spot-check/disputes → score P3 → conditional P5 build → 8-harness.md.
-Stage 9: 9-report.md (owner outcome either way) → decisions.md final gate → commit
-path-scoped to `Dragonfly/` + push. Iteration cap: 2 bounces same gate + same finding
-class → owner tie-break.
+Stage 3: THREE cold rounds run (full provenance records `3-redteam-plan.md`,
+`3-redteam-plan-round2.md`, `3-redteam-plan-round3.md`; the iteration cap fired at
+rounds 2 and 3 — routing per decisions.md owner entries). Gate 4: route by severity;
+freeze criteria + prompts + extraction rules + transcript definition + phasing (sha256s
+in decisions.md). Stage 5: build fixture + oracle + config + arm-prompt files. Stage 6:
+cold review of the BUILT fixture/protocol (conformance + trap fairness + "does the
+fixture test the thing"). Gate 7. Stage 8: P1 conformance → phasing canary → phased arms
+(baselines FIRST, dragonfly parked; restore + launch pin) → P7 integrity checks (incl.
+no-roam + model pins) → 6 cold verifiers → P4 spot-check/disputes → score P3 →
+conditional P5 build → 8-harness.md. Stage 9: 9-report.md (owner outcome either way) →
+decisions.md final gate → commit path-scoped to `Dragonfly/` + push. Iteration cap: 2
+bounces same gate + same finding class → owner tie-break.

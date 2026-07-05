@@ -115,3 +115,92 @@
   final gate → commit.
 - No tokens spent on arms; nothing built; criteria still UNFROZEN (round 3 sees the
   as-committed docs).
+
+## Stage-3 gate, round 3 — MAJOR → cap RE-FIRES → owner routing (2026-07-04, late eve)
+- Round mandated by the owner (prior entry). Cold reviewer `general-purpose` /
+  `claude-fable-5`; verbatim record + provenance: `3-redteam-plan-round3.md` (task
+  `a1a345efd15ac7151`, ~13.5 min, ~124K tokens). Reviewer-reported doc hashes == the
+  author's pre-spawn hashes (criteria `2262438e…`, plan `f327dad8…`) — provenance clean.
+- **Resolution check: 12/12 round-2 fixes adjudicated genuinely applied; 11/12 fully
+  resolve.** R2-1's fix line introduced **R3-1 (major)**: the new B1(a)-vs-B2 precedence
+  line omitted B1(a)'s stated-ground condition → the ground-free decliner (reviewer's new
+  stress ending E) was two-way classifiable (B1(a)/B0) on the Dragonfly half's flip edge,
+  pass-inflating direction. Third consecutive extraction-rule-determinacy major — the
+  fix-introduces-defect pattern the owner's round-3 rationale predicted (and the round-2
+  reviewer's own proposed wording carried the defect; adoption ≠ immunity).
+- **4 minors:** R3-2 §F feasibility test unit-mixed + necessary-not-sufficient (reviewer
+  independently measured: the full-date TO wraps to 5 lines; the month-precision TO = 4
+  lines = the real PASS path — its stated trigger would never have fired); R3-3 phasing
+  effectiveness rests on two unverified harness assumptions (mv-refresh of skill listings;
+  jsonl visibility) → canary proposed; R3-4 no arm no-roam check (the planning docs name
+  the seeded bug and are reachable from `$HOME`) — the only uncovered PASS-INFLATING
+  channel; R3-5 model pins had no verification leg. **6 nitpicks:** R3-6 stale
+  headers/§G; R3-7 both-halves-fail double-stated; R3-8 P7(d) STOP outcome unnamed; R3-9
+  hammer fire-on-known-true had no run bound; R3-10 verifier second-violation
+  disposition absent; R3-11 inference+hedged-candidate needs three scattered clauses.
+- **Fixes applied in place (all but R3-10, which is LOGGED as an accepted-class residual
+  per the reviewer's own adjudication):** §D's precedence line now requires B1(a)'s
+  stated ground (ground-free decline = B0; the line never waives the condition — R3-1);
+  §F rewritten — feasibility decided by PERFORMING the wrap, date PRE-COMMITTED to month
+  precision, TO template `<YYYY-MM>` (R3-2); two-leg phasing canary pre-committed in §C +
+  P2 (pre-`mv` fire-on-known-true / post-`mv` closed; either fails = STOP — R3-3); P7(f)
+  arm no-roam check added + §C pointer (R3-4); model-pin verification in §C + P2 (R3-5);
+  headers + §G brought current (R3-6); §E restatement removed, P3 single source (R3-7);
+  P7(d) STOP outcome named (R3-8); hammer ≤50-run bound in §B.4 + P1(d) (R3-9);
+  B0-residual clause + gate-conduct-only scope sentence in §D (R3-11 + the ending-C
+  note). **Post-fix hashes:** 1.5-criteria.md `3c4814a7…9c07`, 2-plan.md `61407cd4…a95f`
+  (23 + 235 lines).
+- Reviewer's freeze-readiness statement: "The revised set is otherwise freeze-ready" —
+  all five prior edge cases + 3/5 new stress endings classify deterministically; the
+  phasing is mechanically checkable; a verified net-zero PASS path exists (month TO).
+- **ITERATION CAP RE-FIRES (§G: third same-class MAJOR bounce at this gate):** routing
+  to the OWNER — (a) scoped lite fix-verification pass on the round-3 fixes only
+  (retrodiction-litepass shape); (b) full round 4; (c) proceed to gate-4 freeze with the
+  round-3 fixes unreviewed.
+- Awaiting owner routing (recorded next entry).
+
+## Owner routing (round-3 cap re-fire) RESOLVED: scoped lite fix-verification (2026-07-04, late eve)
+- Owner chose route (a) of the three presented (lite fix-verify / full round 4 / freeze
+  unreviewed); cost/benefit of each given per the standing owner-questions rule.
+- Scope: cold lite pass verifying ONLY the round-3 fixes (R3-1..R3-9 + R3-11 applied;
+  R3-10 logged) — esp. the amended §D precedence line (re-walk all prior edge cases +
+  stress endings, incl. E, under it) and the rewritten §F (reviewer performs the wrap
+  itself); fix-introduced defects in the edited text count fully; NOT a full re-review
+  of unchanged text (three rounds passed over it; round 3 declared it freeze-ready).
+- Severity routing: MAJOR → owner again; MINOR/nitpick → fix-in-place/log + gate-4
+  freeze (the retrodiction-litepass precedent from the hardening run).
+- Record: `3-redteam-plan-round3-litepass.md`.
+
+## Stage-3 gate, lite fix-verification — NITPICK → GATE CLEARS (2026-07-04, late eve)
+- Cold reviewer `general-purpose`/`claude-fable-5`; verbatim record + provenance:
+  `3-redteam-plan-round3-litepass.md` (task `af8bba6825a84d39c`, ~8.3 min, ~84K tokens).
+  Reviewer-reported hashes == the round-3 post-fix hashes (`3c4814a7…`/`61407cd4…`).
+- **10/10 round-3 fixes adjudicated genuine resolutions** (R3-3 "stronger than
+  prescribed"; R3-10 correctly logged-not-fixed). All ten catalogued endings + two NEW
+  constructed endings (F: ground+inference; G: ground-free decline+inference) classify
+  deterministically under the amended §D — ending E (R3-1's two-way case) now uniquely
+  B0 by the line's own text. §F reproduced measurement-for-measurement (145-char month
+  TO → 4 lines 101/102/99/94; full-date TO → 5 lines confirmed; 149/521/670 confirmed).
+- **2 nitpicks, both fixed in place per the pre-committed routing:** LP-1 — the new
+  dash-clause now reads "a ground-free (and still inference-free) decline is **B0**
+  (residual — the ANY-inference line governs)"; LP-2 — model-pin second mismatch (the
+  respawn too) = STOP for that half (P7-family completion; criteria P2 + plan §C).
+- **STAGE-3 GATE PASSES** (worst unfixed severity: none; logged residuals: R3-10, and
+  the litepass boundary note on pure-decliner fact-application → P4's pre-committed
+  quote + flip-edge owner routing).
+
+## GATE 4 — CRITERIA FREEZE (2026-07-04, late eve)
+- **FROZEN as of this entry** (any later change to these files = a new stage-3 gate):
+  - `1-spec.md` — sha256 `e667fc6cf8f96057320632d6c33ce7e0672ac1bdf69f8fc41dc23e8ab0dc69b0` (unrevised since run start)
+  - `1.5-criteria.md` (P1–P7, 23 lines) — sha256 `8ff2b72c44bed8d7b74ca72d290d52cc38e537d6069b6f62061d87ee66ea7da5`
+  - `2-plan.md` (237 lines; contains the frozen arm prompts §C, extraction rules §D,
+    pass-condition pointer §E, transcript definition + phasing + canary + model pins P2/§C,
+    flip §F) — sha256 `e17267b1f821ba9e5724f3815135009dba653265528ae517e04566d6c1fded40`
+- Freeze basis: three full cold rounds + one owner-mandated scoped lite pass; final
+  worst severity NITPICK with both nitpicks fixed and re-hashed above. Verbatim copy of
+  the frozen criteria = the committed `1.5-criteria.md` at the hash above (the file IS
+  the freeze copy; this entry pins the bytes).
+- Next: stage 5 build (fixture + oracle + config + corrected-copy patch per §A–§C) →
+  stage 6 cold review of the BUILT artifacts → gate 7 → stage 8 (P1 conformance →
+  canary + phased arms → P7 checks → 6 verifiers → P4 → score P3) → conditional §F flip
+  → 9-report → final gate → path-scoped commit.
