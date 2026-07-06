@@ -1,0 +1,97 @@
+diff --git a/Dragonfly/METHODOLOGY.md b/Dragonfly/METHODOLOGY.md
+index 386fc86..e795366 100644
+--- a/Dragonfly/METHODOLOGY.md
++++ b/Dragonfly/METHODOLOGY.md
+@@ -120,7 +120,7 @@ reproduction:             # how to run / reproduce in this project
+   logs: <where the app's own logs/telemetry land — ground truth for observations>
+ 
+ ledgers:
+-  dir: <where the symptom + observation ledgers are written for a run>
++  dir: <where the symptom + observation + incidental ledgers are written for a run>
+ 
+ iteration_cap:
+   N: <integer>            # OPTIONAL — overrides the Layer-1 default of 3
+@@ -148,6 +148,8 @@ observation-ledger.md append-only record of everything examined (what/observatio
+ hypotheses.md         ranked falsifiable hypotheses: confirm/refute prediction, status, + gate marker
+ diagnosis.md          (stage 8) root cause, causal chain (per-level depth-check), evidence, repro,
+                       recommended fix, named residuals; characterized: (a)–(c) instead
++incidental-ledger.md  append-only parking lot of potential bugs noticed but UNRELATED to the S# set —
++                      logged and not chased; surfaced at stage 8 for future, separately-scoped hunts
+ decisions.md          append-only gate log (gates, severities, routes, human overrides, cap counts)
+ ```
+ 
+diff --git a/Dragonfly/SKILL.md b/Dragonfly/SKILL.md
+index 4a7df1e..f11fc42 100644
+--- a/Dragonfly/SKILL.md
++++ b/Dragonfly/SKILL.md
+@@ -23,13 +23,14 @@ orientation/reference spec (why it exists, the config contract, what a run produ
+ 
+ If this is invoked inside an already-long or visibly thrashing session, **recommend a fresh session
+ first** and emit a carry-over brief pointing at the hunt's files — the frozen symptom ledger, the
+-observation ledger to date, `hypotheses.md`, and `decisions.md` (the cap's bounce-count + prior
+-findings), not just the symptoms — prior context loss/thrash poisons the hunt.
++observation ledger to date, `hypotheses.md`, `incidental-ledger.md`, and `decisions.md` (the cap's
++bounce-count + prior findings), not just the symptoms — prior context loss/thrash poisons the hunt.
+ 
+ ## Loop
+ 
+ Create a hunt folder `hunts/<slug>/` and maintain the ledgers as **files** there (`symptom-ledger.md`,
+-`observation-ledger.md`, `hypotheses.md`; `diagnosis.md` at stage 8; `decisions.md` throughout).
++`observation-ledger.md`, `hypotheses.md`; `diagnosis.md` at stage 8; `incidental-ledger.md` (out-of-scope
++findings, throughout); `decisions.md` throughout).
+ **Step numbers below are the canonical stage numbers** used everywhere (METHODOLOGY, `decisions.md`).
+ At every gate, append to `decisions.md`: the gate, worst severity, route taken, and a rationale+name
+ for any human override — the iteration cap reads this log. Walk the loop; **at each stage, read that
+@@ -56,6 +57,15 @@ every repro/test/instrument/toggle/detector through guarded-change (lite or full
+ The **iteration cap** (config `N`, default 3) stops thrash: `N` cycles with no hypothesis eliminated →
+ escalate to a human.
+ 
++**Incidental findings.** If at any stage you notice a potential bug **unrelated to the frozen `S#`
++set**, **park it in `incidental-ledger.md`** (what / where / why it looks suspect) and **move on — do
++not chase it.** **When in doubt whether a finding bears on the `S#` set, treat it as in-scope** (record
++it in the observation ledger and let the stage-7 coverage sweep adjudicate) — park **only
++clearly-unrelated** findings, so focus protection never silently drops a real contributor. The hunt's
++focus and convergence budget stay on the `S#`; parked findings are surfaced at stage 8 as a parking lot
++for future, separately-scoped hunts. Logging to the parking lot never blocks a gate and is never part
++of convergence-cap accounting.
++
+ ## Stop-for-human
+ 
+ Pause and ask when: the **0a restatement needs confirmation**; a **blocker** is about to restart the
+diff --git a/Dragonfly/stages/stage-2.md b/Dragonfly/stages/stage-2.md
+index c0f89e7..ed51d63 100644
+--- a/Dragonfly/stages/stage-2.md
++++ b/Dragonfly/stages/stage-2.md
+@@ -9,6 +9,14 @@ that stops the same areas being re-checked and prior findings being forgotten.
+   the *observation* / a *citation* (file:line, log row) / *what it rules in or out*.
+ - **An area may not be re-examined without first recording why the prior finding is insufficient**
+   (A-2-2). This makes re-checking a deliberate, justified act rather than forgetful churn.
++- **Incidental findings go to a *separate* ledger.** If while examining you notice a potential bug
++  **clearly unrelated to the `S#` set**, record it in `incidental-ledger.md` (append-only: what / where
++  file:line-or-component / why suspect) — **not** in the observation ledger (which is for things
++  examined *about the current symptom*) — and **do not investigate it** (log-and-move-on; focus
++  protection). **When in doubt whether it bears on the `S#` set, treat it as in-scope** — record it in
++  the observation ledger and let the stage-7 coverage sweep adjudicate; park only clearly-unrelated
++  findings, so a real contributor is never silently lost. It is out of scope of this hunt and carried to
++  the stage-8 parking lot.
+ 
+ ## Cross-cutting rules governing this stage
+ 
+diff --git a/Dragonfly/stages/stage-8.md b/Dragonfly/stages/stage-8.md
+index e7abfbc..0da4021 100644
+--- a/Dragonfly/stages/stage-8.md
++++ b/Dragonfly/stages/stage-8.md
+@@ -10,6 +10,13 @@ finds the bug; it does **not** author the fix.
+ - **Hand `diagnosis.md` to guarded-change to make the fix. Dragonfly does NOT author the fix itself**
+   (A-8-2). This is the legitimate workflow handoff — a compose relationship, not a rules dependency:
+   dragonfly diagnoses, guarded-change makes the fix, and dragonfly then verifies it at stage 9.
++- **Surface the incidental-bug ledger as a parking lot — on either terminal verdict** (a "found"
++  `diagnosis.md` **or** a "characterized, not found" handoff). If `incidental-ledger.md` is non-empty,
++  the handoff lists it as **out-of-scope findings for future, separately-scoped investigation** — kept
++  **distinct** from the diagnosed root cause and its named residuals (which are `S#`-related by
++  definition). It is surfaced, **not** routed to guarded-change (each incidental bug is a future hunt of
++  its own, if pursued). (If a hunt halts mid-loop at the convergence-cap stop-for-human without reaching
++  stage 8, the parked findings are on disk + in the cold-start carry-over brief — not lost.)
+ 
+ ## "Characterized, not found" — the only other legal terminal verdict (A-8-3)
+ 

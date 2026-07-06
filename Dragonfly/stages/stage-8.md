@@ -10,6 +10,13 @@ finds the bug; it does **not** author the fix.
 - **Hand `diagnosis.md` to guarded-change to make the fix. Dragonfly does NOT author the fix itself**
   (A-8-2). This is the legitimate workflow handoff — a compose relationship, not a rules dependency:
   dragonfly diagnoses, guarded-change makes the fix, and dragonfly then verifies it at stage 9.
+- **Surface the incidental-bug ledger as a parking lot — on either terminal verdict** (a "found"
+  `diagnosis.md` **or** a "characterized, not found" handoff). If `incidental-ledger.md` is non-empty,
+  the handoff lists it as **out-of-scope findings for future, separately-scoped investigation** — kept
+  **distinct** from the diagnosed root cause and its named residuals (which are `S#`-related by
+  definition). It is surfaced, **not** routed to guarded-change (each incidental bug is a future hunt of
+  its own, if pursued). (If a hunt halts mid-loop at the convergence-cap stop-for-human without reaching
+  stage 8, the parked findings are on disk + in the cold-start carry-over brief — not lost.)
 
 ## "Characterized, not found" — the only other legal terminal verdict (A-8-3)
 

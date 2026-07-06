@@ -23,13 +23,14 @@ orientation/reference spec (why it exists, the config contract, what a run produ
 
 If this is invoked inside an already-long or visibly thrashing session, **recommend a fresh session
 first** and emit a carry-over brief pointing at the hunt's files — the frozen symptom ledger, the
-observation ledger to date, `hypotheses.md`, and `decisions.md` (the cap's bounce-count + prior
-findings), not just the symptoms — prior context loss/thrash poisons the hunt.
+observation ledger to date, `hypotheses.md`, `incidental-ledger.md`, and `decisions.md` (the cap's
+bounce-count + prior findings), not just the symptoms — prior context loss/thrash poisons the hunt.
 
 ## Loop
 
 Create a hunt folder `hunts/<slug>/` and maintain the ledgers as **files** there (`symptom-ledger.md`,
-`observation-ledger.md`, `hypotheses.md`; `diagnosis.md` at stage 8; `decisions.md` throughout).
+`observation-ledger.md`, `hypotheses.md`; `diagnosis.md` at stage 8; `incidental-ledger.md` (out-of-scope
+findings, throughout); `decisions.md` throughout).
 **Step numbers below are the canonical stage numbers** used everywhere (METHODOLOGY, `decisions.md`).
 At every gate, append to `decisions.md`: the gate, worst severity, route taken, and a rationale+name
 for any human override — the iteration cap reads this log. Walk the loop; **at each stage, read that
@@ -55,6 +56,15 @@ the founding failure — a test that doesn't test the thing. The **diagnostic-ar
 every repro/test/instrument/toggle/detector through guarded-change (lite or full) before it is trusted.
 The **iteration cap** (config `N`, default 3) stops thrash: `N` cycles with no hypothesis eliminated →
 escalate to a human.
+
+**Incidental findings.** If at any stage you notice a potential bug **unrelated to the frozen `S#`
+set**, **park it in `incidental-ledger.md`** (what / where / why it looks suspect) and **move on — do
+not chase it.** **When in doubt whether a finding bears on the `S#` set, treat it as in-scope** (record
+it in the observation ledger and let the stage-7 coverage sweep adjudicate) — park **only
+clearly-unrelated** findings, so focus protection never silently drops a real contributor. The hunt's
+focus and convergence budget stay on the `S#`; parked findings are surfaced at stage 8 as a parking lot
+for future, separately-scoped hunts. Logging to the parking lot never blocks a gate and is never part
+of convergence-cap accounting.
 
 ## Stop-for-human
 

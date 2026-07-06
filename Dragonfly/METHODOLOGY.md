@@ -120,7 +120,7 @@ reproduction:             # how to run / reproduce in this project
   logs: <where the app's own logs/telemetry land — ground truth for observations>
 
 ledgers:
-  dir: <where the symptom + observation ledgers are written for a run>
+  dir: <where the symptom + observation + incidental ledgers are written for a run>
 
 iteration_cap:
   N: <integer>            # OPTIONAL — overrides the Layer-1 default of 3
@@ -148,6 +148,8 @@ observation-ledger.md append-only record of everything examined (what/observatio
 hypotheses.md         ranked falsifiable hypotheses: confirm/refute prediction, status, + gate marker
 diagnosis.md          (stage 8) root cause, causal chain (per-level depth-check), evidence, repro,
                       recommended fix, named residuals; characterized: (a)–(c) instead
+incidental-ledger.md  append-only parking lot of potential bugs noticed but UNRELATED to the S# set —
+                      logged and not chased; surfaced at stage 8 for future, separately-scoped hunts
 decisions.md          append-only gate log (gates, severities, routes, human overrides, cap counts)
 ```
 
