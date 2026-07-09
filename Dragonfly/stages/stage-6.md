@@ -33,3 +33,9 @@ distinct from this stage's `N`-cycle convergence cap.
 **Trust-before-gate ordering (B-TBG-1).** A test result consumed here to count a cycle or eliminate a
 hypothesis may only be used once the producing artifact's **triage is recorded passed** in
 `decisions.md` (see stage 5 for the full rule); a reading is never consumed ahead of its cold review.
+
+**Untrusted results do not count as eliminations (B-REP-4 / B-REG-1).** A cycle that produced an
+**untrusted-negative** (B-REP-4) or a result whose registered-design deviation is unresolved (B-REG-1)
+has **not eliminated a hypothesis** — it still counts as a *cycle* (it ran and was recorded, A-6-4),
+but it may **not be recorded as an elimination or as narrowing** (A-6-1). Otherwise a non-representative
+or off-design run manufactures false convergence.

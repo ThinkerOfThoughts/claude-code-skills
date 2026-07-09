@@ -50,7 +50,7 @@ stage's file for the full procedure + the rules it must apply:**
 | **8** | Handoff: emit `diagnosis.md` → guarded-change makes the fix | → `stages/stage-8.md` |
 | **9** | Fix verification: the root cause is resolved, not just the symptom | → `stages/stage-9.md` |
 
-The **most important gate is the representativeness gate** (governs stages 1 and 4): a diagnostic
+The **most important gate is the representativeness gate** (governs stages 1, 4, and 5 — the result-time gate B-REP-4): a diagnostic
 artifact is untrusted until a control run is shown to exhibit the symptom. It is the cheapest catch for
 the founding failure — a test that doesn't test the thing. The **diagnostic-artifact triage** routes
 every repro/test/instrument/toggle/detector through guarded-change (lite or full) before it is trusted.
@@ -64,7 +64,10 @@ it in the observation ledger and let the stage-7 coverage sweep adjudicate) — 
 clearly-unrelated** findings, so focus protection never silently drops a real contributor. The hunt's
 focus and convergence budget stay on the `S#`; parked findings are surfaced at stage 8 as a parking lot
 for future, separately-scoped hunts. Logging to the parking lot never blocks a gate and is never part
-of convergence-cap accounting.
+of convergence-cap accounting. **Drift is distinct from an incidental finding:** even an on-topic step
+is drift if it attributes to a property of a *symptom* or a *mitigation* rather than a share of the
+frozen root-cause target — before each step, name the target node it advances (re-reading the frozen
+ledgers), or park it; in doubt, pull it (B-TARGET-1, stage 2).
 
 ## Stop-for-human
 

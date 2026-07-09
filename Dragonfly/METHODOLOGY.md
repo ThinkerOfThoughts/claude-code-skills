@@ -61,7 +61,7 @@ not an assertion.
 9    FIX VERIFICATION verify the ROOT CAUSE is resolved (not merely the symptom suppressed)
 ```
 
-The **most important gate is the representativeness gate** (governs stages 1 and 4) — the cheapest
+The **most important gate is the representativeness gate** (governs stages 1, 4, and 5) — the cheapest
 place to kill the failure that wasted the motivating session: a test that doesn't test the thing.
 Everything downstream of a non-representative test is wasted, so the gate sits upstream of all
 conclusions. The operative rules (representativeness gate, triage, charter, gate-before-present,

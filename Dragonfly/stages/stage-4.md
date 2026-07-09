@@ -10,6 +10,13 @@ test is routed through *is* its stage-4 cold review.
 ## Procedure
 
 - **Design a test/instrument that splits the live hypotheses** (rules at least one in or out) (A-4-1).
+- **Register the design as a checkable object (A-4-2).** When the test/instrument is designed, record
+  its **parameters** — sample size / number of runs, the **stop rule** (e.g. "100 turns, or +20 on
+  first trigger"), scale, and the conditions each arm holds — in **`decisions.md`** (the design-time
+  record, alongside the triage result per B-TRI-3 — the observation ledger is for things *examined*,
+  not forward-looking design) as the **pre-registered design**. This is the object stage-5's B-REG-1
+  checks the executed run against; a design with no registered parameters cannot later be shown to
+  have been run faithfully.
 - **Before it is run** it passes the **representativeness gate** and the **diagnostic-artifact triage**
   (both below). A result may not be **consumed** until its triage is recorded passed (trust-before-gate,
   below).
@@ -24,6 +31,9 @@ test is routed through *is* its stage-4 cold review.
 - **A detector/readout is itself a diagnostic artifact** (B-REP-3): anything deciding "the symptom
   occurred" must **fire on a known-true instance AND stay silent on a known-clean one** (ledger row)
   before its readings are consumed.
+- **The gate binds again at result-recording (B-REP-4, stage 5):** passing the design-time gate here
+  does not discharge it — a "clean" result is re-checked at stage 5 against whether this arm could
+  exhibit the symptom at the parameters it actually ran.
 
 ## Diagnostic-artifact triage (every repro / test / instrument / toggle / detector)
 

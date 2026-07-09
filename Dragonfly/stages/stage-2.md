@@ -37,3 +37,19 @@ sitting in a **memory note** that is steering the hunt. Memory is where a conven
 definition ossifies; a memory-encoded claim that drives a decision is re-verified against the source,
 not trusted because it is written down. This strengthens B-EVID-1 (cite) to cite-**and-verify**: an
 unverified assertion — however confident, however often repeated — is not a finding.
+
+**Every step attributes a share to a named frozen-target node — or it is drift (B-TARGET-1).** Before
+any investigative step, name which frozen-target node it attributes a share to — a specific `S#` or a
+live hypothesis (`hypotheses.md`) — **re-reading the frozen symptom + hypothesis ledgers to do it, not
+reconstructing the target from memory** (reconstruction is where the target gets quietly distorted; cf
+B-VER-1). A step that instead investigates a property of a **symptom** or of a **mitigation/bandaid** —
+real and nearby, and seductive *because* it is — does not attribute a share to the root-cause target:
+it is **drift**. Park it in the incidental-ledger and **do not pull it**. Record the attribution as a
+marker on the step's observation-ledger row (the named target, or "parked — no target"); a row that can
+name no target is the tell. **In doubt whether a step attributes a share, take it and mark the row's
+attribution `uncertain`** — resolve doubt toward pulling, never toward parking, so a real cause-tracing
+step is never lost (the same inclusion tie-break the incidental-findings rule uses). This **composes
+with** the incidental-findings rule rather than replacing it: that rule asks "is a *newly-noticed
+finding* related to the `S#` set?" (in doubt → in-scope, never dropped); B-TARGET-1 asks "does the
+*step I am about to take* advance the frozen root-cause target?" — a step can be on-topic yet still be
+drift onto a symptom/mitigation property; both rules resolve doubt toward inclusion.
