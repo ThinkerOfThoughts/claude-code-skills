@@ -13,13 +13,19 @@ data, prior docs) named in the project config's `redteam_context`. Code/data acc
 load-bearing: a docs-only review can only catch internal inconsistency, never a claim that is
 confidently wrong about how the system actually behaves.
 
-The reviewer attacks on four **separate** lenses (kept distinct so one doesn't crowd out the
+The reviewer attacks on five **separate** lenses (kept distinct so one doesn't crowd out the
 others):
 
 1. **Factual** — does the artifact match the source? (claims vs. code/data; cite line/file)
 2. **Logical** — flaws in the plan/reasoning/sequencing, independent of the code.
 3. **Missed opportunity** — better approaches or optimizations left on the table.
 4. **Unstated assumptions & risks** — what's being taken for granted that could be false.
+5. **Fidelity** — does the artifact implement the *mechanism the owner specified*, or a
+   convenient **proxy** for it? Pin each loaded operational term in the spec/request ("agent",
+   "drive", "human", "reproduce", "replace", …) to its concrete mechanism from owner intent; an
+   artifact that substitutes a convenient or pre-existing implementation for that mechanism is
+   **untrusted** until the owner confirms the substitution. A definition inherited from a prior
+   artifact or a **memory note** is a *claim to re-verify against owner intent*, not a spec.
 
 Discipline that makes aggressive review trustworthy:
 - **Cite or it doesn't count.** Each finding names a line/file or a concrete failure scenario.
@@ -33,17 +39,26 @@ Discipline that makes aggressive review trustworthy:
   (file:line, log rows). A clean factual verdict with zero source citations is treated as an
   un-run review and re-run — this is the guard against the reviewer reasoning from the
   artifact alone and rubber-stamping it (the failure this whole loop targets).
+- **A clean *fidelity* lens must be earned by pinning the terms.** A "no fidelity issue" verdict
+  is valid only if the review **names the loaded operational terms** in the spec/request and, for
+  each, states the concrete mechanism it was pinned to and shows the artifact implements *that*
+  mechanism, not a proxy. A clean fidelity verdict that pins no terms is treated as an un-run
+  review and re-run — the same guard the factual lens carries. Watch specifically for a definition
+  inherited from a prior artifact or a **memory note**: it is a claim to re-verify against owner
+  intent, not a spec.
 - **Spot-verify the citations themselves.** Whoever consumes the review checks a sample of the
   cited file:lines / log rows actually exist and say what's claimed. Citations are the one
   guard defending the loop's founding failure; a fabricated citation would defeat it, so the
-  guard itself must be spot-checked (cheap: verify a few, not all).
+  guard itself must be spot-checked (cheap: verify a few, not all) — and, for a clean *fidelity*
+  lens, spot-check that the named term→mechanism pins are real: the term appears in the
+  spec/request and the pinned mechanism is the one the owner meant, not a proxy.
 - **Provenance is part of the review record.** Every cold-review record, wherever in the run it
   occurs (stage 3/6, a targeted post-6 check, a harness-embedded reviewer arm), embeds: (i) the
   verbatim charter/prompt given, (ii) the exact context path list given, (iii) the reviewer's
   verbatim output (the author's summary lives in `decisions.md`, separately), (iv) the
   reviewer's agent type + model, and (v) the reviewer-reported sha256 of each context file it
   read (the charter instructs the reviewer to report these). The charter given is the
-  METHODOLOGY charter **core** verbatim — the four lenses + the unconditional discipline
+  METHODOLOGY charter **core** verbatim — the five lenses + the unconditional discipline
   bullets, plus the coverage-challenge bullet for stage-3 reviews and any conditional lens
   (position / concurrency) whose trigger fires — with task-specific additions quoted
   as such. Reviewer input is a **closed set**: the named stage artifacts + the config's

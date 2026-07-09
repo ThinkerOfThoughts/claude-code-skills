@@ -63,7 +63,7 @@ exists to prevent. (Full text in `stages/stage-1.5.md`, `stages/stage-4.md`,
 ## Self-check / dogfooding
 
 This skill can be run on its own artifacts: treat `METHODOLOGY.md` + `SKILL.md` + the `stages/`
-files as the thing under review, and execute a stage-3 red-team on them (cold subagent, four
+files as the thing under review, and execute a stage-3 red-team on them (cold subagent, five
 lenses, evidence discipline). Skill-file edits are edits to a **position-sensitive assembly**
 (these documents are prompts), so the position lens applies. **Non-trivial edits take the full
 loop**, not a stage-3 pass alone. Standing self-check criteria for any such run: live copy ==

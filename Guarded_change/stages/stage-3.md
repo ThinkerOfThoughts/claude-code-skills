@@ -3,7 +3,7 @@
 **What this stage does:** independent cold review of {1-spec, 1.5-criteria, 2-plan} — the
 assumption-catcher, and the loop's most important gate.
 
-**Read `stages/charter.md` for the full red-team charter (the four lenses + the discipline
+**Read `stages/charter.md` for the full red-team charter (the five lenses + the discipline
 bullets + provenance + the conditional position/concurrency lenses), then apply the additions
 below.** The charter core is given to the reviewer verbatim; the stage-3 additions
 (coverage challenge + label audit) are given on top.
@@ -12,7 +12,7 @@ below.** The charter core is given to the reviewer verbatim; the stage-3 additio
 
 Spawn a **cold subagent** (no shared context; `general-purpose` or `Explore`). Give it read
 access to `{1-spec, 1.5-criteria, 2-plan}` AND the priority-ordered `redteam_context` paths.
-Charter it with the four lenses + evidence discipline from `stages/charter.md`. Write
+Charter it with the five lenses + evidence discipline from `stages/charter.md`. Write
 `3-redteam-plan.md` as a **verbatim record** per the charter's provenance rule: embed the
 charter given (core verbatim + task additions quoted), the exact context list (closed set:
 stage artifacts + config `redteam_context` + spec touched-files + carried findings), the

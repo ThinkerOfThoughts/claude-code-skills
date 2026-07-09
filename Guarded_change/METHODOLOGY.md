@@ -79,7 +79,7 @@ where, at each gate) lives written-in-full in each gate file — `stages/stage-4
 | 7 — Gate | `stages/stage-7.md` | route by severity |
 | 8 — Harness | `stages/stage-8.md` | conformance + regression; per-criterion verification table; freeze verify |
 
-The **red-team charter** (four lenses + discipline + provenance + the conditional
+The **red-team charter** (five lenses + discipline + provenance + the conditional
 position/concurrency lenses) is shared by stages 3 and 6 in `stages/charter.md`. The **severity
 model** and the **stage-8 verification detail** live in the gate/harness stage files.
 

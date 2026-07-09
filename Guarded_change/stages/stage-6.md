@@ -3,7 +3,7 @@
 **What this stage does:** independent cold review of the built code against {1.5-criteria,
 2-plan}. A backstop to stage 3.
 
-**Read `stages/charter.md` for the full red-team charter (the four lenses + the discipline
+**Read `stages/charter.md` for the full red-team charter (the five lenses + the discipline
 bullets + provenance + spot-verify + the conditional position/concurrency lenses), then apply
 the addition below.** The charter core is given to the reviewer verbatim; the stage-6 addition
 (the mechanical-diff duty) governs how the reviewed diff is produced.
