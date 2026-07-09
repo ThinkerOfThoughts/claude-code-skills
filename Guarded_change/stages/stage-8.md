@@ -70,7 +70,18 @@ unguarded version; until then its results are `verified = no`. A defective check
 is discarded and rebuilt in place (logged in `decisions.md`), not a loop restart; findings it
 raises about the change itself route via the gate-8 severity row. In-place fix diffs at gates
 7/8 are recorded in `decisions.md`, and a stage-8 fix-in-place re-runs the criterion checks its
-diff could have invalidated.
+diff could have invalidated. **This "must be shown able to fail" duty is not limited to checks
+that guard a fix — it binds *every* conformance/oracle check whose result stage 8 trusts,
+including a cheap `grep`/`diff` asserting a document invariant: before a "pass" from it counts,
+the oracle must be demonstrated to fire on a known-violating input (a self-test — e.g. run it
+against the pre-change / known-bad tree and confirm it flags the violation).** An oracle that
+cannot be shown to fail is an un-run check (`verified = no`). **Prefer a positive per-site
+assertion (the desired value is present at each expected site) over a bare absence sweep (the bad
+token is gone): a fragile matcher — markdown emphasis, a line-wrap, an encoding quirk — makes
+"absent" silently, wrongly true, hiding a missed edit, whereas a positive assertion surfaces the
+same miss as a missing expected value the matcher cannot hide. Where an absence sweep is used,
+pair it with the positive assertion AND normalize the text first (flatten newlines, strip `**…**`
+markers) so formatting cannot defeat the sweep.**
 
 **Per-criterion verification table — H7.** `8-harness.md` **must contain a per-criterion
 verification table**: one row per criterion with columns *criterion │ gating/advisory │ path

@@ -37,6 +37,16 @@ one of two means:
 This degraded mode exists because some changes (especially to subjective/emergent behavior)
 genuinely cannot be reduced to a metric pre-build; the loop must not force a fake number.
 
+**An oracle must be shown able to fail; prefer positive assertion over absence (ST1.5f).** When a
+criterion states *how* it is verified, its oracle must itself be a check that can be **shown able
+to fail** — demonstrated to fire on a known-violating input (a self-test, e.g. run it against the
+pre-change / known-bad state and confirm it flags the violation) before a "pass" from it counts;
+until then that criterion's result is `verified = no`. Prefer a **positive per-site assertion**
+(the desired value is present at each expected site) over a bare **absence check** (the bad token
+is gone), because a fragile matcher makes "absent" silently, wrongly true; where an absence sweep
+is unavoidable, pair it with the positive assertion and normalize the text first (strip markup,
+flatten wraps). This is enforced at stage 8 by H6 (`stages/stage-8.md`).
+
 **Criteria are mandatory (ST1.5b).** Criteria are the **conformance oracle** for stage 8 and
 are **mandatory** — without them (in either form) the loop refuses to proceed past stage 3,
 because completion would be unverifiable.
