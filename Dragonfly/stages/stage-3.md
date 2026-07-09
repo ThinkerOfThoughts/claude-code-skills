@@ -38,6 +38,16 @@ the cause, or presenting any hypothesis as a **conclusion to act on** before its
 motivating slip: a hypothesis was presented as the "leading" cause with no cold red-team, no repro, no
 toggle — and the cold pass, when finally run, refuted it as dead code.
 
+## The timeline rule (B-TIME-1, mandatory)
+
+A root cause **cannot post-date its symptom.** If a symptom exists in the past, its root cause exists
+in the past. So for every candidate: establish (a) the symptom's **first-appearance** version/point
+and (b) the candidate factor's **introduction** version/point — both cited — and **discard as *root*
+any factor introduced after the symptom first appeared.** Such a factor may still be an
+**exacerbating/amplifying** contributor (rank it as one, not as root). Establishing the two points is
+part of forming the hypothesis — a candidate whose timeline is unestablished stays `ungated` and may
+not be ranked as leading.
+
 ## Cross-cutting rules governing this stage
 
 **Never present an ungated hypothesis as the likely/leading cause (C-HIL-2).** Candidate (`ungated`) →
@@ -46,3 +56,7 @@ always fine. (This is the gate-before-present rule restated as a stop-for-human 
 
 **Evidence over rhetoric (B-EVID-1).** Every hypothesis's confirm/refute prediction and its ranking
 cite the observations behind them; "seems like X" is not a finding.
+
+**Verify, don't just cite (B-VER-1).** A hypothesis's confirm/refute predictions, its ranking, and any
+timeline point (B-TIME-1) are **verified against source**, not asserted from memory — including claims
+the agent just made or ones carried in a memory note. (Full rule at stage 2.)

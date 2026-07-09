@@ -80,7 +80,7 @@ invent project specifics. And **never describe a hypothesis as the root cause** 
 ## Self-check / dogfooding
 
 This skill can be run on its own artifacts: treat `METHODOLOGY.md` + `SKILL.md` + the `stages/` files as
-the thing under review and run a cold stage-3-style red-team on them (four lenses, evidence discipline).
+the thing under review and run a cold stage-3-style red-team on them (five lenses, evidence discipline).
 These files are **prompts** (position-sensitive): **non-trivial edits to either take the full
 guarded-change loop.** Standing criteria after any edit to these files: live == source (`diff`);
 SKILL ↔ METHODOLOGY ↔ stage-file consistency on every shared rule; behavior-preservation for anything

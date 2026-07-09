@@ -85,7 +85,7 @@ severity model) live written-in-full in the stage files that enforce them, not h
 | 8 — Handoff | `stages/stage-8.md` | emit diagnosis.md; hand the fix to guarded-change |
 | 9 — Fix verification | `stages/stage-9.md` | root cause resolved (not masked); 9a/9b; residuals re-check |
 
-The **red-team charter** (four lenses + discipline + provenance + diagnosis aiming + severity model) is
+The **red-team charter** (five lenses + discipline + provenance + diagnosis aiming + severity model) is
 dragonfly's **own**, in `stages/charter.md`, shared by stages 1/4/7. It was forked from guarded-change's
 charter (unconditional core) as an authoring reference and is now self-contained — there is no live
 cross-reference to guarded-change's text.

@@ -4,7 +4,7 @@
 reproduction *before* any hypothesizing. The repro is a diagnostic artifact, so it is red-teamed (via
 the triage) before it is trusted.
 
-**Read `stages/charter.md`** for the full red-team charter (four lenses + discipline + provenance +
+**Read `stages/charter.md`** for the full red-team charter (five lenses + discipline + provenance +
 severity) — the triage's guarded-change/lite pass each repro is routed through *is* its stage-1 cold
 review.
 
@@ -52,9 +52,18 @@ decides which form, **in priority order** (B-TRI-2):
 untrusted (B-TRI-3).
 
 **guarded-change-lite (C-LITE-1)** is a **single cold red-team pass of the artifact** — using
-dragonfly's own charter (`stages/charter.md`: four lenses + evidence discipline) — against a one-line
+dragonfly's own charter (`stages/charter.md`: five lenses + evidence discipline) — against a one-line
 intent + a checkable "does exactly X and exercises path P" criterion → fix → run. **It keeps the
 charter AND the provenance record** (C-LITE-2), dropping only the surrounding scaffolding (spec /
 criteria / plan / baseline / regression). Full cases invoke the guarded-change skill directly. A lite
 pass records, minimally, the artifact, the one-line intent + criterion, the verdict, and where the
 verbatim output lives, in `decisions.md`.
+
+**Fidelity check — the instrument the owner specified, not a convenient proxy (B-FID-1).** The triage
+also asks, of every instrument: does it implement the **mechanism the owner specified** — per the
+operational meaning of their loaded terms ("agent", "drive", "human", "reproduce") — or a
+convenient/pre-existing **proxy** for it? Pin each loaded term to its concrete mechanism at build time;
+an instrument that substitutes a proxy (e.g. a stateless one-shot where an *agent* was specified) is
+**untrusted until the owner confirms the substitution**, even if it passes the
+correctness/representativeness review. A definition inherited from a prior artifact or a memory note is
+a claim to re-verify (B-VER-1), not a spec.

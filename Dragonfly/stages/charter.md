@@ -1,6 +1,6 @@
 # The red-team charter (shared by stages 1, 4, 7)
 
-Dragonfly's own cold-review charter — the four lenses, the discipline that makes aggressive review
+Dragonfly's own cold-review charter — the five lenses, the discipline that makes aggressive review
 trustworthy, the diagnosis-specific aiming, the provenance record, and the severity model. Stages 1
 and 4 reach it via the diagnostic-artifact triage (the guarded-change/lite pass each repro/test is
 routed through *is* its cold review); stage 7 spawns a cold reviewer directly for the causal chain.
@@ -18,12 +18,18 @@ read access to **both the artifact under review and the underlying source** (cod
 named in the project config's `redteam_context`. Source access is load-bearing: a docs-only review can
 only catch internal inconsistency, never a claim that is confidently wrong about how the system behaves.
 
-The reviewer attacks on four **separate** lenses (kept distinct so one doesn't crowd out the others):
+The reviewer attacks on five **separate** lenses (kept distinct so one doesn't crowd out the others):
 
 1. **Factual** — does the artifact match the source? (claims vs. code/logs; cite line/file)
 2. **Logical** — flaws in the reasoning/sequencing, independent of the code.
 3. **Missed opportunity** — better approaches or tests left on the table.
 4. **Unstated assumptions & risks** — what's being taken for granted that could be false.
+5. **Fidelity** — does the artifact implement the *mechanism the owner specified*, or a convenient
+   **proxy** for it? Pin each loaded operational term in the request ("agent", "drive", "human",
+   "reproduce", …) to its concrete mechanism from owner intent; an instrument that substitutes a
+   convenient or pre-existing implementation for that mechanism is **untrusted** until the owner
+   confirms the substitution. A definition inherited from a prior artifact or a **memory note** is a
+   *claim to re-verify against owner intent*, not a spec.
 
 Discipline that makes aggressive review trustworthy:
 - **Cite or it doesn't count.** Each finding names a line/file / log row or a concrete failure scenario.
@@ -35,9 +41,16 @@ Discipline that makes aggressive review trustworthy:
   only if the review shows the specific source evidence it consulted (file:line, log rows). A clean
   factual verdict with zero source citations is treated as an **un-run** review and re-run — the guard
   against reasoning from the artifact alone and rubber-stamping it.
+- **A clean *fidelity* lens must be earned by pinning the terms.** A "no fidelity issue" verdict is
+  valid only if the review **names the loaded operational terms** in the request and, for each, states
+  the concrete mechanism it was pinned to and shows the instrument implements *that* mechanism, not a
+  proxy. A clean fidelity verdict that pins no terms is treated as an **un-run** review and re-run —
+  the same guard the factual lens carries.
 - **Spot-verify the citations themselves.** Whoever consumes the review checks a sample of the cited
   file:lines / log rows actually exist and say what's claimed (cheap: verify a few, not all). Citations
-  are the one guard defending the loop's founding failure; a fabricated citation would defeat it.
+  are the one guard defending the loop's founding failure; a fabricated citation would defeat it. And
+  for a clean *fidelity* lens, spot-check that the named term→mechanism pins are real: the term appears
+  in the request and the pinned mechanism is the one the owner meant, not a proxy.
 - **The reviewer is graded on precision** (are its findings real?), not on how many it raises.
 
 ## Diagnosis-specific aiming
@@ -49,6 +62,8 @@ The cold pass is aimed at the failure modes a hunt produces:
 - **Does the causal chain actually follow from the cited evidence**, or is it asserted? (stage 7)
 - **Root or relay — is the claimed root the deepest node the project can act on?** (stage 7)
 - **What assumption does the live hypothesis set share, and is it true?** (aimed at the whole set)
+- **Does the instrument implement the mechanism the owner specified, or a convenient proxy?** (the
+  fidelity challenge — the wrong-KIND-of-instrument failure; see B-FID-1)
 
 ## Provenance (part of the review record — unconditional)
 

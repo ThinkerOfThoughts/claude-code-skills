@@ -29,3 +29,11 @@ the carry-over to be real.
 
 **Evidence over rhetoric (B-EVID-1).** Every conclusion recorded here cites a log row / file:line /
 observed result. "Seems like X" is not a finding; "line N logged Y, which only happens when Z" is.
+
+**Verify, don't just cite — especially your own claims and memory (B-VER-1).** Every factual claim
+about the code, data, or timeline is **verified against the source** before it enters a ledger or a
+conclusion — including (especially) a claim the agent itself just made, and a definition or fact
+sitting in a **memory note** that is steering the hunt. Memory is where a convenient-but-wrong
+definition ossifies; a memory-encoded claim that drives a decision is re-verified against the source,
+not trusted because it is written down. This strengthens B-EVID-1 (cite) to cite-**and-verify**: an
+unverified assertion — however confident, however often repeated — is not a finding.

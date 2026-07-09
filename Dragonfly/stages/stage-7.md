@@ -29,6 +29,11 @@ property / third-party / not actionable — named), or (c) **not load-bearing** 
 cause. The stage-7 cold pass explicitly challenges "**root or relay?**" — "explains the symptom" at a
 relay does not satisfy stage 7.
 
+**Timeline sibling — root, or a post-dating amplifier? (A-7-4 / B-TIME-1).** A node cannot be the root
+if it was introduced *after* the symptom first appeared; the stage-7 cold pass challenges the claimed
+root's introduction point against the symptom's first-appearance point (both cited). A post-dating
+node is at most an amplifier — "found" names it as such, never as root.
+
 **Evidence-coverage sweep (A-7-5).** Before "found": every observation-ledger row tied to the `S#` is
 either **explained by the confirmed chain** (cite how) or recorded as a **residual** (named secondary
 contributor / open sub-hypothesis, ranked), carried in `diagnosis.md` + the stage-8 handoff, struck
@@ -55,7 +60,8 @@ in doubt → full. **Recorded in `decisions.md`** (B-TRI-3). **guarded-change-li
 using dragonfly's own charter against a one-line intent + "does X, exercises path P" criterion → fix →
 run, keeping charter + provenance (C-LITE-1, C-LITE-2). **A detector/readout** deciding "the symptom
 occurred" must **fire on a known-true instance AND stay silent on a known-clean one** before its
-readings are consumed (B-REP-3).
+readings are consumed (B-REP-3). The instrument/toggle also passes the **fidelity check (B-FID-1)** —
+the mechanism the owner specified, not a convenient proxy (full rule at stage 1).
 
 ## Cross-cutting rules governing this stage
 

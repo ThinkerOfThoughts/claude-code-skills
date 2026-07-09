@@ -18,3 +18,11 @@ same precedence binds any later stage that consumes this reading — 6, 7 — no
 
 **Evidence over rhetoric (B-EVID-1).** The recorded result cites the run / log row / file:line that
 earned it. "Seems like X" is not a finding.
+
+**A surprising resource signal is a tell, not just a number (B-COST-1).** When a run's cost, token
+burn, latency, or call-count comes back **surprising** (much higher/lower/different than the design
+implies), treat it as a **fidelity question** — "does my implementation match the intended design?" —
+and investigate the surprise before recording the result as trusted. The surprise is often the first
+evidence that the instrument is the wrong *kind* of thing (see B-FID-1); reporting the number without
+asking why is how a mismatched instrument's readings get consumed. (Motivating case: a ~$31 run cost
+exposed a stateless-`claude -p` instrument standing in for a specified agent.)
