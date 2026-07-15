@@ -18,7 +18,10 @@ charter given (core verbatim + task additions quoted), the exact context list (c
 stage artifacts + config `redteam_context` + spec touched-files + carried findings), the
 reviewer's verbatim output, its agent type/model, and its reported context-file hashes —
 missing any ⇒ the review is un-run. Require the **coverage challenge** (below); no such section
-⇒ lens 4 un-run.
+⇒ lens 4 un-run. For any carried-forward **escalated fidelity finding** (a prior "OWNER MUST
+RATIFY"), the reviewer's context also includes the **owner's verbatim exchange** on that finding
+— the options presented + the owner's response — since the ratification cannot be audited
+without it; its absence degrades the fidelity lens to un-run and is surfaced to the human.
 
 ## Stage-3 additions to the charter
 
@@ -49,11 +52,71 @@ look fine" verdict is valid only if the review shows, per gating criterion, whic
 it confirmed was exercised and what evidence it checked. An unsubstantiated clean label-audit
 is treated as un-run and re-run — the same guard the factual lens already carries.
 
+**Audit any owner-ratification of an escalated fidelity finding — CH11 (RAT1).** When the
+plan/spec closes an **escalated fidelity/intent finding** (a prior "OWNER MUST RATIFY") with a
+recorded owner-ruling, the reviewer **audits the ratification as an artifact**, using the owner's
+verbatim exchange. A valid ratification cites (i) the flagged axis + the options presented,
+verbatim; (ii) the owner's response, verbatim, **with a durable source (a transcript line / a
+timestamped `decisions.md` owner entry) the author did not author, so the quote is
+spot-checkable** — a re-typed "verbatim" with no source is un-spot-checkable and treated as
+unverified; (iii) a mapping showing those words select the recorded option *on the flagged axis*.
+The finding to raise (ranks ≥ major): a ruling built on a **partial or adjacent** owner answer
+that does not disambiguate the presented options — especially one resolved into the author's *own
+recommended* option — is **not ratified**; the axis must be **re-asked**, not defaulted (the
+*unanswered-question-means-missed* principle applied to ratifications). For a **multi-turn** owner
+exchange the record captures the *confirming* turn with its qualifying context, and re-ask fires
+only when *no* turn disambiguates the axis (not on the middle of a legitimate exchange). A
+stage-3 review that carries a recorded owner-ruling with **no ratification-audit section** (an
+explicit "audited, valid — owner words + source cited + mapping shown" counts) is incomplete on
+the fidelity lens and treated as un-run for it. **Spot-verify** a cited owner-quote against its
+named source, exactly as the charter's citation spot-verify already requires for code claims.
+
+**Audit the elaboration of a ratified option — CH12 (RAT2).** Where the spec **expands** a
+ratified option into detailed commitments, the reviewer checks the expansion's **load-bearing
+operative terms** trace to the owner's words / the ratified option's stated meaning. The finding
+(ranks ≥ major): an elaboration that introduces operative commitments (a mechanism, an
+"only/every/never", a division of responsibility) **not present in or entailed by** the ratified
+phrase is an **unratified inflation** — untrusted until the owner confirms the expansion, exactly
+like a substituted mechanism. A clean verdict here must name the ratified phrase's operative
+terms and show the elaboration adds none beyond them.
+
 ## Cross-cutting rules governing this stage
 
 **Nothing self-certifies (CP1).** The author of an artifact never approves it. Review is done
 by a reviewer with *no shared context* with the author (a cold subagent), so it doesn't inherit
 the author's blind spots.
+
+**A ratification is an artifact, not an assertion (RAT1).** An escalated fidelity/intent finding
+("OWNER MUST RATIFY") is closed only by a **ratification record** — the flagged axis + the
+options presented to the owner (verbatim), the owner's response (verbatim, **with a durable
+source the author did not author — a chat-transcript line (acceptable even for a just-made live
+ruling) or a timestamped, owner-attributed `decisions.md` entry — so the quote is
+spot-checkable**), and a mapping showing those words select the recorded option *on the flagged
+axis*. The test of the source is the owner's *quoted words with a locus*, not the author's
+paraphrase. A recorded "OWNER RULING: X" is the author's *reading* of owner intent and
+self-certifies nothing (CP1). It is a **new artifact authored *after* the escalation** (the
+owner answers the "OWNER MUST RATIFY", then the assistant records the ruling), so the point of
+auditing it cold (CH11) is to force that ruling back through review — the one step the loop
+otherwise leaves self-certified. *This audit exists to make the check happen, not to add
+detection:* a competent fidelity reviewer can already *detect* a fabricated or non-disambiguating
+ruling once it audits the ruling against the owner's exchange — RAT1's work is to make that audit
+**mandatory** (E3 puts the exchange in context; CH11 makes the audit a required section) and give
+it a checklist, closing the gap where a self-certified ratification reached build unreviewed. An owner answer that is **partial or
+adjacent** — it settles a sub-question but does not disambiguate the presented options against
+each other — is **not a ratification**: the loop **re-asks the flagged axis** and never resolves
+the answer into the author's own recommended option (the *unanswered-question-means-missed*
+principle). Because the record embeds the verbatim options + owner words + their **source**, it
+is genuinely **re-confirmable** — a later reader, across an autonomous run or a context
+compaction, re-checks the mapping *and the quote against its cited source* rather than inheriting
+a one-time reading or a re-typed reconstruction.
+
+**An elaboration inherits only what was ratified (RAT2).** When the spec expands a ratified
+option into detailed commitments, only what the owner's words / the ratified option's stated
+meaning **entail** carries the owner's authority. An expansion whose load-bearing operative terms
+(a mechanism, an "only/every/never", a division of responsibility) are absent from and not
+entailed by the ratified phrase is an **unratified inflation** — trusted no more than a
+substituted mechanism, and audited cold (CH12). The fix for an inflation is to confirm the
+expansion with the owner or narrow the spec back to the ratified meaning.
 
 **Evidence over rhetoric (CP2).** Every criticism cites a line/file or a concrete failure
 scenario. Where data exists, an argument from the data beats an argument from reasoning. "Seems

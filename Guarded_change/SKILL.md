@@ -54,11 +54,23 @@ stop and a human breaks the tie (see the gate files).
 ## Stop-for-human
 
 Pause and ask when: a **blocker** is about to restart the loop; a **major** appears at the
-harness (stage 8); **criteria/config are missing**; or a **gating criterion cannot be verified
-pre-ship** (build a representative harness or get named risk-acceptance — never defer silently).
+harness (stage 8); **criteria/config are missing**; a **gating criterion cannot be verified
+pre-ship** (build a representative harness or get named risk-acceptance — never defer silently);
+or an **escalated fidelity finding's owner answer does not disambiguate the flagged axis**
+(re-ask the axis rather than resolving it into the recommended option — RAT1, and under
+delegation relay the re-ask to the actual human per RAT3; see `stages/stage-4.md`).
 Refuse to guess project metrics or acceptance criteria — that's the exact failure this loop
 exists to prevent. (Full text in `stages/stage-1.5.md`, `stages/stage-4.md`,
 `stages/stage-8.md`.)
+
+**Under delegation, these stops belong to the human, not the runner (RAT3).** If a subagent is
+running this loop, every stop above **halts the subagent and returns to its orchestrator as a
+human-gate question to relay verbatim** — the subagent does not self-answer or proceed (this half
+is enforced here). The orchestrator is expected to **relay to the actual human and relay the
+verbatim answer back, never answering as the owner** — a **caller-side** obligation the loop
+cannot itself enforce (full statement + the enforceability split in `METHODOLOGY.md`
+"Human-in-the-loop"; a fidelity ratification additionally needs the owner's verbatim words +
+durable source per `stages/stage-3.md` RAT1).
 
 ## Self-check / dogfooding
 

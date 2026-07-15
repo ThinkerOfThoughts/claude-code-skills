@@ -179,6 +179,18 @@ Human acceptance of a known regression is the entry that matters most. At stage 
 also records each **gating** criterion's disposition. The operative form of this rule lives in
 the gate/harness stage files (`stages/stage-4.md`, `stages/stage-7.md`, `stages/stage-8.md`).
 
+**Ratification records.** An escalated fidelity finding (a stage-3 "OWNER MUST RATIFY") is closed
+in `1-spec.md` by a **ratification record** — the flagged axis + the options presented to the
+owner (verbatim), the owner's response (verbatim, with a durable spot-checkable source: a
+transcript line or a timestamped owner entry), and the mapping to the selected option — not a
+bare "OWNER RULING" line. A partial/adjacent owner answer is re-asked, not defaulted into the
+author's recommendation. The record is what stage 3 audits (CH11/CH12) and is re-confirmable
+across autonomous runs and compactions. **Why this exists:** the recorded ruling is a *new
+artifact the assistant authors after the escalation*, and it self-certifies nothing (CP1) — so
+the guard forces it back through a **cold audit** (the one step the loop otherwise left
+self-certified), rather than teaching a new detection the fidelity lens already has. Operative
+rule: `stages/stage-3.md` (RAT1/RAT2).
+
 Together these double as the audit trail and as context for reconstructing the work if lost.
 
 ---
@@ -188,6 +200,32 @@ Together these double as the audit trail and as context for reconstructing the w
 The skill executes stages 1–7 autonomously (reason, spawn cold reviewers, write docs, edit
 code) and runs stage 8 if the config provides the check. It **stops for a human decision** at
 any blocker (loop about to restart), any major at stage 8, a gating criterion that cannot be
-verified pre-ship, and missing criteria or config. The full stop conditions live in
-`stages/stage-1.5.md`, `stages/stage-4.md`, and `stages/stage-8.md`; everything else routes
-automatically per the severity model, reporting what it did.
+verified pre-ship, a **fidelity ratification whose owner answer does not disambiguate the flagged
+axis** (re-ask, never default to the recommended option), and missing criteria or config. The
+full stop conditions live in `stages/stage-1.5.md`, `stages/stage-4.md`, and `stages/stage-8.md`;
+everything else routes automatically per the severity model, reporting what it did.
+
+**Delegation preserves the human-in-the-loop (RAT3).** The loop's stop-for-human points are
+stops for the **actual human owner**, not for whatever agent happens to be running the loop.
+When the loop is executed by a **delegated subagent** (an orchestrator spawns a subagent to run
+the gated loop so its context stays out of the main session), the boundary between that subagent
+and the human must not absorb the question. RAT3 has two halves of **different enforceability**:
+
+- **Subagent half (skill-enforced).** On reaching any stop-for-human point, the subagent **halts
+  and returns the question verbatim** to its orchestrator — the options presented, the specific
+  unresolved axis, and (for a fidelity finding) the material needed to ratify — **marked as a
+  human-gate question to relay, not a result.** It does not resolve the point by its own judgment
+  or proceed past it. (The subagent *is* running this skill, so this half is binding here.)
+- **Orchestrator half (a caller-side obligation, not skill-enforced).** The **orchestrator relays
+  the question to the human and relays the human's verbatim answer back into the loop; it must not
+  answer a stop-for-human question as if it were the owner.** The orchestrator is not running this
+  skill, so the loop cannot *enforce* this — it lives in the caller's operating instructions and
+  is stated here as a caller expectation. An orchestrator substituting its own answer for the
+  owner's is the same untrusted substitution the fidelity lens forbids (RAT1), one level up. RAT1
+  **reinforces** (does not guarantee) this half: because a valid ratification record needs the
+  owner's verbatim words *plus a durable, spot-checkable source*, an orchestrator that answered on
+  the owner's behalf must also fabricate a spot-checkable source to pass the CH11 audit — a
+  higher, checkable bar, not an impossibility.
+
+This is what makes RAT1's **re-ask** reach the human under delegation instead of looping back into
+the agent that mis-answered.

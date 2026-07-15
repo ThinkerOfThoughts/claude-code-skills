@@ -49,6 +49,25 @@ they were addressed rather than re-deriving. Without this, a hard disagreement c
 
 ## Other rules governing this gate
 
+**An escalated fidelity finding resolves only on a passing ratification audit (RAT1/RAT2).** A
+prior "OWNER MUST RATIFY" finding counts as **resolved** for routing **only if** its ratification
+record passes the stage-3 audit — CH11 (the selection maps to the owner's verbatim words,
+spot-checked against their cited source, on the flagged axis) and CH12 (the elaboration adds no
+unratified operative commitment). If the record is absent, cites no verbatim owner selection or
+no durable source for it, rests on a **partial or adjacent** answer, or the elaboration inflates
+beyond the ratified option, the finding **stands at its escalated severity** and the loop **stops
+for the human to re-ask** the unresolved axis — it is never cleared by the presence of an "OWNER
+RULING" line alone. This is the fidelity sibling of *the reviewer's severity routes*: an author
+cannot self-clear an escalated fidelity finding by recording their own reading of owner intent.
+The recorded ratification is created *after* the stage-3 escalation, between review and build; the
+purpose of this gate is to force that ruling back through a **cold audit** rather than let it
+reach build **self-certified** — the exact CP1 failure this loop exists to prevent, in the one
+place the loop otherwise had no gate. (It is not adding detection the fidelity lens lacks — it is
+making the review of the ratification happen at all.) (Interaction with the iteration cap: a
+re-ask is already a stop-for-human, so no livelock; if a *second* owner answer is again
+non-disambiguating, the cap's human tie-break applies — the correct outcome, not a guard
+failure.) Full statement in `stages/stage-3.md` (RAT1/RAT2).
+
 **Criteria freeze (FRZ).** When gate 4 routes to build, `1.5-criteria.md` **freezes** and its
 hash (or a verbatim copy) is recorded in `decisions.md`. The freeze binds to the route-to-build
 version, which must equal the version the stage-3 reviewer read — except for gate-4 in-place
@@ -79,5 +98,7 @@ that matters most ("why did we ship this?" gets a recorded answer).
 
 The skill **stops for a human decision** at: **any blocker** (the loop is about to restart —
 confirm direction first); **missing criteria or config** needed to proceed (it refuses rather
-than guesses); and the iteration-cap / blocker-major-demotion tie-breaks above. Everything else
-it routes automatically per the severity model, reporting what it did.
+than guesses); a **non-disambiguating owner answer** to an escalated fidelity finding (re-ask the
+flagged axis, never resolve the answer into a recommended option — RAT1); and the iteration-cap /
+blocker-major-demotion tie-breaks above. Everything else it routes automatically per the severity
+model, reporting what it did.

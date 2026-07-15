@@ -25,7 +25,12 @@ others):
    "drive", "human", "reproduce", "replace", …) to its concrete mechanism from owner intent; an
    artifact that substitutes a convenient or pre-existing implementation for that mechanism is
    **untrusted** until the owner confirms the substitution. A definition inherited from a prior
-   artifact or a **memory note** is a *claim to re-verify against owner intent*, not a spec.
+   artifact or a **memory note** — or a recorded **"OWNER RULING"** closing an escalated fidelity
+   finding — is a *claim to re-verify against owner intent*, not a spec. For a recorded ruling
+   that means **auditing it as a ratification artifact** (does the owner's cited verbatim answer
+   actually *select* the recorded option on the flagged axis, or was a partial/adjacent answer
+   resolved into the author's own pick?) and **checking any elaboration of it for unratified
+   inflation** — the operative duties are RAT1 and RAT2 in `stages/stage-3.md`.
 
 Discipline that makes aggressive review trustworthy:
 - **Cite or it doesn't count.** Each finding names a line/file or a concrete failure scenario.
@@ -45,7 +50,12 @@ Discipline that makes aggressive review trustworthy:
   mechanism, not a proxy. A clean fidelity verdict that pins no terms is treated as an un-run
   review and re-run — the same guard the factual lens carries. Watch specifically for a definition
   inherited from a prior artifact or a **memory note**: it is a claim to re-verify against owner
-  intent, not a spec.
+  intent, not a spec. And where a finding carries a **recorded owner-ruling**, a clean fidelity
+  verdict must additionally show the **ratification-record audit** was done: the presented options
+  and the owner's verbatim words (with their durable source) are cited, the mapping to the recorded
+  option is confirmed to disambiguate the flagged axis, and any elaboration's operative terms are
+  traced to the ratified text. A clean verdict that trusts an "OWNER RULING" line without this
+  audit is treated as un-run and re-run.
 - **Spot-verify the citations themselves.** Whoever consumes the review checks a sample of the
   cited file:lines / log rows actually exist and say what's claimed. Citations are the one
   guard defending the loop's founding failure; a fabricated citation would defeat it, so the
