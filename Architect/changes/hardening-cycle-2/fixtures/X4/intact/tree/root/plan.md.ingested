@@ -1,0 +1,13 @@
+# Billing migration — draft (owner-authored, ingested; DO NOT EDIT)
+
+## Why
+The monolith's invoicing module blocks independent deploys.
+
+## How
+Extract invoicing behind an interface, dual-write for two weeks, then cut over.
+
+## Risks
+Dual-write drift; a partial backfill.
+
+## How we'll know it worked
+Reconciliation job reports zero drift for seven consecutive nights.

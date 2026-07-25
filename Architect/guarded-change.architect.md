@@ -21,9 +21,14 @@ redteam_context:            # priority-ordered; a cold reviewer reads these to c
           (e.g. "nested spawn may be impossible") is itself a fidelity error.
   - path: /home/zero/architect-hardening-loop/LOOP-STATE.md
     note: HARDENING RUNS ONLY — the loop's durable state: the owner's verbatim directive, the cycle
-          scope, the orchestrator calls made within it, and the OWNER QUESTIONS QUEUED (F8 — whether a
-          human must review the assembled plan). A hardening run that implements or pre-shapes F8 is
-          out of scope; check any human-gate claim against this file.
+          scope, the orchestrator calls made within it, and the OWNER RATIFICATIONS (R1 tie-break =
+          ship narrower; R2 = F8 RATIFIED **IN SCOPE**, a human reviews the assembled plan; R3 = loop
+          exits only when nothing at all surfaces). **CORRECTED 2026-07-25 ~11:20: an earlier version of
+          this note told reviewers "a hardening run that implements or pre-shapes F8 is out of scope."
+          That is now FALSE — the owner ratified F8 into scope on 2026-07-25 (see R2). Implementing the
+          assembly human gate is IN scope from cycle 2 onward; do NOT flag it as a scope violation.**
+          Check any human-gate claim against R2's ratified text — and note R2's scope is the ruling plus
+          only what it entails (RAT2: no unratified inflation).
   - path: /home/zero/.claude/plans/1-this-is-a-proud-scott.md
     note: THE APPROVED SCOPE/DECISION RECORD — source of truth for every settled decision, the
           plan-artifact spine, the on-disk layout, the recursion/orchestration model, and the
