@@ -1,0 +1,23 @@
+# Mechanical build diff (stage-6 ST6d)
+# base commit: 8d73e5dbee1eb3abbd18ba393577e14037a10f5f
+# command: git add -N <new skill files>; git diff --stat HEAD -- Architect/ (excluding changes/)
+
+ Architect/METHODOLOGY.md                          | 329 ++++++++++++++++++++++
+ Architect/README.md                               |  28 ++
+ Architect/SKILL.md                                | 112 ++++++++
+ Architect/examples/authoring-a-skill/README.md    |  29 ++
+ Architect/examples/authoring-a-skill/planning.md  |  48 ++++
+ Architect/stages/charter.md                       | 142 ++++++++++
+ Architect/stages/stage-1-frame-template-match.md  |  45 +++
+ Architect/stages/stage-2-draft-node.md            |  47 ++++
+ Architect/stages/stage-3-completeness-critic.md   |  64 +++++
+ Architect/stages/stage-4-adversarial-redteam.md   |  52 ++++
+ Architect/stages/stage-5-gate.md                  |  60 ++++
+ Architect/stages/stage-6-granularity-decompose.md |  67 +++++
+ Architect/stages/stage-7-assemble.md              |  41 +++
+ Architect/stages/stage-8-restart-resume.md        |  47 ++++
+ Architect/templates/seed/README.md                |  41 +++
+ Architect/templates/seed/decomposition-node.md    |  28 ++
+ Architect/templates/seed/generic-node.md          |  33 +++
+ Architect/templates/seed/leaf-task-spec.md        |  23 ++
+ 18 files changed, 1236 insertions(+)
