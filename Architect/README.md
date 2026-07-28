@@ -48,18 +48,45 @@ Why this beats attempt 1:
 coordination model. Also `changes/` (three guarded-change run folders) and `guarded-change.architect.md`:
 attempt-1 provenance, preserved in the archive.
 
-## Open, before attempt 2 is authored
+## Settled since the redesign
 
-1. **The human gate.** The owner agreed one is needed and called it "layer specific" — it is absent from the
-   pseudocode, which may mean it belongs in the per-project config rather than the core. Unresolved.
-2. **Crash-recovery state.** Required (a VM crash or usage cap must not force a rebuild from scratch), but
-   absent from the pseudocode. The shape that avoids attempt 1's failure: **memoize, don't coordinate** —
-   each node writes `{iteration, task, plan, division}` after computing it, keyed by its position; a restart
-   returns the memo instead of re-running. One writer per key, written after the fact, read only on resume.
-3. **One red-team pass or two.** The pseudocode has a single red-team whose mandate covers vagueness, missing
-   `task` coverage, missing contingencies, and load-bearing things neither `task` nor `plan` mentions. The
-   owner earlier ratified *two distinct passes* (completeness, then adversarial). The pseudocode supersedes
-   it in spirit; not confirmed.
+1. **The human gate is depth-scoped.** `Human_gate` blocks for the owner at every `depth <= gate_depth`,
+   **default 2**, and fires **before children spawn** — a bad cut corrupts everything beneath it, so approving
+   after the fact is worthless. Deeper/finer plans warrant more gated levels. On reject the split is
+   re-derived and re-presented.
+2. **One red-team pass, with the three-tier completeness definition moved INTO the charter.** The separate
+   completeness pass goes away, so the charter must carry the tiers explicitly or coverage is lost silently:
+   (i) the **universal spine** (the 7 sections every node fills); (ii) **Layer-2 required sections** for this
+   plan-type; (iii) the **generative tier** — load-bearing things *neither* list anticipated. Tier (iii) is
+   what catches the founding failure and is exactly what dies if completeness is left implicit in an "etc."
+   The red-team must also **assign a severity** to each finding, because `Severity()` filters on it.
+
+3. **Crash recovery: memoize, don't coordinate** — now in the spec. `Memo_read` is called **before** the node
+   claims a work-queue slot (a finished subtree should cost nothing), a partial memo resumes the loop exactly
+   where it stopped, and two checkpoints per iteration — one after `Consensus`, one at the loop foot — cap the
+   worst-case loss at a single red-team round. `node_id` is threaded so children get stable ids (`0.1`, `0.2`,
+   …) across restarts.
+
+## The spec
+
+`core-loop.md` is a **snapshot** of the owner's design spec (`~/Documents/Architect.md`, authoritative — edits
+happen there). Attempt 2 is authored against it. Re-snapshot when the owner's copy changes.
+
+## Why the recovery model is not attempt 1's
+
+**Memoize, don't coordinate.** `Memo_read(node_id)` at the top of `Node`, `Memo_write(node_id, iter, task,
+plan, division)` at each iteration. On restart you **re-walk down from the root**, not up from the crash
+point: a completed node returns its memo instantly, the walk falls through it, and you arrive at the
+in-flight node and resume it there. The parent is never "recovered" — it is an ordinary stack frame
+re-created by the replay, so **nothing needs reattaching and live-agent state is never persisted**.
+One writer per key, written after the value exists, read only by a restart of that same node.
+*What is lost in a crash:* whatever was in flight and had not returned (a leaf triple, a red-team round).
+The memo write points set that granularity — loop-foot only loses a full iteration; also writing after
+`Consensus` loses only the red-team round.
+*Contrast with attempt 1,* where disk was the **coordination** mechanism: a parent learned its children were
+done by reading a file another stage was supposed to write, which generated "which stage writes this fact,
+and when?" — the question that tripped the iteration cap twice, because the answer kept being "a stage that
+runs after the one reading it."
 
 **The installed copy at `~/.claude/skills/architect/` is still attempt 1** and still works for single-pass
 plans. That drift from this directory is intentional for now — replacing a working tool with a half-built one
