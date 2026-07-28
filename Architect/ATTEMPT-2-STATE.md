@@ -3,15 +3,22 @@
 **Read this first.** Written 2026-07-25 before a context compaction. It is the single place a fresh session
 picks up. Everything below is settled unless marked OPEN; nothing needs re-asking.
 
-**One-line status (2026-07-28):** element 1 of 6, the **charter, is BUILT but has NEVER PASSED A GATE** —
-two blockers are open. It is parked mid-loop. **The run's own resume point is
+**One-line status (2026-07-28, later):** **element 1 was RE-SCOPED by the owner** from "the red-team
+charter" (one file) to **"the agent prompt set"** — six dispatched prompts plus a manifest, under
+`Architect/stages/`. The set is **BUILT**, the two prior blockers are **CLOSED**, the **stage-8 harness is
+built and run** (76/0 clean, 63/63 mutants — the first working oracle in this project), and **3 cold
+reviewers were dispatched at gate 7**. **The run's own resume point is
 [`changes/charter-2026-07/RESUME.md`](changes/charter-2026-07/RESUME.md) — read that before touching
-anything in the run folder.** This file stays the project-level entry point; RESUME.md is the element-level one.
+anything in the run folder**, and read `changes/charter-2026-07/decisions.md`'s final entry for the
+re-scope record. This file stays the project-level entry point.
 
-> ⚠ **`Architect/stages/charter.md` no longer carries an UNVETTED DRAFT banner, and that does NOT mean it is
-> accepted.** The build had to remove the banner, because the config uses its absence as the stage-6
-> discriminator. The file is a built artifact with two open blockers against it. This is the most likely
-> misread on restart.
+> ⚠ **The set has not passed a gate yet — reviewers L, M and N were still the deciding evidence at the time
+> of writing.** And **no behavioural verification exists for any of it**; the arms are cut on the owner's
+> authority (record 1572). Text presence is not behaviour.
+>
+> ⚠ **`Architect/stages/charter.md` is now a MANIFEST, not a prompt.** It is not dispatched to any agent;
+> it holds the fork provenance and the rule-allocation table. The dispatched prompts are the other six
+> files. Absence of an `UNVETTED DRAFT` banner still does not mean "accepted."
 
 ---
 
@@ -98,7 +105,7 @@ Key commits: `3771038` attempt-1 build · `8efdca1` hardening paused · `8ca7197
 
 | File | Status |
 |---|---|
-| `stages/charter.md` | **BUILT, 2 BLOCKERS OPEN, never passed a gate.** 237 lines. The draft it replaced is at `git show 67d8c3f:Architect/stages/charter.md`. **No banner ≠ accepted** — see the warning at the top of this file. |
+| `stages/` — **seven files, 713 lines** | The re-scoped element 1: `charter.md` (manifest, not dispatched) + six dispatched prompts `charter-common.md`, `redteam.md`, `divider.md`, `combiner.md`, `leaf.md`, `node.md`. **BUILT, 2 BLOCKERS OPEN, gate 4 skipped, never passed a gate.** The 237-line monolith it replaced is at `git show 711932f:Architect/stages/charter.md`. **No banner ≠ accepted.** |
 | `changes/charter-2026-07/` | The element-1 run: 9 stage docs, 18 records incl. **11 verbatim reviewer records A–K**, `RESUME.md`. `oracles/` and `fixtures/` are empty because nothing was built. |
 | `templates/seed/*.md` | Attempt-1 artifacts, carried over. The 7-section spine. Not yet revised for attempt 2. |
 | `examples/authoring-a-skill/` | Attempt-1 artifact. Shape of a Layer-2 config. |
@@ -174,7 +181,37 @@ artifact that has since been demolished. The ones that still matter are carried 
 free text; and the orchestrator later **inflated** his "means nothing" into cap-bounce immunity, which he
 never said. Do not inherit that inflation.
 
+## 6b. ⚠ AN AUTHORITY THE ORCHESTRATOR INVENTED — UNRESOLVED as of 2026-07-28 20:00
+
+§1b consequence 3 below states *"per-element harnesses are instruments, not gates"* and *"do not have to be
+statistically powerful."* **That is NOT in record 1572.** Verified by direct word search of the record:
+*instrument*, *harness*, *gate*, *statistical*, *element* — **zero hits.** The owner said the done criteria
+is planning Data-Distiller and that on failure you fix the first broken link. The rest is the
+**orchestrator's inference, propagated into four documents as owner authority**, and it is what justified
+**cutting every behavioural arm** from the charter harness.
+
+Caught by cold reviewer L in the element-1 re-scope run, confirmed by the runner, verified independently by
+the orchestrator. Same failure class as the struck ~85% statistic, and precisely the **RAT2 unratified
+inflation** rule this very element ships.
+
+**Consequence: the harness cut is UNRATIFIED.** It may well be right — the owner's complaint about the
+measurement-apparatus problem sits in the same message — but nobody has ruled on it. **Do not cite record
+1572 for it.** Treat §1b consequence 3 as a proposal awaiting a ruling, and re-ask rather than defaulting.
+
 ## 7. OPEN
+
+- **Three questions put to the owner at 19:40, UNANSWERED at park:**
+  1. **Does the harness cut stand?** See §6b — its stated authority was fabricated.
+  2. **`Consensus` arity and semantics.** Spec L22 defines it 2-of-3 with the odd plan discarded; L79 calls
+     it on **three leaves at the same task** (a vote fits) and L97 on **two children holding *different*
+     tasks** (`division.first()`, `division.second()`). On the node path a majority vote is a **category
+     error, not merely undefined for n=2** — taken literally it discards half the plan. Options floated,
+     none chosen: spawn three children; give the node path a distinct integrate-the-halves function; make
+     `Consensus` arity-aware. **Owner's design, owner's call.**
+  3. **The demotion port is half-landable.** Owner record 1449 said to copy guarded-change's severity
+     mechanism verbatim. The human-tie-break half now works via `Ask_human`. The *contest-via-a-logged-entry*
+     half has no destination: `grep -ic 'decision log'` on the spec returns **0**, and the memo cannot serve
+     (single-writer, per-node, read only by that node's own restart). The rule is inert as written.
 
 - **ELEMENT 1 RE-SCOPED 2026-07-28 evening, owner ruling.** From "the red-team charter" to **"the agent
   prompt set."** His instruction: *"see if the charter can be sub-divided into different files for different
