@@ -92,9 +92,9 @@ A few deliberate design choices worth knowing:
 ## How it's structured (two layers)
 
 - **Layer 1 — the agnostic core.** The loop, the representativeness gate, the triage, the ledgers,
-  the reviewer charter (reused from guarded-change), the severity model, the default cap. Knows
-  nothing about any specific project. This is `METHODOLOGY.md` (the spec) + `SKILL.md` (what Claude
-  Code executes).
+  the reviewer charter (dragonfly's own — forked from guarded-change, now self-contained), the
+  severity model, the default cap. Knows nothing about any specific project. This is
+  `METHODOLOGY.md` (the spec) + `SKILL.md` (what Claude Code executes).
 - **Layer 2 — a per-project config.** Where the code lives, how to reproduce, where the logs/ledgers
   land, the cap `N`, and the priority-ordered `redteam_context`. One small file per repo
   (`dragonfly.companion.md` is a worked example).
@@ -125,7 +125,7 @@ already use can run it, the cheapest version is to let it.
 | Job | *make* a change correctly | *find* the bug correctly |
 | "Done" bar | conformance to criteria set before building | root cause reproduced + caused + toggled |
 | Hands off to | — | guarded-change (for the fix) |
-| Shared machinery | cold-subagent red-team, four-lens charter, evidence discipline, severity model, iteration cap, two-layer config | (all reused — not forked) |
+| Shared machinery | cold-subagent red-team, five-lens charter, evidence discipline, severity model, iteration cap, two-layer config | (design shared; the charter is forked from guarded-change — self-contained, no live dependency) |
 
 A bug hunt with a fix is the two composed: **Dragonfly finds it → guarded-change fixes it →
 Dragonfly verifies the cause is gone.**
