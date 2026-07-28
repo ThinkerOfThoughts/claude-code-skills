@@ -69,8 +69,9 @@ attempt-1 provenance, preserved in the archive.
 
 ## The spec
 
-`core-loop.md` is a **snapshot** of the owner's design spec (`~/Documents/Architect.md`, authoritative — edits
-happen there). Attempt 2 is authored against it. Re-snapshot when the owner's copy changes.
+The design spec lives at **`~/Documents/Architect.md`** — owner-authored, single copy, deliberately **not**
+duplicated into this repo. Attempt 2 is authored against it. (A snapshot was briefly kept here and removed:
+two copies of a spec is the drift problem this project spent a day on.)
 
 ## Why the recovery model is not attempt 1's
 
@@ -88,6 +89,6 @@ done by reading a file another stage was supposed to write, which generated "whi
 and when?" — the question that tripped the iteration cap twice, because the answer kept being "a stage that
 runs after the one reading it."
 
-**The installed copy at `~/.claude/skills/architect/` is still attempt 1** and still works for single-pass
-plans. That drift from this directory is intentional for now — replacing a working tool with a half-built one
-would be worse. Re-sync when attempt 2 is ready.
+**Nothing is installed.** `~/.claude/skills/architect/` was removed on 2026-07-25: attempt 1 had been synced
+there after it passed stage-8 conformance, and left there after the dogfood found a blocker in its recursive
+path — so an unfinished skill sat live and triggerable. Install only when attempt 2 is actually finished.
