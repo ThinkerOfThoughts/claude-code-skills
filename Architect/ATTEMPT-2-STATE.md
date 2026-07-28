@@ -176,6 +176,17 @@ never said. Do not inherit that inflation.
 
 ## 7. OPEN
 
+- **FIRST THING TOMORROW (owner, 2026-07-28, end of day): "look at sub-deviding things."** Raised in
+  response to the size comparison below — **not yet analysed, and deliberately left un-acted-on.** The
+  prompting facts: Architect's charter is now **237 lines**, versus 143 for attempt 1, 103 for the
+  guarded-change fork source and 90 for Dragonfly. Roughly a third of the growth is the **RAT1/RAT2
+  inlining** and the **`origin.kind` provenance block**, both of which landed in the charter *only because
+  Architect has no stage files to point at* — guarded-change keeps them in `stages/stage-3.md`. Every cold
+  reviewer reads the charter verbatim, so length is a real cost, not a cosmetic one. The open question is
+  whether Architect should be subdivided into more files (its own stage/reference files, so the charter
+  carries the review discipline and nothing else) — which also bears on elements 4 and 5, still unwritten.
+  **Do not treat this as a decision already made in either direction.**
+
 - **The config's `redteam_context` is missing load-bearing paths — ORCHESTRATOR-OWNED, fix in element 3.**
   `guarded-change.architect.md` lists 8 paths. `Guarded_change/stages/{stage-1.5,stage-3,stage-4,stage-8}.md`
   are **not** among them, yet Architect's charter cites them as the authority for RAT1/RAT2, the severity
