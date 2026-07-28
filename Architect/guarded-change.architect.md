@@ -55,12 +55,19 @@ redteam_context:            # priority-ordered; a cold reviewer reads these to c
           states explicitly what was carried and what was "deliberately not carried." Architect's must
           meet this bar.
   - path: /home/zero/Desktop/claude-code-skills/.claude/worktrees/recursing-visvesvaraya-b40a0c/Architect/stages/charter.md
-    note: THE ARTIFACT UNDER CHANGE — but read the banner: it is an **UNVETTED DRAFT with NO standing**,
-          hand-written freehand in the main session outside this loop and never cold-reviewed. It is a
-          PROPOSAL, not a baseline and not a spec. Do NOT treat its assertions as settled, do NOT preserve
-          a rule merely because it appears there, and do NOT rate a finding lower because "the draft
-          already says this." Anything in it that is not traceable to `~/Documents/Architect.md`, to the
-          fork source, or to a ratified owner ruling is the author's invention and is fair game.
+    note: THE ARTIFACT UNDER CHANGE. **Its standing depends on the stage, and you must check which file
+          you are actually holding** — the path is the same before and after the build.
+          BEFORE THE BUILD (stages 0-4): this path holds the pre-run DRAFT, which carries an UNVETTED
+          DRAFT banner at the top. That draft was hand-written freehand in the main session outside this
+          loop and never cold-reviewed. It is a PROPOSAL with NO standing: do NOT treat its assertions as
+          settled, do NOT preserve a rule merely because it appears there, and do NOT rate a finding lower
+          because "the draft already says this." Anything in it not traceable to `~/Documents/Architect.md`,
+          to the fork source, or to a ratified owner ruling is the author's invention and is fair game.
+          AFTER THE BUILD (stages 6-8): this path holds THIS RUN'S OUTPUT and the banner is gone — the
+          build removes it. That artifact is the loop's product, reviewed on its own merits against
+          `1.5-criteria.md` and the baseline. **Do not discount it as a draft; the discount above applied
+          to the file it replaced.** The banner's presence or absence is the discriminator: if it is
+          there, you are holding the draft.
   - path: /home/zero/Desktop/claude-code-skills/.claude/worktrees/recursing-visvesvaraya-b40a0c/Architect/ATTEMPT-2-STATE.md
     note: The resume point: settled design, owner rulings WITH TRANSCRIPT LOCI, and §8 "failure modes this
           project actually produced" — hunt those six. NOTE its own §6 caveat: it is an agent-written file
@@ -74,9 +81,16 @@ redteam_context:            # priority-ordered; a cold reviewer reads these to c
           definition ~1175. Records are JSON lines; index N = the Nth line.
   - path: /home/zero/architect-dogfood-2026-07-24/FINDINGS.md
     note: Attempt 1's dogfood findings — evidence about how cold reviewers actually behaved on this
-          artifact, including the measured singleton rate (~85% of findings caught by exactly one
-          reviewer) that the Union-not-majority-vote rule rests on. Read it to check that claim rather
-          than accepting the number because the draft states it.
+          artifact, including per-finding convergence counts ("3/3", "2 angles", "adversarial") which are
+          the real record of how often a finding was caught by one reviewer versus several.
+          **CORRECTION 2026-07-28:** an earlier version of this note asserted "the measured singleton rate
+          (~85% of findings caught by exactly one reviewer)" as fact. **That statistic has no source.** It
+          appears in no file this project did not author about itself — not here, not in
+          `~/architect-hardening-loop/LOOP-STATE.md`. It was propagated by the orchestrator from a summary
+          into four documents and then handed to reviewers as measurement. Do not cite it; if a
+          convergence claim is needed, derive it from this file's per-finding counts and show the
+          derivation. The Union-not-majority-vote rule does NOT depend on it: it rests on the owner's spec
+          (`~/Documents/Architect.md` L20, "DISCARDS NOTHING… A finding one reviewer caught is signal").
   - path: /home/zero/Desktop/claude-code-skills/.claude/worktrees/recursing-visvesvaraya-b40a0c/Architect-Attempt-1/stages
     note: ARCHIVED AND SUPERSEDED — attempt 1's stage files, including its two-pass charter. Read ONLY to
           see what was tried and why it was dropped. Never a source of authority: attempt 1's structure

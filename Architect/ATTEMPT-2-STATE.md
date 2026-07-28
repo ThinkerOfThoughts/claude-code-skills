@@ -84,8 +84,16 @@ node_id)`. What the pseudocode alone does not make obvious:
 - **Slot inheritance** — a child runs inside its parent's queue slot, so siblings serialize and only leaf
   triples run concurrently. This deletes the entire shared-mutable-state class.
 - **`Consensus` for plans, `Union` for issues.** Majority-vote is right for plans (one coherent plan out) and
-  **wrong for findings**: ~85% of attempt 1's findings were caught by exactly one reviewer, and several
-  single-reviewer findings were the most valuable of their round.
+  **wrong for findings** — the spec's own reason: "DISCARDS NOTHING… A finding one reviewer caught is
+  signal" (`~/Documents/Architect.md` L20).
+  > **CORRECTION 2026-07-28.** This bullet used to read "~85% of attempt 1's findings were caught by exactly
+  > one reviewer." **That statistic has no source.** It appears in no file this project did not author about
+  > itself — not in `~/architect-dogfood-2026-07-24/FINDINGS.md`, not in `~/architect-hardening-loop/`. The
+  > orchestrator propagated it from a summary into this file, `README.md`, `guarded-change.architect.md` and
+  > the charter draft, and then handed it to cold reviewers as measurement; the charter run's reviewer A
+  > caught it. This is §8 failure mode 1 (self-certification) committed by the orchestrator. `FINDINGS.md`
+  > records **per-finding convergence counts** ("3/3", "2 angles", "adversarial"), not a rate — derive from
+  > those and show the derivation, or make the argument without a number.
 - **Granularity floor**, threaded to three places: `Divisible` (tree depth), `Spawn_leaf` (step fineness),
   and — load-bearing — `Spawn_redteam` (what counts as "vague"). Without the third the red-team *manufactures*
   runaway subdivision: "you didn't say how to grip the handle" becomes an issue, the issue becomes the next

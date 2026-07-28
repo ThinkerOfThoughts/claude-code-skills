@@ -28,8 +28,11 @@ Why this beats attempt 1:
   triples run concurrently. The entire shared-mutable-state problem disappears.
 - **Termination is the red-team going quiet**, not a gate table.
 - **`Consensus` for plans, `Union` for issues.** Majority-vote is right for plans (one coherent plan out) and
-  wrong for findings: measured across attempt 1's runs, ~85% of findings were caught by exactly one reviewer,
-  and several single-reviewer findings were the most valuable of the round.
+  wrong for findings — per the spec, "a finding one reviewer caught is signal"
+  (`~/Documents/Architect.md` L20). *(An earlier version of this line cited "~85% of findings caught by
+  exactly one reviewer" as measured across attempt 1's runs. **That statistic has no source** and was struck
+  on 2026-07-28; `FINDINGS.md` records per-finding convergence counts, not a rate. The rule stands on the
+  spec, which does not depend on the number.)*
 - **A granularity floor**, set per run and threaded down: *"a step a competent practitioner can execute
   without further planning."* It bounds three things — how deep `Divisible` goes, how fine a leaf writes its
   steps, and **what the red-team is allowed to call "vague."** The third is the one that matters: without it
