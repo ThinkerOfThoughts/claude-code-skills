@@ -1,5 +1,10 @@
 # The red-team charter
 
+> ⚠ **UNVETTED DRAFT — not the shipped charter.** Written freehand in the main session on 2026-07-25,
+> outside the guarded-change loop and never cold-reviewed. It is an **input** to attempt 2's guarded-change
+> build (spec → criteria → plan → red-team → build → red-team → harness), not an output of it. Remove this
+> banner only when the loop has produced and reviewed it. Until then, nothing should be built against it.
+
 The ONE copy of Architect's cold-review discipline. Every cold reviewer Architect dispatches reads this
 core **verbatim**; each caller adds its own aiming on top (see "The two callers" at the end).
 

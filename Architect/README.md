@@ -38,7 +38,7 @@ Why this beats attempt 1:
 
 | Kept | Why |
 |---|---|
-| `stages/charter.md` | The cold-review discipline (lenses, cite-or-it-doesn't-count, a clean verdict must be *earned*) is method, not plumbing. **Needs trimming:** its separate sixth "Completeness" lens folds into the single red-team mandate. |
+| `stages/charter.md` | The cold-review discipline (lenses, cite-or-it-doesn't-count, a clean verdict must be *earned*) is method, not plumbing. **Now an UNVETTED DRAFT** rewritten for the one-pass loop — authored freehand outside guarded-change, so it is an *input* to attempt 2's build, not an output. Completeness stays a **distinct lens**: dissolving it into a general mandate is how the generative tier dies quietly. |
 | `templates/seed/*.md` | The 7-section plan spine is the floor a leaf fills in — the founding failure was a silently missing section, and `task`-coverage alone would not have caught it. |
 | `examples/authoring-a-skill/` | The shape of a per-project Layer-2 config. |
 
@@ -61,7 +61,10 @@ attempt-1 provenance, preserved in the archive.
    what catches the founding failure and is exactly what dies if completeness is left implicit in an "etc."
    The red-team must also **assign a severity** to each finding, because `Severity()` filters on it.
 
-3. **Crash recovery: memoize, don't coordinate** — now in the spec. `Memo_read` is called **before** the node
+3. **No backstop on the loop.** The owner ruled: trust the blocker|major filter to terminate it, and fix
+   that later if it proves to be a problem. So there is deliberately **no** "same class survives N iterations
+   → stop" cap. (Attempt 1's cap tripped twice, so this is a known, accepted risk rather than an oversight.)
+4. **Crash recovery: memoize, don't coordinate** — now in the spec. `Memo_read` is called **before** the node
    claims a work-queue slot (a finished subtree should cost nothing), a partial memo resumes the loop exactly
    where it stopped, and two checkpoints per iteration — one after `Consensus`, one at the loop foot — cap the
    worst-case loss at a single red-team round. `node_id` is threaded so children get stable ids (`0.1`, `0.2`,
