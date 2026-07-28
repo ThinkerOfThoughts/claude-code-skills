@@ -1,5 +1,9 @@
 # Architect — attempt 2 (rebuild in progress)
 
+**Resuming after a break? Read [`ATTEMPT-2-STATE.md`](ATTEMPT-2-STATE.md) first** — it is the single
+resume point: the build plan, the settled design, the owner rulings with transcript loci, and what is
+vetted (nothing yet).
+
 **State: partially demolished, deliberately.** Attempt 1 was built, shipped, dogfooded, and then spent
 three hardening passes failing at the same gate. The owner wrote out the skill's central logic as ~60 lines
 of pseudocode (`~/Documents/Architect.md`), and the comparison was decisive: attempt 1 had implemented a
