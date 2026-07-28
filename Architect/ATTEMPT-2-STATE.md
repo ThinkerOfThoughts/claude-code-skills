@@ -21,6 +21,34 @@ criteria set — the *measurement apparatus* became the thing that kept failing.
 Elements, in dependency order: **charter** → **the 7-section spine** (`templates/seed/`) → **Layer-2 config
 contract** → **router (`SKILL.md`)** → **methodology/reference doc** → then the whole-skill run.
 
+## 1b. THE DONE CRITERIA — owner-set, record **1572** (2026-07-28)
+
+> "The done criteria for Architect is that it can create a detailed plan to implement Data_Distiller. If it
+> can do that, we call it created. If it runs on that and gets stuck, or produces garbage, then we fix the
+> first link in the chain that broke and try again, repeat until nothing breaks and the results are good
+> (they don't need to match what was used to make Data_Distiller, the goal is for equivalence or better,
+> not sameness)."
+
+**This is the acceptance test for the whole skill, and it replaces "prove each element behaviourally" as
+the bar that decides whether Architect exists.** Read three consequences off it:
+
+1. **The test is end-to-end and real**: run Architect on "plan the implementation of Data-Distiller" and
+   judge the plan it produces. Data-Distiller already exists, so its actual plan is available as a
+   reference — but the bar is **equivalence or better, explicitly not sameness**. A plan that reaches the
+   same quality by a different route passes. Do not build a diff-against-the-original oracle; that would
+   test sameness, which the owner ruled out.
+2. **The repair rule is first-link-that-broke**, not full-restart and not fix-everything: run it, find the
+   earliest point in the chain that failed, fix that, run again. Repeat until it completes and the output
+   is good.
+3. **Per-element harnesses are therefore instruments, not gates.** They exist to catch gross defects early
+   and cheaply. They do **not** have to be statistically powerful, and an element does not need its own
+   behavioural proof to proceed — the end-to-end run is what proves it. This directly answers the failure
+   that produced this ruling: the charter element burned 34 cold agents and two gate-4 bounces on
+   behavioural arms whose own reviewers concluded had *"no path to done, only a path to a halt."*
+   **When a per-element harness bounces twice, cut the harness — do not strengthen it.** See the standing
+   TODO in `~/.claude/CLAUDE.md` ("the measurement-apparatus problem"), which this project is the third
+   recorded instance of.
+
 ## 2. Process rules — non-negotiable, these were violated and it cost real work
 
 - **The guarded-change loop runs in a SUBAGENT. The main session orchestrates only** — shepherds the
