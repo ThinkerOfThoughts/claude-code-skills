@@ -1,0 +1,72 @@
+# ruleplace.sh probe table — AUTHOR-WRITTEN, not generated.
+# Each probe encodes a criterion from 1.5-criteria-v2.md, which is a human judgement; there is no source to
+# generate it from. It is therefore NOT independent evidence that the criteria are covered — only that the
+# rules it names sit in the files it names. The B01-B19 fork-fidelity probes are generated separately, from
+# charter.md's own allocation table, by ruleplace.sh's `fidelity` mode.
+#
+# Columns, tab-separated:
+#   ID  MODE  FILE  ANCHOR  PATTERN
+# MODE:
+#   present     PATTERN must match the normalized text of FILE
+#   absent      PATTERN must NOT match the normalized text of FILE
+#   absent-set  PATTERN must NOT match the normalized text of ANY file in the set (FILE is ignored, use -)
+#   absent-dispatched  same, but over the six DISPATCHED files only -- charter.md is a manifest that is
+#               never given to an agent, so a pointer it contains cannot dangle in anyone's prompt.
+# ANCHOR is a literal substring used by mutation-test.sh to build the deletion/relocation mutant.
+#   Use "-" for absent/absent-set rules (their mutant is insertion, see mutants.tsv).
+#
+N-01a	present	charter.md	Forked from	Forked from Guarded_change/stages/charter.md @ 8d73e5d
+N-01b	present	charter.md	0e73bacf3af87d8e852e3a9723deda8cdd54f102de54af3880456f7024adc590	sha256 0e73bacf3af87d8e852e3a9723deda8cdd54f102de54af3880456f7024adc590
+N-01c	present	charter.md	CARRIED: the five lenses	CARRIED: the five lenses
+N-01d	present	charter.md	CHANGED — each difference	CHANGED . each difference stated
+N-01e	present	charter.md	DELIBERATELY NOT CARRIED	DELIBERATELY NOT CARRIED
+N-02	absent-set	-	-	UNVETTED DRAFT
+N-04a	present	charter-common.md	the sha256 of each	the sha256 of each context file you read
+N-04b	present	charter-common.md	treated as un-run	record missing any of these means the work is treated as un-run
+N-04c	present	charter-common.md	bounded by the function that spawned you	bounded by the function that spawned you
+N-04d	present	charter-common.md	quoted in your record as such	quoted in your record as such
+N-05a	present	redteam.md	the task, the plan, and the granularity floor	Exactly: the task, the plan, and the granularity floor
+N-05b	present	divider.md	Exactly: the task and the granularity floor	Exactly: the task and the granularity floor
+N-05c	present	leaf.md	the plan you are to fill out	the task, the plan you are to fill out, and the granularity floor
+N-05d	present	node.md	your depth, and your	the granularity floor, your depth, and your node_id
+N-05e	present	combiner.md	the vector your function was called with	the vector your function was called with
+N-05f	present	node.md	Human_gate	Human_gate
+N-05g	present	node.md	Memo_read(node_id) runs BEFORE	Memo_read.node_id. runs BEFORE you claim a work-queue slot
+N-05h	present	node.md	inherit your parent's	inherit your parent.s work_queue slot
+N-06a	present	charter-common.md	A role file only ever ADDS	A role file only ever ADDS
+N-06b	present	charter-common.md	defect in the prompt set	that is a defect in the prompt set
+N-06c	present	charter.md	which roles can act on this rule	which roles can act on this rule
+N-07	present	redteam.md	## The six lenses	The six lenses
+N-08a	present	redteam.md	the generative sweep	.iii. the generative sweep
+N-08b	present	redteam.md	floor, not the finding	Ticking .i. and .ii. is the floor, not the finding
+N-09a	present	charter-common.md	Apply the floor you were given	Apply the floor you were given, not one you infer
+N-09b	present	charter-common.md	no backstop cap	There is deliberately no backstop cap
+N-09c	present	redteam.md	It is finished	A step already at or below the floor is NOT vague. It is finished
+N-09d	present	leaf.md	Never write below the floor	Never write below the floor
+N-09e	present	divider.md	Neither half may fall below the floor	Neither half may fall below the floor
+N-10a	present	charter-common.md	or is unverifiable	omits a load-bearing element of the task, cannot be executed as written, or is unverifiable
+N-10b	present	charter-common.md	recorded against the plan but not looped on	recorded against the plan but not looped on
+N-10c	present	charter-common.md	treated as not filed	A finding with no severity is unusable and is treated as not filed
+N-10d	present	charter-common.md	Borderline is a human decision	Borderline is a human decision
+N-10e	absent	redteam.md	-	nitpick . Style, wording, clarity
+N-11a	present	node.md	Demoting a	Demoting a blocker or major requires the owner
+N-11b	present	node.md	silent unilateral demotion is a violation	silent unilateral demotion is a violation and the reviewer.s severity stands
+N-11c	present	redteam.md	No contest channel exists for your	No contest channel exists for your role
+N-11d	absent-set	-	-	(logged|entry|recorded) [a-z ]*in the run.s decision log
+N-12a	present	combiner.md	DISCARD NOTHING	DISCARD NOTHING
+N-12b	present	combiner.md	Marking is not demoting	Marking is not demoting
+N-12c	present	combiner.md	passes to	keeps the severity its reviewer assigned and passes to Severity on that severity
+N-12d	present	combiner.md	an unchecked citation is not thereby a verified one	an unchecked citation is not thereby a verified one
+N-12e	present	combiner.md	report every citation as	report every citation as .*unchecked
+N-12f	present	combiner.md	You filter. You do not re-rank	You filter. You do not re-rank
+N-13a	present	redteam.md	## RAT1	RAT1 . audit a recorded owner-ruling as an artifact
+N-13b	present	redteam.md	## RAT2	RAT2 . audit the elaboration of a ratified option
+N-13c	present	redteam.md	re-asked, not defaulted	The axis must be re-asked, not defaulted
+N-13d	present	redteam.md	unratified inflation	unratified inflation
+N-13e	present	charter-common.md	only admissible source	the harness-authored session transcript is the only admissible source
+N-13f	present	charter.md	NARROWED	NARROWED . the durable source for an owner quote
+N-17	absent-dispatched	-	-	stages/stage-[0-9]
+N-18	absent-set	-	-	85%
+N-19a	present	charter-common.md	Findings are unioned, never majority-voted	Findings are unioned, never majority-voted
+N-19b	present	redteam.md	Do not self-censor a lone observation	Do not self-censor a lone observation
+N-19c	present	combiner.md	Dedup only exact restatements	Dedup only exact restatements
