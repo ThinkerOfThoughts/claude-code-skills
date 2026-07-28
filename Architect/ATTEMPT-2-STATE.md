@@ -165,6 +165,15 @@ never said. Do not inherit that inflation.
 
 ## 7. OPEN
 
+- **The config's `redteam_context` is missing load-bearing paths — ORCHESTRATOR-OWNED, fix in element 3.**
+  `guarded-change.architect.md` lists 8 paths. `Guarded_change/stages/{stage-1.5,stage-3,stage-4,stage-8}.md`
+  are **not** among them, yet Architect's charter cites them as the authority for RAT1/RAT2, the severity
+  model and the earned-clean rules. The charter run hit this twice: both times the runner had to read
+  out-of-set to check its own citations, and the second time it correctly quoted them as B15 supplementary
+  context instead. **Do not amend the config mid-run** — changing `redteam_context` under a frozen criteria
+  set is moving the goalposts. Fix it when element 3 (the Layer-2 config contract) is built, which is the
+  element that owns this question anyway.
+
 - **Draft PR body** still describes attempt 1 end-to-end. Needs rewriting for attempt 2.
 - **`templates/seed/*` and `examples/` are attempt-1 artifacts** carried over unexamined. They are build
   elements in their own right, not settled inputs.
