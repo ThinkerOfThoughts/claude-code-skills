@@ -176,16 +176,25 @@ never said. Do not inherit that inflation.
 
 ## 7. OPEN
 
-- **FIRST THING TOMORROW (owner, 2026-07-28, end of day): "look at sub-deviding things."** Raised in
-  response to the size comparison below — **not yet analysed, and deliberately left un-acted-on.** The
-  prompting facts: Architect's charter is now **237 lines**, versus 143 for attempt 1, 103 for the
-  guarded-change fork source and 90 for Dragonfly. Roughly a third of the growth is the **RAT1/RAT2
-  inlining** and the **`origin.kind` provenance block**, both of which landed in the charter *only because
-  Architect has no stage files to point at* — guarded-change keeps them in `stages/stage-3.md`. Every cold
-  reviewer reads the charter verbatim, so length is a real cost, not a cosmetic one. The open question is
-  whether Architect should be subdivided into more files (its own stage/reference files, so the charter
-  carries the review discipline and nothing else) — which also bears on elements 4 and 5, still unwritten.
-  **Do not treat this as a decision already made in either direction.**
+- **ELEMENT 1 RE-SCOPED 2026-07-28 evening, owner ruling.** From "the red-team charter" to **"the agent
+  prompt set."** His instruction: *"see if the charter can be sub-divided into different files for different
+  types of agent, i.e. one for the red-team, one for the leaf agents, one for the combiner (or whatever its
+  called now), one for the node agents, one for the divider, along with one main one that has the information
+  needed by all of them"* — then **"Go for it."**
+  **What the analysis found:** the 237-line charter is ~90% red-team material with other roles' instructions
+  buried in it as asides (the spot-verify rule instructs `Union` but lives where only reviewers read it; the
+  demotion rule tells the node when to call `Ask_human`). And **three of six roles — leaf, node, combiner —
+  had no instructions anywhere at all**, existing only as pseudocode signatures. So this is not a refactor;
+  it is writing the missing half of the skill. The monolith *looked* complete, which is why nobody noticed.
+  **Target:** `charter-common.md` + `redteam.md` + `divider.md` + `combiner.md` + `leaf.md` + `node.md`.
+  **Governing rule, not negotiable:** common is included **verbatim**; role files are **additions only and
+  never restate a common rule** — if a role file must *modify* a common rule, the rule was never common.
+  This is the charter's own composition rule (B19) applied to the file set, and it is what stops six files
+  drifting. Generalised to all multi-agent skills in `~/.claude/CLAUDE.md`.
+  **The two open blockers are absorbed, not excused:** the self-contradicting durable-source clause is fixed
+  in `charter-common.md` against the spec (which outranks `stage-3.md`); and the frozen-criterion conflict is
+  resolved by the freeze being **legitimately re-taken** under a re-scope — recorded as such, not quietly
+  edited.
 
 - **The config's `redteam_context` is missing load-bearing paths — ORCHESTRATOR-OWNED, fix in element 3.**
   `guarded-change.architect.md` lists 8 paths. `Guarded_change/stages/{stage-1.5,stage-3,stage-4,stage-8}.md`
