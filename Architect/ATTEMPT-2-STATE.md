@@ -3,8 +3,15 @@
 **Read this first.** Written 2026-07-25 before a context compaction. It is the single place a fresh session
 picks up. Everything below is settled unless marked OPEN; nothing needs re-asking.
 
-**One-line status:** the design is complete and owner-ratified; **nothing has been built yet**; the next
-action is a **guarded-change run, in a subagent, on ONE element** (start with the charter).
+**One-line status (2026-07-28):** element 1 of 6, the **charter, is BUILT but has NEVER PASSED A GATE** —
+two blockers are open. It is parked mid-loop. **The run's own resume point is
+[`changes/charter-2026-07/RESUME.md`](changes/charter-2026-07/RESUME.md) — read that before touching
+anything in the run folder.** This file stays the project-level entry point; RESUME.md is the element-level one.
+
+> ⚠ **`Architect/stages/charter.md` no longer carries an UNVETTED DRAFT banner, and that does NOT mean it is
+> accepted.** The build had to remove the banner, because the config uses its absence as the stage-6
+> discriminator. The file is a built artifact with two open blockers against it. This is the most likely
+> misread on restart.
 
 ---
 
@@ -91,7 +98,8 @@ Key commits: `3771038` attempt-1 build · `8efdca1` hardening paused · `8ca7197
 
 | File | Status |
 |---|---|
-| `stages/charter.md` | **UNVETTED DRAFT** (banner in file). Rewritten for the one-pass loop. The first build element. |
+| `stages/charter.md` | **BUILT, 2 BLOCKERS OPEN, never passed a gate.** 237 lines. The draft it replaced is at `git show 67d8c3f:Architect/stages/charter.md`. **No banner ≠ accepted** — see the warning at the top of this file. |
+| `changes/charter-2026-07/` | The element-1 run: 9 stage docs, 18 records incl. **11 verbatim reviewer records A–K**, `RESUME.md`. `oracles/` and `fixtures/` are empty because nothing was built. |
 | `templates/seed/*.md` | Attempt-1 artifacts, carried over. The 7-section spine. Not yet revised for attempt 2. |
 | `examples/authoring-a-skill/` | Attempt-1 artifact. Shape of a Layer-2 config. |
 | `README.md` | Orientation for the rebuild. |
@@ -148,6 +156,9 @@ agent-written file (including this one) is **not**. Loci are record indices in
 
 | # | Ruling | Locus |
 |---|---|---|
+| **Done criteria** | Architect is created when it can plan Data-Distiller; equivalence or better, **not sameness**; on failure fix the first broken link and re-run | **1572** |
+| **Six lenses** | rejected "fold" as *"literally just the six lense option without the structure that makes it work"* — ratifies the six-lens structure with earned-clean verdicts | **1829** |
+| **`Ask_human`** | *"yes, add second function so agents can ask the human a question, filtered through you"* — now in the spec beside `Human_gate` | **1762** |
 | Granularity | there must be a max-granularity option (Manual Samuel) | **1128** |
 | Human gate | depth-scoped; "at least to the second level" as a safe default | **1148** |
 | Crash recovery | agreed: memoize-and-replay | **1188** |
