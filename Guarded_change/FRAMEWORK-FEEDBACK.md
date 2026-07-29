@@ -94,6 +94,30 @@ runner. An orchestrator that steers harder does not buy quality — it lengthens
 before anything independent touches them. Any fix here should probably also consider whether the
 orchestrator's own inputs to the runner belong in the reviewers' context as claims to challenge.
 
+## ISOLATION-vs-ASSEMBLED TESTING — the owner's rule, 2026-07-29. This is the stopping rule the
+## measurement-apparatus problem never had.
+
+> "if a component can be tested in isolation, it should be. If testing it requires more than three
+> iterations of the test mechanism, reconsider if it should be tested in isolation or on a test run of the
+> assembled thing."
+
+**Read it as:** default to isolation. **Count rebuilds of the test mechanism, not runs of the test.** At
+more than three, stop building and decide — either this thing is not isolation-testable, or it belongs in a
+run of the assembled system.
+
+**The distinction it turns on, in the owner's words:** *"some components can only be properly tested in the
+fully functional mechanism that they go in. This distinction has, on many occasions, resulted in days being
+wasted trying to create increasingly elaborate test mechanisms to test trivial little things that would be
+simplicity itself to test by just plugging them into the finished thing and seeing what happens."*
+
+**So the failure is not "we tested too little" — it is refusing to notice that a thing is not
+isolation-testable, and answering each failed harness by building a bigger one.** The three-iteration count
+is what makes that noticeable from the inside, which nothing before it did.
+
+**Where it belongs in the skill:** stage 1.5 (criteria) and stage 8 (harness) both currently let a
+criterion demand isolation verification without ever asking whether the thing is isolation-testable, and
+neither bounds harness effort. This rule supplies both the default and the stop.
+
 ### ⚠ ON IMPLEMENTATION — remove the interim copy from CLAUDE.md
 G1–G4 are currently written as **user-level rules** in `~/.claude/CLAUDE.md` (Workflow section, the bullet
 beginning *"Orchestrate has a ceiling"*) as a stopgap, because the skill does not enforce them. **When these
