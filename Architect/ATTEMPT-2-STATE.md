@@ -227,6 +227,30 @@ whose work the file is used to adjudicate, and the corpus does not say so anywhe
 **The rule to carry:** *"the spec says X"* is not *"the owner said X."* For the owner's actual words the
 harness-authored session transcript is the only admissible source.
 
+## 6d. SPEC CHANGES 2026-07-29 — two owner rulings, and a stale-hash warning
+
+**⚠ `~/Documents/Architect.md` is now 131 lines, sha256 `483ed8c4…261087`.** Every drift-detection table in
+`changes/charter-2026-07/` still names the old `1d385954…cee826`, and every line citation into the spec
+below the insertion point has shifted. **A mismatch there is expected, not corruption.** Re-derive before
+treating any spec line-number citation as current.
+
+**Ruling 1 — the node-path merge is `Union`, not `Consensus`.** Owner, on being shown that spec L97 merged
+two children with a 2-of-3 majority vote: *"that should probably be Union rather than Consensus."* The two
+children hold **different halves** (`division.first` / `division.second`), so a vote is a category error and
+taken literally discards half the plan; the three-leaf path (three agents, same task) is the case a vote
+fits. Applied. **Consequence not yet resolved:** `Union` is declared for *issues*; it now serves *plans* on
+this path, so its declaration comment needs to cover both, or the two uses need separating.
+
+**Ruling 2 — the design gains a decision log.** Owner: *"Why is there no decision log? There should
+definitely be a decision log."* **Why there wasn't one:** the orchestrator ported guarded-change's rule
+("contest a severity only via a logged entry") without checking that its destination existed in Architect.
+The only disk state in the design was the per-node crash-recovery memo, which cannot serve — it is
+single-writer and read only by that node's own restart. So that half of the severity mechanism was inert.
+Now added as `Log_decision` / `Read_decisions`: **append-only, one per run, shared by every node** — the
+opposite of `Memo_*`. **It is agent-writable, so it is NOT an admissible source for the owner's own words**;
+the harness-authored transcript remains the only one. It is a durable record that a decision was taken, by
+whom, on what grounds.
+
 ## 7. OPEN
 
 - **Three questions put to the owner at 19:40, UNANSWERED at park:**
