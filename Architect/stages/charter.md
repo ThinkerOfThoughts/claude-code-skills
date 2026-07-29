@@ -29,10 +29,12 @@ else from this directory.
 >   common-core-plus-role-file structure (`charter-common.md` §0).
 > - **NARROWED — the durable source for an owner quote.** `Guarded_change/stages/stage-3.md` L59 admits
 >   several durable sources. Architect admits **only the harness-authored session transcript**
->   (`charter-common.md` §6), because `~/Documents/Architect.md` **L19** states it is *"the only admissible
->   source"* for the owner's actual words, and because any agent-writable record — a decision log
->   included — re-admits the forgery that clause was written against. Where the two sources conflict, the
->   owner's spec wins.
+>   (`charter-common.md` §6). **CAUTION ON THE AUTHORITY FOR THIS.** It was justified by
+>   `~/Documents/Architect.md` **L19** stating the transcript is *"the only admissible source"* — but L19 is
+>   the `// PROVENANCE` comment, which is **orchestrator-written (transcript record 1787) and absent from
+>   the owner's original**. So this narrowing rests on the *substantive* argument only: any agent-writable
+>   record — a decision log included — re-admits the forgery the clause was written against. That argument
+>   may well be right, but it is **not an owner ruling**, and it must not be cited as one.
 >
 > **DELIBERATELY NOT CARRIED:** the fork source's **A/B-harness-arm supplementary-context prohibition** —
 > Architect's design defines no A/B harness arms, so the rule would have no referent. The general rule it
@@ -73,7 +75,7 @@ a rule the common core states.**
 
 **If a role file needs to *modify* a common rule, that is the signal the rule was never common** — it moves
 down into the roles that can act on it. This is the fork source's own composition rule (B19) applied to the
-file set. It is not "keep them in sync"; nothing is duplicated, so there is nothing to sync.
+file set. It is not "keep them in sync"; **[FALSE AS SHIPPED — see GATE-B2.** `grep -rn "A finding one reviewer caught is signal" stages/` hits `charter-common.md` AND `combiner.md`; `"floor is wrong"` hits `divider.md` AND `leaf.md`. `ruleplace.sh` cannot see these — its rule table has no shared-span negative assertion.**]** nothing is duplicated, so there is nothing to sync.
 
 **The diagnostic for what belongs in the common core:** *which roles can **act** on this rule?* A rule only
 one role can act on is that role's, wherever it currently sits. The granularity floor is the worked example

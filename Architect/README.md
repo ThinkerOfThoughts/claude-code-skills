@@ -15,8 +15,8 @@ Attempt 1 is preserved in full at **`../Architect-Attempt-1/`** (and in git hist
 
 ## The core being rebuilt around
 
-A single recursive function. `Node(task, plan)` claims a work-queue slot, asks a cold agent whether the task
-is `Divisible`, then either spawns **3 leaf agents** (if atomic) or **2 child nodes** (if not), waits for
+A single recursive function. `Node(task, plan, granularity, depth, node_id)` reads its memo, claims a
+work-queue slot, asks a cold agent whether the task is `Divisible`, then either spawns **3 leaf agents** (if atomic) or **2 child nodes** (if not), waits for
 them, and merges. It then spawns **3 cold red-teamers**, and their findings — unioned, then filtered to
 blocker/major — **become the next iteration's task**. When nothing survives that filter, the loop ends and
 the plan is returned.
@@ -29,7 +29,7 @@ Why this beats attempt 1:
 - **Termination is the red-team going quiet**, not a gate table.
 - **`Consensus` for plans, `Union` for issues.** Majority-vote is right for plans (one coherent plan out) and
   wrong for findings — per the spec, "a finding one reviewer caught is signal"
-  (`~/Documents/Architect.md` L20). *(An earlier version of this line cited "~85% of findings caught by
+  (`~/Documents/Architect.md` L24). *(An earlier version of this line cited "~85% of findings caught by
   exactly one reviewer" as measured across attempt 1's runs. **That statistic has no source** and was struck
   on 2026-07-28; `FINDINGS.md` records per-finding convergence counts, not a rate. The rule stands on the
   spec, which does not depend on the number.)*
@@ -45,15 +45,18 @@ Why this beats attempt 1:
 
 | Kept | Why |
 |---|---|
-| `stages/charter.md` | The cold-review discipline (lenses, cite-or-it-doesn't-count, a clean verdict must be *earned*) is method, not plumbing. **Now an UNVETTED DRAFT** rewritten for the one-pass loop — authored freehand outside guarded-change, so it is an *input* to attempt 2's build, not an output. Completeness stays a **distinct lens**: dissolving it into a general mandate is how the generative tier dies quietly. |
+| `stages/` — **seven files** | **Element 1, re-scoped by the owner from "the charter" to "the agent prompt set."** `charter.md` is now a **manifest and is NOT dispatched to any agent**; the six dispatched prompts are `charter-common.md` (read verbatim by all) + `redteam.md`, `divider.md`, `combiner.md`, `leaf.md`, `node.md`. **BUILT, never passed a gate, 2 blockers open, gate 4 skipped.** No `UNVETTED DRAFT` banner survives anywhere in the set — and its absence does **not** mean accepted. Completeness stays a **distinct lens**: dissolving it into a general mandate is how the generative tier dies quietly. |
 | `templates/seed/*.md` | The 7-section plan spine is the floor a leaf fills in — the founding failure was a silently missing section, and `task`-coverage alone would not have caught it. |
 | `examples/authoring-a-skill/` | The shape of a per-project Layer-2 config. |
 
 ## What was removed
 
 `SKILL.md`, `METHODOLOGY.md`, and all eight `stages/stage-*.md` — the 8-stage pipeline **was** the disk
-coordination model. Also `changes/` (three guarded-change run folders) and `guarded-change.architect.md`:
-attempt-1 provenance, preserved in the archive.
+coordination model. Attempt 1's `changes/` (three run folders) went too; all preserved in the archive.
+
+**Correction 2026-07-28:** this section previously also listed `guarded-change.architect.md` as removed.
+It *was* deleted at `8ca7197` and **re-created at `1b6443e`** — it exists, and it is the live Layer-2
+config for attempt 2. Likewise `changes/` exists again, holding the element-1 run.
 
 ## Settled since the redesign
 
@@ -79,7 +82,8 @@ attempt-1 provenance, preserved in the archive.
 
 ## The spec
 
-The design spec lives at **`~/Documents/Architect.md`** — owner-authored, single copy, deliberately **not**
+The design spec lives at **`~/Documents/Architect.md`** — owner-**seeded** (only ~41% of its non-blank lines
+are verbatim owner text; the rest is orchestrator-written under ratified rulings), single copy, deliberately **not**
 duplicated into this repo. Attempt 2 is authored against it. (A snapshot was briefly kept here and removed:
 two copies of a spec is the drift problem this project spent a day on.)
 

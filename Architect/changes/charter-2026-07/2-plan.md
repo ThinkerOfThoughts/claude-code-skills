@@ -36,7 +36,7 @@ two placements that carry behavioral claims.
 cap, record 1258; B18 is the only counterweight to finding-inflation in a loop where findings become the
 next task). But **relocation cannot isolate position** — moving a block changes two-to-three adjacencies,
 not one, found 3/3 at pass 2 — and under the owner's done criteria (record **1572**) a per-element harness
-is an instrument, not a gate. So every block's position ships as a **stated design decision with its
+is an instrument, not a gate — **orchestrator's inference, not in record 1572, unratified**. So every block's position ships as a **stated design decision with its
 rationale, explicitly marked unverified**, and the end-to-end Data-Distiller run is what tests it. **No
 fourth attempt at isolating position will be built.**
 

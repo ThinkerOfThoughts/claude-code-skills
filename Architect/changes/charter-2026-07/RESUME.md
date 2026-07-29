@@ -518,10 +518,12 @@ Do these in order. Do **not** start stage 8.
 
 ## 5. THE DISCLOSED-UNVERIFIED LIST — do not let a restart quietly assume these are verified
 
-The behavioural harness was **deliberately cut** on the owner's authority (transcript record **1572**: a
-per-element harness is an *instrument, not a gate*, because the end-to-end run producing a Data-Distiller
-plan is what proves the skill). Standing rule adopted: **when a per-element harness bounces twice, cut it;
-do not strengthen it.** Consequently these ship **unverified or text-only**, each by decision, not by
+The behavioural harness was **deliberately cut** — but **NOT on the owner's authority.** Record **1572**
+says only that the done criteria is an end-to-end Data-Distiller plan, *"equivalence or better, not
+sameness."* The propositions used to justify the cut — *"a per-element harness is an instrument, not a
+gate"* and *"when a per-element harness bounces twice, cut it"* — are the **orchestrator's inference,
+absent from that record** (see §3 of this file). **The cut is UNRATIFIED and the owner has not yet
+ruled on it.** Consequently these ship **unverified or text-only**, each by decision, not by
 oversight:
 
 | Item | Status | Why |

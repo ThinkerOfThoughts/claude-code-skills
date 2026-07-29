@@ -54,10 +54,13 @@ the bar that decides whether Architect exists.** Read three consequences off it:
 2. **The repair rule is first-link-that-broke**, not full-restart and not fix-everything: run it, find the
    earliest point in the chain that failed, fix that, run again. Repeat until it completes and the output
    is good.
-3. **Per-element harnesses are therefore instruments, not gates.** They exist to catch gross defects early
-   and cheaply. They do **not** have to be statistically powerful, and an element does not need its own
-   behavioural proof to proceed — the end-to-end run is what proves it. This directly answers the failure
-   that produced this ruling: the charter element burned 34 cold agents and two gate-4 bounces on
+3. ⚠ **NOT A CONSEQUENCE — AN ORCHESTRATOR INFERENCE. UNRATIFIED. See §6b.** *"Per-element harnesses are
+   therefore instruments, not gates; they do not have to be statistically powerful, and an element does not
+   need its own behavioural proof to proceed."* **None of that is in record 1572** — the word test returns
+   zero hits for `instrument`, `harness`, `gate`, `statistical` and `element`. It is the orchestrator's
+   reading, it justified cutting every behavioural arm, and **the owner has been asked and has not ruled.**
+   Do not cite record 1572 for it. It is retained here only because the cut was made on it. The failure
+   that produced this ruling: the charter element burned **14** cold agents and two gate-4 bounces on
    behavioural arms whose own reviewers concluded had *"no path to done, only a path to a halt."*
    **When a per-element harness bounces twice, cut the harness — do not strengthen it.** See the standing
    TODO in `~/.claude/CLAUDE.md` ("the measurement-apparatus problem"), which this project is the third
@@ -87,7 +90,7 @@ the bar that decides whether Architect exists.** Read three consequences off it:
 
 | What | Where |
 |---|---|
-| **The design spec (AUTHORITATIVE)** | `~/Documents/Architect.md` — owner-authored pseudocode, single copy, deliberately not duplicated into the repo |
+| **The design spec** | `~/Documents/Architect.md` — pseudocode, single copy, deliberately not duplicated into the repo. **Owner-SEEDED, not owner-written throughout: measured 2026-07-28, only 41% of non-blank lines are verbatim owner text; the rest was written by the orchestrator under ratified rulings.** Do not equate "the spec says X" with "the owner said X" — see §6c. |
 | The working tree | `Architect/` on branch `claude/recursing-visvesvaraya-b40a0c` |
 | Attempt 1, archived whole | `Architect-Attempt-1/` — deleted only once attempt 2 works (owner's instruction) |
 | Attempt 1's loop history | `~/architect-hardening-loop/LOOP-STATE.md` (rulings R1–R10, three failed hardening passes) |
@@ -106,7 +109,7 @@ Key commits: `3771038` attempt-1 build · `8efdca1` hardening paused · `8ca7197
 | File | Status |
 |---|---|
 | `stages/` — **seven files, 713 lines** | The re-scoped element 1: `charter.md` (manifest, not dispatched) + six dispatched prompts `charter-common.md`, `redteam.md`, `divider.md`, `combiner.md`, `leaf.md`, `node.md`. **BUILT, 2 BLOCKERS OPEN, gate 4 skipped, never passed a gate.** The 237-line monolith it replaced is at `git show 711932f:Architect/stages/charter.md`. **No banner ≠ accepted.** |
-| `changes/charter-2026-07/` | The element-1 run: 9 stage docs, 18 records incl. **11 verbatim reviewer records A–K**, `RESUME.md`. `oracles/` and `fixtures/` are empty because nothing was built. |
+| `changes/charter-2026-07/` | The element-1 run: **11** stage docs, **22** records incl. **14** verbatim reviewer records **A–N**, `RESUME.md`. `oracles/` holds **4 files** (both scripts executable; both run clean — 76/0 and 63/63). `fixtures/` IS empty: **no behavioural arm was ever run.** |
 | `templates/seed/*.md` | Attempt-1 artifacts, carried over. The 7-section spine. Not yet revised for attempt 2. |
 | `examples/authoring-a-skill/` | Attempt-1 artifact. Shape of a Layer-2 config. |
 | `README.md` | Orientation for the rebuild. |
@@ -128,7 +131,7 @@ node_id)`. What the pseudocode alone does not make obvious:
   triples run concurrently. This deletes the entire shared-mutable-state class.
 - **`Consensus` for plans, `Union` for issues.** Majority-vote is right for plans (one coherent plan out) and
   **wrong for findings** — the spec's own reason: "DISCARDS NOTHING… A finding one reviewer caught is
-  signal" (`~/Documents/Architect.md` L20).
+  signal" (`~/Documents/Architect.md` L24).
   > **CORRECTION 2026-07-28.** This bullet used to read "~85% of attempt 1's findings were caught by exactly
   > one reviewer." **That statistic has no source.** It appears in no file this project did not author about
   > itself — not in `~/architect-dogfood-2026-07-24/FINDINGS.md`, not in `~/architect-hardening-loop/`. The
@@ -164,7 +167,7 @@ agent-written file (including this one) is **not**. Loci are record indices in
 | # | Ruling | Locus |
 |---|---|---|
 | **Done criteria** | Architect is created when it can plan Data-Distiller; equivalence or better, **not sameness**; on failure fix the first broken link and re-run | **1572** |
-| **Six lenses** | rejected "fold" as *"literally just the six lense option without the structure that makes it work"* — ratifies the six-lens structure with earned-clean verdicts | **1829** |
+| **Six lenses** | rejected "fold" as *"literally just the six lense option without the structure that makes it work"* — ratifies the six-lens **structure**. NOTE: "with earned-clean verdicts" was previously appended here and is **NOT in record 1829**; the earned-clean rules are the orchestrator's elaboration, not part of the ratified words. | **1829** |
 | **`Ask_human`** | *"yes, add second function so agents can ask the human a question, filtered through you"* — now in the spec beside `Human_gate` | **1762** |
 | Granularity | there must be a max-granularity option (Manual Samuel) | **1128** |
 | Human gate | depth-scoped; "at least to the second level" as a safe default | **1148** |
@@ -198,6 +201,32 @@ inflation** rule this very element ships.
 measurement-apparatus problem sits in the same message — but nobody has ruled on it. **Do not cite record
 1572 for it.** Treat §1b consequence 3 as a proposal awaiting a ruling, and re-ask rather than defaulting.
 
+## 6c. ⚠ THE DESIGN SPEC IS OWNER-SEEDED, NOT OWNER-WRITTEN — measured 2026-07-28
+
+The corpus calls `~/Documents/Architect.md` "owner-authored" and hands it to cold reviewers as
+**priority-1 authority outranking guarded-change's own stage files**. Measured against the harness record:
+
+- The owner's original (harness record **1044**, an attachment record, not agent text): **59 lines**.
+- On disk today: **119 lines**. **Only 37 of 90 non-blank lines (41%) are verbatim owner text.**
+- Nine assistant mutations at records 1091, **1131**, 1151, 1157, 1159, 1161, 1168, **1190**, **1787** —
+  1787's timestamp equals the file's mtime, so **the orchestrator is the last writer.**
+
+The owner seeded the file and authorised additions (record **1085**), and every addition traces to a
+ratified ruling — **so this is not fabrication.** But the majority of the file was written by the party
+whose work the file is used to adjudicate, and the corpus does not say so anywhere.
+
+**Two consequences that bit:**
+1. **`stages/charter.md` cited spec L19 as the owner's authority for overruling `Guarded_change/stages/
+   stage-3.md`** on what counts as a durable source. L19 is the `// PROVENANCE` comment — **orchestrator-
+   written at record 1787, absent from the owner's original** (`grep -c admissible` on record 1044 → 0). No
+   genuine owner turn anywhere contains the word "admissible." The narrowing was corrected on 2026-07-28 to
+   rest on its substantive argument only; it is **not** an owner ruling and must not be cited as one.
+2. **Spec L26** — *"three real rounds showed cold reviewers always find something"* — is an orchestrator
+   insertion (record 1091) with no derivation. Struck 2026-07-28.
+
+**The rule to carry:** *"the spec says X"* is not *"the owner said X."* For the owner's actual words the
+harness-authored session transcript is the only admissible source.
+
 ## 7. OPEN
 
 - **Three questions put to the owner at 19:40, UNANSWERED at park:**
@@ -208,8 +237,8 @@ measurement-apparatus problem sits in the same message — but nobody has ruled 
      error, not merely undefined for n=2** — taken literally it discards half the plan. Options floated,
      none chosen: spawn three children; give the node path a distinct integrate-the-halves function; make
      `Consensus` arity-aware. **Owner's design, owner's call.**
-  3. **The demotion port is half-landable.** Owner record 1449 said to copy guarded-change's severity
-     mechanism verbatim. The human-tie-break half now works via `Ask_human`. The *contest-via-a-logged-entry*
+  3. **The demotion port is half-landable.** Owner record 1449 said the mechanism *"gets implemented
+     however it is implemented in guarded-change"* (the word "verbatim" is the orchestrator's, not the owner's). The human-tie-break half now works via `Ask_human`. The *contest-via-a-logged-entry*
      half has no destination: `grep -ic 'decision log'` on the spec returns **0**, and the memo cannot serve
      (single-writer, per-node, read only by that node's own restart). The rule is inert as written.
 

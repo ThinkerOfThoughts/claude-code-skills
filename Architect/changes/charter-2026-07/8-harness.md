@@ -228,7 +228,7 @@ Both were found by the self-test and not by inspection. This is the self-test ea
   read the rule's substance in that file. Substance is checked by the per-rule probes above and by the cold
   reviewers, not by this assertion.
 - **NO BEHAVIOURAL VERIFICATION WAS RUN. None. The arms stay cut.** Owner record **1572**: a per-element
-  harness is an instrument, not a gate; the end-to-end Data-Distiller run is what proves the skill. Nothing
+  harness is an instrument, not a gate — WHICH IS THE ORCHESTRATOR'S INFERENCE, NOT IN RECORD 1572 AND UNRATIFIED; the end-to-end Data-Distiller run is what proves the skill. Nothing
   here shows that an agent handed `charter-common.md` + its role file *behaves* as the files instruct.
   Specifically **unverified**: N-05 (all six roles addressed — text only), N-06 (the composition rule —
   text plus one duplication sweep), N-09 (the floor decomposition — text only), N-13 (RAT1/RAT2 — text
@@ -261,7 +261,8 @@ leaf                        197     1969
 node                        245     2365
 split-reviewer              340     3509     <- common + redteam.md + divider.md §B
 
-predecessor (single charter @ HEAD): 237 lines / 2925 words
+predecessor (single charter, `git show 711932f:Architect/stages/charter.md`): 237 lines / 2925 words
+  [was written as "@ HEAD"; true when written, false since 8bcaca2 — HEAD's charter.md is now the 119-line manifest]
 ```
 
 **Read this honestly.**

@@ -2,7 +2,8 @@
 
 **This file is run configuration, not skill content.** It is authored by the orchestrator and is an
 *input* to the loop. Nothing in it is an Architect design decision; where it states a design fact it is
-quoting `~/Documents/Architect.md` (the owner-authored spec) and is checkable there.
+quoting `~/Documents/Architect.md` (the design spec) and is checkable there. **On that file's provenance,
+see the note in `redteam_context` below — it is owner-SEEDED, not owner-written throughout.**
 
 ## The attempt-2 build model — ONE ELEMENT PER RUN
 
@@ -19,7 +20,7 @@ build → cold red-team → gate → harness. Elements in dependency order:
 
 | # | Element | Run folder | Status |
 |---|---|---|---|
-| 1 | **The red-team charter** | `changes/charter-2026-07/` | **current run** |
+| 1 | **The agent prompt set** (RE-SCOPED by the owner from "the red-team charter") | `changes/charter-2026-07/` | **current run** — built, 2 blockers open |
 | 2 | The 7-section plan spine (`templates/seed/`) | `changes/spine-2026-07/` | not started |
 | 3 | The Layer-2 config contract | — | not started |
 | 4 | The router (`SKILL.md`) | — | not started |
@@ -36,8 +37,15 @@ run: charter-2026-07
 
 redteam_context:            # priority-ordered; a cold reviewer reads these to check claims vs. source
   - path: /home/zero/Documents/Architect.md
-    note: THE AUTHORITATIVE DESIGN SPEC — owner-authored pseudocode for the whole skill, single copy,
-          deliberately NOT duplicated into the repo. Every claim about what Architect does, what the
+    note: THE AUTHORITATIVE DESIGN SPEC — pseudocode for the whole skill.
+          **PROVENANCE, MEASURED 2026-07-28 — READ THIS BEFORE TREATING IT AS OWNER AUTHORITY.** The owner
+          seeded this file (59 lines, harness record 1044) and authorised additions (record 1085), but it is
+          now 119 lines and only **37 of 90 non-blank lines (41%) are verbatim owner text**. The remainder
+          was written by the ORCHESTRATOR — the party whose work this file is used to adjudicate. Every
+          addition traces to a ratified owner ruling, so this is not fabrication; but a line here is NOT
+          self-evidently the owner's, and **citing "the spec says X" is not the same as citing the owner**.
+          For the owner's actual words the session transcript is the only admissible source.
+          Single copy, deliberately NOT duplicated into the repo. Every claim about what Architect does, what the
           charter's callers are, what the granularity floor bounds, what Consensus/Union/Severity do, and
           how the loop terminates is checked HERE FIRST. Read `Spawn_redteam` and `Divisible` in
           particular — they are the charter's two callers. If the artifact under review disagrees with
@@ -90,7 +98,7 @@ redteam_context:            # priority-ordered; a cold reviewer reads these to c
           into four documents and then handed to reviewers as measurement. Do not cite it; if a
           convergence claim is needed, derive it from this file's per-finding counts and show the
           derivation. The Union-not-majority-vote rule does NOT depend on it: it rests on the owner's spec
-          (`~/Documents/Architect.md` L20, "DISCARDS NOTHING… A finding one reviewer caught is signal").
+          (`~/Documents/Architect.md` L24, "DISCARDS NOTHING… A finding one reviewer caught is signal").
   - path: /home/zero/Desktop/claude-code-skills/.claude/worktrees/recursing-visvesvaraya-b40a0c/Architect-Attempt-1/stages
     note: ARCHIVED AND SUPERSEDED — attempt 1's stage files, including its two-pass charter. Read ONLY to
           see what was tried and why it was dropped. Never a source of authority: attempt 1's structure
@@ -118,7 +126,10 @@ measurement:
     how: |
       Conformance for a prompt-assembly element. The charter is not independently loadable as a skill, so
       `quick_validate.py` does NOT apply to this run (it applies from element 4, the router, onward).
-      (1) STRUCTURAL CHECKER — `changes/charter-2026-07/oracles/check.sh`. One POSITIVE PER-SITE
+      (1) STRUCTURAL CHECKER — **NOTE: `check.sh` and `forkdiff.sh` named in this section were NEVER BUILT.
+          The run instead built `oracles/ruleplace.sh` + `oracles/mutation-test.sh`, which exist and run.
+          This section is stale and was left frozen mid-run deliberately; fix it in element 3.**
+          `changes/charter-2026-07/oracles/check.sh`. One POSITIVE PER-SITE
           ASSERTION per criterion: the rule IS STATED, at each site that must state it. Absence sweeps
           are permitted only PAIRED with their positive assertion, and run on NORMALIZED text (strip
           emphasis markers, flatten wrapped lines) — an unnormalized grep for a rule that wraps across a
