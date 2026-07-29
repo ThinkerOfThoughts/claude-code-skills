@@ -29,16 +29,34 @@ down. The runner has the same filesystem access the orchestrator does.
   mechanism) to answer runner halts, then handed down summaries.
 
 ### G2 — verification is SAMPLING, not reproduction
-Define the ceiling explicitly: confirm claimed artifacts exist, hashes match, a sample of citations
-resolve, and mutation tests actually fail. That is the whole job. Absent a stated bound, each additional
-read looks like *more rigour*, and the pressure runs one way only.
+Define the ceiling **as a closed list**, because an open-ended "verify its output" is what gets walked
+through. The orchestrator's whole verification job, exhaustively:
+
+> **Re-run its oracle once yourself; spot-check a handful of its citations; confirm the files it claims
+> exist do; confirm hashes. If you want to know whether the artifact is any good, spawn a cold reviewer and
+> ask — do not read it and decide.**
+
+Nothing else. Absent a stated bound, each additional read looks like *more rigour*, and the pressure runs
+one way only.
+
+**The test to apply after any check:** do I now know more about **whether the runner is truthful**
+(sampling — correct), or more about **the subject matter** (reproducing — I have started doing the loop's
+job in the wrong place)?
 - **Observed:** "verify its output" slid from *test the runner's claims* to *reconstruct the runner's
-  reasoning* over roughly six exchanges, with no single step that looked wrong.
+  reasoning* over roughly six exchanges, with no single step that looked wrong. The checks that stayed on
+  the right side of the line were all one-command: `wc -l`, `grep -c`, `ls`, `sha256sum`, and pulling a
+  single transcript record to test a single quotation.
 
 ### G3 — never read the artifact under change in order to judge it
 If it needs judging, that is a **cold reviewer's** task. Checking a few lines against a specific claim is
 fine; reading it to *decide* is not. Useful tripwire: opening a file inside the run's own working set — the
 artifact under change, a stage doc, a reviewer record in full — means the line has been crossed.
+
+**Why the ceiling is not merely about context economy:** reading the artifact in order to judge it makes the
+orchestrator **a fourth reviewer with none of the safeguards** — no cold context (it wrote the runner's
+brief), no charter, no lens discipline, no earned-clean requirement, and nobody reviewing it. So its verdict
+is simultaneously the **least trustworthy** in the system and the **most authoritative**, because everything
+the orchestrator concludes travels downstream as instruction rather than as a claim to be challenged.
 - **Observed:** the orchestrator read all 237 lines of the artifact to answer a decomposition question that
   should have been delegated.
 
