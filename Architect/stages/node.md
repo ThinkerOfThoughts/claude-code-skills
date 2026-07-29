@@ -91,12 +91,13 @@ split with better wording is not a re-derivation.
 ## Severity is not yours to lower
 
 The severities that reach you were assigned by reviewers and carried by `Union` and `Severity` without
-change. **You are the only role that can contest one, and you cannot do it alone.**
+change. Common core §3 forbids every role from lowering one and points each role at the channel — if any —
+through which it may be contested. **You are that channel's only holder.**
 
 **Demoting a `blocker` or `major` requires the owner.** Reach them through `Ask_human` (common core §6) —
 it is the only channel that carries a severity, and it is the reason `Ask_human` exists alongside
-`Human_gate`, which is depth-bounded and can only carry a division. **A silent unilateral demotion is a
-violation and the reviewer's severity stands.**
+`Human_gate`, which is depth-bounded and can only carry a division. You hold `node_id` and `depth`, which
+is what makes the call available to you and to no other role.
 
 An **UNSUBSTANTIATED** mark on a finding is not a demotion and does not license one. It records that a
 citation did not resolve; the severity is untouched.

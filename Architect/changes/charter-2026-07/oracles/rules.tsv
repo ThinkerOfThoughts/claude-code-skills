@@ -25,12 +25,12 @@ N-04a	present	charter-common.md	the sha256 of each	the sha256 of each context fi
 N-04b	present	charter-common.md	treated as un-run	record missing any of these means the work is treated as un-run
 N-04c	present	charter-common.md	bounded by the function that spawned you	bounded by the function that spawned you
 N-04d	present	charter-common.md	quoted in your record as such	quoted in your record as such
-N-05a	present	redteam.md	the task, the plan, and the granularity floor	Exactly: the task, the plan, and the granularity floor
+N-05a	present	redteam-plan.md	Exactly one thing beyond the common list: the plan	Exactly one thing beyond the common list: the plan
 N-05b	present	divider.md	Exactly: the task and the granularity floor	Exactly: the task and the granularity floor
 N-05c	present	leaf.md	the plan you are to fill out	the task, the plan you are to fill out, and the granularity floor
 N-05d	present	node.md	your depth, and your	the granularity floor, your depth, and your node_id
 N-05e	present	combiner.md	the vector your function was called with	the vector your function was called with
-N-05f	present	node.md	Human_gate	Human_gate
+N-05f	present	redteam-split.md	its two sub-tasks and the stated seam between them	its two sub-tasks and the stated seam between them
 N-05g	present	node.md	Memo_read(node_id) runs BEFORE	Memo_read.node_id. runs BEFORE you claim a work-queue slot
 N-05h	present	node.md	inherit your parent's	inherit your parent.s work_queue slot
 N-06a	present	charter-common.md	A role file only ever ADDS	A role file only ever ADDS
@@ -41,7 +41,7 @@ N-08a	present	redteam.md	the generative sweep	.iii. the generative sweep
 N-08b	present	redteam.md	floor, not the finding	Ticking .i. and .ii. is the floor, not the finding
 N-09a	present	charter-common.md	Apply the floor you were given	Apply the floor you were given, not one you infer
 N-09b	present	charter-common.md	no backstop cap	There is deliberately no backstop cap
-N-09c	present	redteam.md	It is finished	A step already at or below the floor is NOT vague. It is finished
+N-09c	present	redteam-plan.md	It is finished	A step already at or below the floor is NOT vague. It is finished
 N-09d	present	leaf.md	Never write below the floor	Never write below the floor
 N-09e	present	divider.md	Neither half may fall below the floor	Neither half may fall below the floor
 N-10a	present	charter-common.md	or is unverifiable	omits a load-bearing element of the task, cannot be executed as written, or is unverifiable
@@ -50,7 +50,7 @@ N-10c	present	charter-common.md	treated as not filed	A finding with no severity 
 N-10d	present	charter-common.md	Borderline is a human decision	Borderline is a human decision
 N-10e	absent	redteam.md	-	nitpick . Style, wording, clarity
 N-11a	present	node.md	Demoting a	Demoting a blocker or major requires the owner
-N-11b	present	node.md	silent unilateral demotion is a violation	silent unilateral demotion is a violation and the reviewer.s severity stands
+N-11b	present	node.md	You are that channel's only holder	You are that channel.s only holder
 N-11c	present	redteam.md	No contest channel exists for your	No contest channel exists for your role
 N-11d	absent-set	-	-	(logged|entry|recorded) [a-z ]*in the run.s decision log
 N-12a	present	combiner.md	DISCARD NOTHING	DISCARD NOTHING
@@ -70,3 +70,20 @@ N-18	absent-set	-	-	85%
 N-19a	present	charter-common.md	Findings are unioned, never majority-voted	Findings are unioned, never majority-voted
 N-19b	present	redteam.md	Do not self-censor a lone observation	Do not self-censor a lone observation
 N-19c	present	combiner.md	Dedup only exact restatements	Dedup only exact restatements
+# --- added at the gate-7 repair: the reviewer restructure and the amended N-06/N-10/N-11 ---
+N-05e	present	redteam-split.md	You have NO PLAN and are not entitled to one	You have NO PLAN and are not entitled to one
+N-05f	present	redteam-split.md	its two sub-tasks and the stated seam between them	its two sub-tasks and the stated seam between them
+N-05g	absent	divider.md	the split reviewers. aiming must not live in the divider.s own file	Aiming for the split review
+N-05h	present	redteam.md	dispatches two kinds of reviewer	Architect dispatches .{0,3}two kinds.{0,3} of reviewer
+N-11e	present	node.md	You hold node_id and depth, which is what makes the call available	You hold node_id and depth, which is what makes the call available
+N-09g	present	charter-common.md	you were not given a floor, the rules below do not bind your work	you were not given a floor, the rules below do not bind your work
+N-06e	present	charter.md	They may not share a rule.	They may not share a rule\.
+N-06f	present	charter.md	declared-duplications.jsonl	declared-duplications\.jsonl
+N-21a	present	combiner.md	discards half the plan.	discards half the plan\.
+N-21b	present	combiner.md	return the plans you were given unmerged	return the plans you were given unmerged
+N-21c	absent	combiner.md	the invented Ask_human halt is gone from Consensus	reach the owner via Ask_human
+N-22a	present	charter.md	rules with no fork-source ancestor	rules with no fork-source ancestor
+N-22b	present	charter.md	That is a widening, not a copy	That is a widening, not a copy
+N-23a	present	redteam.md	That guarantee does not yet hold for these two	That guarantee does not yet hold for these two
+N-23b	present	redteam.md	report that tier as UNRUNNABLE	report that tier as UNRUNNABLE
+N-24a	present	charter-common.md	say so in your return value, before anything else	say so in your return value, before anything else

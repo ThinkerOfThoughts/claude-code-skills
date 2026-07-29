@@ -42,8 +42,6 @@ planning, and no finer.** Both directions are errors:
   prevent, and you are one of the three places it can enter. **Never write below the floor**, even when you
   can see how.
 
-If the floor is wrong for this task, say so (common core §2) rather than quietly working beneath it.
-
 ## What you owe the plan
 
 - **Cover every element of the task.** An unaddressed portion of the task is the most expensive thing you

@@ -15,8 +15,8 @@ SELF_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 if [ "$#" -lt 1 ]; then
     echo "usage: $0 <set-dir> [rules.tsv]" >&2
-    echo "  <set-dir> is the directory holding charter.md, charter-common.md, redteam.md," >&2
-    echo "  divider.md, combiner.md, leaf.md, node.md" >&2
+    echo "  <set-dir> is the directory holding charter.md, charter-common.md, redteam.md, redteam-plan.md," >&2
+    echo "  redteam-split.md, divider.md, combiner.md, leaf.md, node.md" >&2
     exit 2
 fi
 SET_DIR="$1"
@@ -24,7 +24,7 @@ RULES="${2:-$SELF_DIR/rules.tsv}"
 [ -d "$SET_DIR" ] || { echo "not a directory: $SET_DIR" >&2; exit 2; }
 [ -f "$RULES" ]   || { echo "no rules file: $RULES" >&2; exit 2; }
 
-FILES="charter.md charter-common.md redteam.md divider.md combiner.md leaf.md node.md"
+FILES="charter.md charter-common.md redteam.md redteam-plan.md redteam-split.md divider.md combiner.md leaf.md node.md"
 
 # Normalize: strip markdown emphasis/code markers, flatten every line break to a space, squeeze runs.
 # An unnormalized grep for a rule that wraps across a line break reports a false absence.
@@ -38,8 +38,8 @@ for f in $FILES; do
     if [ -f "$SET_DIR/$f" ]; then norm "$SET_DIR/$f" > "$NORMDIR/$f"; else : > "$NORMDIR/$f"; fi
 done
 cat "$NORMDIR"/*.md > "$NORMDIR/_ALL"
-# The six DISPATCHED files. charter.md is a manifest and is never given to an agent.
-DISPATCHED="charter-common.md redteam.md divider.md combiner.md leaf.md node.md"
+# The DISPATCHED files. charter.md is a manifest and is never given to an agent.
+DISPATCHED="charter-common.md redteam.md redteam-plan.md redteam-split.md divider.md combiner.md leaf.md node.md"
 for f in $DISPATCHED; do cat "$NORMDIR/$f"; done > "$NORMDIR/_DISPATCHED"
 
 pass=0; fail=0; failed_ids=""
@@ -71,7 +71,7 @@ while IFS=$'\t' read -r id mode file anchor pattern; do
                 hit=$(for f in $DISPATCHED; do grep -Eq -- "$pattern" "$NORMDIR/$f" && echo -n "$f "; done)
                 echo "FAIL  $id  forbidden text present in dispatched files ($hit) -- /$pattern/"; fail=$((fail+1)); failed_ids="$failed_ids $id"
             else
-                echo "PASS  $id  absent from all six dispatched files"; pass=$((pass+1))
+                echo "PASS  $id  absent from all dispatched files"; pass=$((pass+1))
             fi ;;
         *) echo "FAIL  $id  unknown mode '$mode'"; fail=$((fail+1)); failed_ids="$failed_ids $id" ;;
     esac
@@ -92,11 +92,29 @@ while IFS='|' read -r _ rulecell filecell _; do
         echo "FAIL  N-03/$rid  allocation table names no destination file"; fail=$((fail+1)); failed_ids="$failed_ids N-03/$rid"
         continue
     fi
+    # The rule's DESCRIPTION, taken from the same table cell, is the search term. Asserting only that the
+    # destination file is non-empty would pass for any set of seven non-empty files — this project has
+    # shipped that class of probe three times. The term is still GENERATED from the artifact, so an
+    # inventory gap cannot hide behind a probe set derived from the inventory.
+    desc=$(echo "$rulecell" | sed -e 's/\*\*B[0-9]\{2\}\*\*//' -e 's/[^A-Za-z ]/ /g' | tr 'A-Z' 'a-z' | tr -s ' ')
     for t in $targets; do
-        if [ -s "$NORMDIR/$t" ]; then
-            echo "PASS  N-03/$rid  destination $t exists and is non-empty"; pass=$((pass+1))
-        else
+        if [ ! -s "$NORMDIR/$t" ]; then
             echo "FAIL  N-03/$rid  destination $t missing or empty"; fail=$((fail+1)); failed_ids="$failed_ids N-03/$rid"
+            continue
+        fi
+        hits=0; words=0
+        for w in $desc; do
+            [ "${#w}" -gt 3 ] || continue          # skip 'the', 'or', 'a' — they carry no evidence
+            words=$((words+1))
+            grep -qi -- "$w" "$NORMDIR/$t" && hits=$((hits+1))
+        done
+        if [ "$words" -eq 0 ]; then
+            echo "FAIL  N-03/$rid  allocation table gives no describable rule text"; fail=$((fail+1)); failed_ids="$failed_ids N-03/$rid"
+        elif [ $((hits * 100 / words)) -ge 60 ]; then
+            echo "PASS  N-03/$rid  $hits/$words description terms present in $t"; pass=$((pass+1))
+        else
+            echo "FAIL  N-03/$rid  only $hits/$words description terms present in $t -- rule may not be stated there"
+            fail=$((fail+1)); failed_ids="$failed_ids N-03/$rid"
         fi
     done
 done < <(sed -n '/^| \*\*B01\*\*/,/^| \*\*B19\*\*/p' "$SET_DIR/charter.md")

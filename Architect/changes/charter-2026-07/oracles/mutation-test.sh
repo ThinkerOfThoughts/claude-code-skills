@@ -82,6 +82,62 @@ else
     echo "  BAD  CONTROL: KILLED (expected SURVIVED) — a probe is matching text no criterion claims"; bad=$((bad+1))
 fi
 
+echo "=== DUPLICATION mutants (shared_spans.py — the NEGATIVE assertion ruleplace.sh cannot express) ==="
+# ruleplace.sh is entirely positive per-site assertions, so it structurally CANNOT see a rule restated in
+# a second file: it passed 76/0 on a set carrying eight duplications. shared_spans.py is the negative
+# assertion. Being an instrument that gates a result, it needs its own can-fail test, which is this.
+SPANS="$SELF_DIR/shared_spans.py"
+EXEMPT="$SELF_DIR/declared-duplications.jsonl"
+spans_clean() { python3 "$SPANS" "$WORK/m" 7 --exempt-file "$EXEMPT" >/dev/null 2>&1; }
+
+# (a) POSITIVE CONTROL: the unmutated set must come back clean, or every kill below is meaningless.
+mk
+if spans_clean; then echo "  ok   DUP control: CLEAN on the unmutated set (expected CLEAN)"; ok=$((ok+1))
+else echo "  BAD  DUP control: the unmutated set already reports duplications"; bad=$((bad+1)); fi
+
+# (b) KILL MUTANTS: copy a rule OUT of charter-common.md into each role file in turn. This is exactly the
+#     defect class GATE-B2 found, injected deliberately. Every one must be caught.
+while read -r target; do
+    mk
+    # take a real common-core rule sentence and restate it in the role file
+    printf '\n%s\n' "A silent unilateral demotion is a violation and the reviewer's severity stands." \
+        >> "$WORK/m/$target"
+    if spans_clean; then
+        echo "  BAD  DUP $target: SURVIVED (expected KILLED) — a common rule restated in a role file went unseen"
+        bad=$((bad+1))
+    else
+        echo "  ok   DUP $target: KILLED (expected KILLED)"; ok=$((ok+1))
+    fi
+done <<'DUP'
+redteam.md
+redteam-plan.md
+redteam-split.md
+divider.md
+combiner.md
+leaf.md
+node.md
+DUP
+
+# (c) ROLE-TO-ROLE mutant: clause 2 of the composition rule, injected between two role files.
+mk
+printf '\n%s\n' "Write each step at the floor: fine enough that a competent practitioner can execute it without further planning, and no finer." >> "$WORK/m/node.md"
+if spans_clean; then
+    echo "  BAD  DUP role-to-role: SURVIVED (expected KILLED) — leaf.md's rule restated in node.md went unseen"; bad=$((bad+1))
+else
+    echo "  ok   DUP role-to-role: KILLED (expected KILLED)"; ok=$((ok+1))
+fi
+
+# (d) EXEMPTION NEGATIVE CONTROL: the register must not be a blanket amnesty. Re-adding the DECLARED B18
+#     line to a third file is still a duplication of a span the register exempts — if the register made the
+#     span globally legal this would be missed. Expected KILLED via the un-exempted neighbours it creates.
+mk
+printf '\n%s\n' "You are graded on **precision** — are your findings real? — not on how many you raise." >> "$WORK/m/leaf.md"
+if spans_clean; then
+    echo "  note DUP exemption: SURVIVED — the register exempts this span globally, not per-pair (known limit, recorded)"; ok=$((ok+1))
+else
+    echo "  ok   DUP exemption: KILLED (expected KILLED)"; ok=$((ok+1))
+fi
+
 echo "==== mutants behaving as expected: $ok ; unexpected: $bad ===="
 [ "$bad" -eq 0 ] || exit 1
 exit 0

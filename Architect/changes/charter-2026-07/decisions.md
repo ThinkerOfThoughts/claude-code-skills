@@ -1059,3 +1059,776 @@ citations are all above the table and are unaffected.
 **Nothing in the gate verdict is invalidated**, because neither blocker nor any major turns on that table.
 But the repair round must re-pin hashes, and **the next reviewer set must be spawned against a frozen
 artifact with the build finished first.**
+
+---
+
+## GATE 7 — REPAIR PASS on the re-scoped set · 2026-07-29
+
+**Runner:** a delegated guarded-change subagent. **Nothing committed, nothing installed** — the
+orchestrator commits.
+
+### Inherited state, and what was verified before acting
+
+`RESUME.md`'s drift table did not match disk. **Every mismatch was traced to commit `aa41f64`** (the cold
+claim-audit) and the working tree was clean, so no unexplained drift existed. Two consequences were carried
+forward rather than assumed away:
+
+- **`1.5-criteria.md` — the SUPERSEDED-but-frozen v1 — was EDITED by that audit** (2 lines, replacing a
+  record-1572 citation with a MIS-CITED marker). Its hash is therefore no longer its gate-4 freeze value
+  `1df324c0…18912c`; it is now `bb33394b…`. The edit is substantively correct and is recorded in the audit
+  commit, **but a frozen document was edited in place rather than annotated alongside**, which is the
+  mechanism `RESUME.md` §6 told a fresh session to treat as a red flag. Recorded here so the next reader
+  does not spend the hash mismatch a second time. **No result in this run depends on v1.**
+- **`~/Documents/Architect.md` also changed** (L26's unsourced justification struck). Line count is
+  unchanged at 119 and **every citation this run relies on was re-verified at its line**: L14/L22/L24/L26
+  (`cold agent` markers), L19 (PROVENANCE), L79 and L92–97 (the two `Consensus` call sites). New hash
+  `87986c3c…`.
+
+### DEVIATION — gate 4 was skipped, and this run did NOT re-run it. Ruling and reason.
+
+**Do not write "gate 4 passed" anywhere.** It was never run.
+
+**The skip's stated justification is now known to be false.** It was skipped on the reasoning that *the
+decomposition is the plan and the owner authored and approved it*, so a cold gate would be red-teaming the
+owner's own instruction. But the owner's instruction enumerated **five** agent types after an *"i.e."*; the
+decomposition actually built contained a **sixth composition he never named** — the split reviewer, as
+`redteam.md` + `divider.md` §B — and **that composition is precisely where gate 7 landed a 2/3 major.** The
+gate that would have caught it was skipped on the grounds that there was nothing un-owner-authored to
+catch.
+
+**Ruling: gate 4 is not re-run as a separate gate; its unique content is folded into gate 7 as a named,
+first-position question, and this is recorded as a deviation, not as an omission.** Reasons:
+
+1. **Gate 7 dominates gate 4 on everything except one question.** A gate-7 reviewer reads the built set
+   against the criteria and the spec; a gate-4 reviewer reads a plan for that set. Re-running gate 4 on a
+   built artifact spends three cold agents re-deriving findings gate 7 already produces.
+2. **The one thing neither gate asks is whether the decomposition itself is right** — gate 7's criteria
+   *presuppose* it. So that question, and only that question, is real residue.
+3. It is therefore asked directly, as **Q1 of `records/stage6d-prompt.md`**, positioned first, and
+   phrased to require the reviewer to **derive the decomposition from the spec and the owner's instruction
+   before opening `charter.md`**, because `charter.md` contains the author's justification and would
+   anchor a reviewer who read it first.
+4. **This is the cheaper instrument for the same evidence**, which is the standing guidance when a per-
+   element measuring apparatus starts costing more than the thing it measures.
+
+**Residual risk, stated rather than closed:** a reviewer given nine questions may weight Q1 lightly. It is
+mitigated by position and by an explicit instruction to answer before reading the justification, and by
+nothing else.
+
+### FRZ-2 — the accept bar was AMENDED mid-run. Change, reason, and the re-review that legalises it.
+
+**N-10 and N-11 of `1.5-criteria-v2.md` contradicted each other.** N-10 required the severity model in
+`charter-common.md` and *"Stated in no other file."* N-11 required `node.md` to restate *"a silent
+unilateral demotion is a violation and the reviewer's severity stands"* — a sentence of that model. The
+artifact could not satisfy both, and GATE-B2 correctly predicted that repairing the text alone would
+re-introduce the duplication at the next build.
+
+**The amendment does not exempt the duplication.** It splits the rule on the composition rule's own
+diagnostic — *which roles can act on it?*
+
+- The **prohibition** (*no role may lower a severity a reviewer assigned*) binds every role → **stays
+  common**, stated in `charter-common.md` §3 and nowhere else.
+- The **permission** (*you may contest one, and only via `Ask_human`*) is actable by the **node alone** —
+  `redteam.md` states no contest channel exists for reviewers, `combiner.md` states the combiner does not
+  demote, the leaf files no findings, the divider holds no severity channel. By the diagnostic **it was
+  never common** → moves to `node.md`, which also now states *why* the call is available to it and no one
+  else (it holds `node_id` and `depth`, which `Ask_human`'s signature requires).
+
+**N-06 amended** to carry the composition rule's **second clause** (role → role) and to require the
+**declared-duplication register**; the rule as written covered only common → role, and the harness could
+see neither. **N-21…N-26 added** for this gate's repairs and for the negative assertion itself.
+
+**The FRZ path requires an entry AND a targeted re-red-team of the edited criteria. Both were done:** this
+entry, and **Q2 of `records/stage6d-prompt.md`**, which puts the amendment to the cold reviewers as an
+explicit self-certification risk — *does it fix a real incoherence or merely license the artifact the
+author wanted to ship?* **An author who amends the bar and then measures themselves against it has
+self-certified unless someone else rules on the amendment.**
+
+### The two blockers — repairs
+
+**GATE-B1 — the invented `Consensus` halt. CLOSED, and the underlying hole is NOT closed.**
+The clause told the combiner, on fewer than three plans, to refuse and reach the owner via `Ask_human`. It
+fired on the spec's **mainline** path (L92–97 spawns exactly two children every divisible node, every
+iteration) and named an escape **the combiner cannot call** — `Ask_human`'s signature needs `node_id` and
+`depth`, which are in no combiner closed set.
+
+Replaced with a statement of the limit that **invents no merge rule and halts nothing**: it names the
+two-child case as a **category error** rather than an arity gap (*"the odd plan is discarded"* would
+discard half the plan, because the two children hold `division.first()` and `division.second()`), records
+it as an open design hole belonging to the owner, and instructs the combiner to **return the plans
+unmerged, led by an explicit note**, and **not to halt.**
+
+⚠ **"Return unmerged with a note" is the runner's own invention and is declared as one.** The argument for
+it, which the reviewers were asked to attack: it is the only option that neither fabricates a merge nor
+converts a depth-bounded gate into an unbounded owner-interrupt stream; and the flagged non-merge travels
+to the red-team, which files it, which makes it the next task — **the loop's own mechanism surfaces the
+hole, which is strictly better than a halt.** The design question itself remains **item 2 on the owner's
+queue and was not resolved here.**
+
+**GATE-B2 — the composition rule violated as a pattern. CLOSED, mechanically.**
+Repaired by (a) deleting restatements that added nothing, (b) splitting the demotion rule as above, (c)
+adding **clause 2** (role → role) to the rule, (d) publishing a **declared-duplication register**, and (e)
+building the negative assertion that could see any of it.
+
+**Measured, not asserted:** the sweep found **3** common→role rule spans at ≥7 words — fewer than the ~8
+the reviewers reported, because the reviewers were also counting **role→role** spans, most of which are
+**scaffolding** (composition banner, closed-set section stem) rather than rules. That distinction is now
+in the rule itself as clause 2 rather than left to judgement. Final state: **0 undeclared shared spans.**
+
+**Two claims in `charter.md` that were FALSE AS SHIPPED are gone:** *"nothing is duplicated, so there is
+nothing to sync"* and *"The one declared duplication"*. The audit's inline `[FALSE AS SHIPPED …]` marker,
+which had been inserted mid-sentence and left the sentence ungrammatical, is replaced by the corrected
+two-clause rule and the register.
+
+### Majors repaired
+
+| Finding | Convergence at gate 7 | Repair |
+|---|---|---|
+| The floor framing is false for roles that hold no floor | 3/3 | `charter-common.md` §2 now states that a role whose file has no *"What the floor means for you"* section **was given no floor** and must not infer one, and names the three roles that do hold one. |
+| Undeclared author inventions ship flat | 3/3 | `charter.md`'s provenance gains an **ADDED** category: D4, D5, D6, D11, and the severity table's **three trigger clauses beyond** `Guarded_change/stages/stage-4.md` L17–22 — the last being the separately-filed *"widened, not copied"* finding, now declared. |
+| `Ask_human` is uncallable by most roles yet offered as *the* remedy | 2/3 | `charter-common.md` §0 now names the **return value** as the universal channel — every role has one — with `Ask_human` as an additional channel only where a role file names it. |
+| The split reviewer's composed prompt self-contradicts on its own closed set | 2/3 | **Restructured.** See below. |
+| The Completeness earned-clean clause is structurally unsatisfiable | 2/3 | Tiers (i)/(ii) are now reported **UNRUNNABLE** when their lists are not in the reviewer's inputs; tier (iii) is always runnable and a clean verdict must show it ran. |
+| Both conditional lenses are hard-coded, so B19/D8 is asserted but not built | 2/3 | Not repairable at this element — the assembly step belongs to the router. **Declared** in `redteam.md` (the reviewer applies the trigger itself) and in `charter.md`'s provenance. Recorded **OOS-14**, element 4. |
+
+### The reviewer restructure — derived, not inherited
+
+Both gate-7 reviewers who filed the split-reviewer major proposed the same fix. **It was re-derived here
+rather than adopted on their authority**, and the derivation is stronger than the vote:
+
+`redteam.md` stated its closed set as *"the task, the plan, and the granularity floor"*. `divider.md` §B
+stated *"You have no plan and are not entitled to one."* Under append-composition §B is an **addition** to
+`redteam.md` — and it **modifies** `redteam.md`'s closed set. **The set's own governing rule says that a
+role file needing to modify a rule is proof the rule was never common.** So the split is forced by the
+rule the whole decomposition rests on, not by reviewer preference.
+
+Result: `redteam.md` keeps only what binds **both** reviewer kinds (lenses, discipline, RAT1/RAT2) and
+**names no artifact**; `redteam-plan.md` and `redteam-split.md` each state their own artifact, their own
+floor meaning, and their own closed set. **B18 moves to the two aiming files** because under append
+composition the last file wins the last line and the two kinds now end in different files.
+
+This also removed an inversion nobody had named: **the split reviewers' aiming lived in `divider.md`**, so
+the divider read instructions written for its own reviewers while its reviewers reached them only by
+composition.
+
+**Cost, stated:** composition is now three tiers for reviewers (common → reviewer core → aiming) instead of
+two, and the set is nine files instead of seven. Whether that is right is **Q1 to the cold reviewers.**
+
+### The harness — extended, and it found three defects
+
+`shared_spans.py` and `declared-duplications.jsonl` were added; `ruleplace.sh`'s N-03 probe was
+strengthened; `mutation-test.sh` gained a duplication-mutant class (positive control, per-role kill
+mutants, a role→role mutant, and an exemption-abuse mutant).
+
+**Measured: 92 passed / 0 failed · 0 undeclared shared spans · 87 mutants as expected / 0 unexpected.**
+Verbatim invocations and output: `records/harness-run-2026-07-29.txt`.
+
+**Three defects the extension caught, each of which had already shipped:**
+
+1. **`shared_spans.py` did not include the two newest files** in its role list, so duplications in them
+   were invisible. Caught by the per-role kill mutants reporting `SURVIVED`, **not by reading the script.**
+2. **The register was a global amnesty**, exempting a declared span everywhere rather than for its
+   declared pair. Caught by the mutant written specifically to abuse the exemption list. Exemptions are
+   now scoped to a `sites` pair.
+3. **The N-03 fork-fidelity probe was near-vacuous** — it asserted only that the destination file *"exists
+   and is non-empty"*, i.e. **nineteen probes that pass for any nine non-empty files**. This is the same
+   class as the two bare `exit 0` checkers this project has already shipped, and it had been reported as
+   fork fidelity "verified rule-by-rule". **The rule-by-rule verification that was done was done by
+   humans; the oracle was not doing it.**
+
+**A fourth defect was caught in this entry's own evidence-gathering:** the first capture of the harness
+record read `$?` **through a pipe**, so a script exiting 2 was recorded as `exit=0`. That is exactly the
+"read a usage error as a pass" failure in this project's own failure-mode list, committed while writing
+the file that documents it. Exit codes are now captured from each script directly.
+
+### Honesty notes carried forward — none of these became verified
+
+- **`rules.tsv` is author-written.** It proves the rules it names sit in the files it names; it is **not**
+  evidence the criteria are covered.
+- **The 60% threshold in N-03 is a judgement, not a derivation.** `B15` passes at **2 of 3**.
+- **`shared_spans.py` cannot see a paraphrase.** Two duplications repaired this run — the floor-is-wrong
+  clause in `divider.md` and `leaf.md` — were found by **reading**, not by the sweep. **A clean run means
+  no verbatim restatement survives, not that the composition rule holds.**
+- **No behavioural evidence exists for any file in this set.** `fixtures/` is empty.
+
+### OOS-14 (new)
+
+**Conditional inclusion is stated but not built.** `charter-common.md` §0 promises that a conditional
+section reaches an agent only when its trigger has fired; no assembly step in this set does that. Declared
+in the artifact rather than hidden. **Belongs to element 4 (the router).**
+
+### Still the owner's, and untouched by this run
+
+1. **Does the harness cut stand**, now that its stated authority is known to be invented? The runner's own
+   position is recorded in `1.5-criteria-v2.md` Part B and **splits the question in two**: the A/B arms
+   should not be rebuilt (their design cannot terminate), **but** the further claim that no behavioural
+   evidence is needed at all is rejected — record 1572's *"fix the first link in the chain that broke"*
+   presupposes the broken link is identifiable. A replacement smoke test is **specified and NOT run.**
+2. **`Consensus` arity and semantics** — spec L22 vs L79 vs L92–97. Not resolved; `combiner.md` now states
+   the hole instead of papering over it.
+3. **The demotion port has no destination** — `grep -ic 'decision log'` on the spec still returns 0, so
+   the contest-via-a-logged-entry half of the ported mechanism remains inert. Untouched.
+
+### ⚠ SELF-REPORTED PROCESS DEVIATION — the criteria file changed after the reviewers were dispatched
+
+**The artifact did not.** All nine `Architect/stages/*.md` hashes were re-verified after dispatch and match
+the frozen table in `records/stage6d-prompt.md` §2 byte for byte. **`1.5-criteria-v2.md` did not.** The
+reviewers were given `eaff14ac6e44189ea6d6195d138305b83dd243ce9bd4e1671c4a8a3210b0ba5e`; the file is now
+`fb75fb64e534005409d2dc793b56d25ebba44fc4ed515fe2884ad8994a28a761`.
+
+**This is the same class of violation the previous runner self-reported** (editing `charter.md` while L, M
+and N were in flight) and it is recorded the same way, not excused.
+
+**What changed, exactly — three corrections to the criteria document's own accuracy, none to any
+requirement the artifact must meet:**
+
+1. **N-11's decision-log clause**, which read *"No reference to a 'decision log' anywhere in the set"*, was
+   tightened to *"no clause routing anything TO a decision log."* The original wording was **never
+   satisfiable and was never meant to be**: N-13b *requires* `charter-common.md` §6 to name a decision log
+   in order to rule it out as an admissible source. The probe (`N-11d`) has always been scoped to the
+   destination phrasing; the criterion's prose overstated it.
+2. **N-11's Part-A row** — the pre-amendment version requiring a restatement that N-10 forbids — was
+   replaced with a pointer to the FRZ-2 row. The document had been left stating **two incompatible
+   versions of one criterion**, which is the very defect FRZ-2 exists to fix.
+3. **Stale role counts** ("all six roles", "six role files") corrected to per-role quantifiers, the set
+   having eight dispatched files since the restructure.
+
+**Consequence for this gate, stated plainly:** a reviewer who verifies the §4 hash will find a mismatch and
+is instructed by the prompt to say so and stop. **If any reviewer stops on that, the review is un-run and
+must be re-dispatched against the current hash** — that is the correct outcome and must not be argued
+around. A reviewer who proceeds is holding a criteria document that differs from the shipped one only in
+the three respects above, none of which changes what the artifact is measured against; **but that judgement
+is the runner's, and the runner is the party the check exists to constrain.** The next reviewer set must be
+spawned against a frozen criteria file as well as a frozen artifact.
+
+### SELF-FOUND DEFECT FROM THIS RUN'S OWN REPAIR — open, not fixed, and the artifact is frozen
+
+**Severity: major. Found by the runner after reviewer dispatch; not fixable without breaking the freeze.**
+
+Repairing the 3/3 major *"the common core's floor framing is false for roles that hold no floor"*,
+`charter-common.md` §2 was given a discriminator:
+
+> *"If your role file has no section headed "What the floor means for you", you were not given a floor, the
+> rules below do not bind your work, and you must not infer one and apply it anyway."* … *"The roles that
+> do hold one are the divider, the leaf and the red-team reviewer — the three the design binds it to."*
+
+**That enumeration is wrong, and it was checked against the wrong thing.** It was derived from
+`~/Documents/Architect.md` L1–8, which lists the three things the floor *bounds*. But the discriminator is
+about **who is given one**, and that is decided by the **signatures**:
+
+```
+L10  Spawn_leaf(task, plan, granularity)                          -> holds one
+L12  Spawn_node(task, plan, granularity, depth, node_id)          -> HOLDS ONE
+L14  Divisible(_task, _granularity)                               -> holds one
+L28  Spawn_redteam(_task, _plan, _granularity)                    -> holds one
+L22/24/26  Consensus / Union / Severity                           -> holds none
+```
+
+**`Spawn_node` takes `granularity`.** `node.md`'s closed set correctly lists *"the **granularity floor**"*
+— and `node.md` has **no** section headed *"What the floor means for you"*
+(`grep -c` → **0**; the heading is in `charter-common.md`, `redteam.md`, `redteam-plan.md`,
+`redteam-split.md`, `divider.md`, `leaf.md`). **So the composed node prompt states, ~130 lines apart, both
+that the node holds the granularity floor and that it does not.**
+
+**This is failure mode 5 from `ATTEMPT-2-STATE.md` §8 — an under-generalized fix — committed while
+repairing a finding, which is the same shape as the R4 episode where a repair turned a non-defect into a
+defect.** The fix addressed the role the reviewers pointed at (the combiner) and did not sweep the class.
+
+**The fix for the next pass, stated now so it is not re-derived:** §2 needs **three** cases, not two.
+
+1. **Roles whose own work is bounded by the floor** — divider, leaf, both reviewer kinds. The two rules
+   bind, and the role file states how.
+2. **The node, which holds the floor but is bounded by none of it.** It writes no plan content
+   (`node.md`: *"You do not plan"*), so nothing of its own can fall below the floor. What it does is
+   **thread** the value to `Divisible`, `Spawn_leaf`, `Spawn_redteam` and its children — so its duty is
+   **pass it down unchanged**, and never substitute a value it thinks better. That is a real duty and
+   currently **no file states it**: the node is the only place the floor can be silently altered for an
+   entire subtree.
+3. **Roles given none** — the combiners.
+
+**Not fixed here.** The three reviewers are holding the frozen artifact; editing it now is precisely the
+process violation this run has already self-reported once. **It goes into the next repair pass**, together
+with the composed-prompt heading collision noted in `RESUME.md` §7 (two sections headed *"What the floor
+means for you"* in a reviewer's composed prompt).
+
+**Note for whoever runs that pass:** case 2 is not merely a wording fix. *"The node must pass the floor
+down unchanged"* is a rule the set does not currently contain anywhere, and its absence is the one way a
+branch-level floor override — which the spec explicitly permits at L1–3 — becomes indistinguishable from a
+node quietly relaxing the floor for everything beneath it.
+
+### SECOND SELF-FOUND DEFECT — two dangling common-core pointers. Open, artifact frozen.
+
+**Severity: major (`divider.md`), minor (`node.md`). Found by sweeping the CLASS after the first
+self-found defect, rather than stopping at the one instance.**
+
+`charter-common.md` §3 makes a promise every role file must resolve:
+
+> *"The severity the reviewer assigned stands unless it is contested through **the channel your role file
+> names**."* and *"A finding one reviewer caught is signal. **What that obliges you to do is in your role
+> file**."*
+
+Generated sweep over the seven dispatched role files, counting mentions of a contest channel and of the
+lone-finding duty:
+
+```
+redteam.md         contest:1  lone-finding-duty:3
+redteam-plan.md    contest:0  lone-finding-duty:0     <- resolved by redteam.md, composed before it: OK
+redteam-split.md   contest:0  lone-finding-duty:0     <- same: OK
+divider.md         contest:0  lone-finding-duty:0     <- NOT resolved anywhere in its composed prompt
+combiner.md        contest:3  lone-finding-duty:2
+leaf.md            contest:0  lone-finding-duty:2     <- "You do not file findings" resolves the duty
+node.md            contest:3  lone-finding-duty:0     <- channel resolved; duty not
+```
+
+**`divider.md` — major.** The divider **consumes severities**: `divider.md:9` and `:50` both say it
+*"loop[s] until no `major` or `blocker` issue remains"* against its split. So it is a role that reads
+reviewer-assigned severities and decides when they are gone — and **its composed prompt never tells it
+whether it may contest one, nor that it may not.** §3's prohibition (*"No role may quietly lower one"*)
+still binds it, so the failure is bounded; but §3's **pointer resolves to nothing**, which is the same
+"instruction whose actor never reads it" class the whole re-scope exists to eliminate — here inverted into
+a promise with no referent. **The `Divisible` loop is also the one place in the design where a role can end
+a review loop by deciding a finding no longer counts, and nothing currently says it cannot.**
+
+**`node.md` — minor.** The channel is fully stated; the lone-finding duty is not. Lower cost because the
+node does not merge — `Union` already discarded nothing before the findings reach it.
+
+**Why this is recorded as its own entry:** the first self-found defect (the node/floor contradiction) was
+an under-generalized repair. **Rather than fix that one instance and stop — failure mode 5, which this
+project has already produced — the class was swept.** This is the result of that sweep, and the sweep is
+what the *"recurrence means under-generalization"* rule in `redteam.md` asks for.
+
+**Not fixed here; the artifact is frozen under three in-flight reviewers.** Goes into the next repair pass
+with the other two open items (the node/floor contradiction, and the duplicate *"What the floor means for
+you"* heading in the composed reviewer prompt).
+
+## GATE 7 — REPAIR-PASS RE-REVIEW · reviewer P returned **BLOCKER** · 2026-07-29
+
+**Reviewers O, P, Q dispatched against the frozen nine-file set.** Identity read first-hand from the
+harness sidecars, **not** reviewer-reported:
+
+| Tag | agentId | model | parentAgentId | spawnDepth |
+|---|---|---|---|---|
+| O | `a0d1f92f5062b62aa` | `opus` | `a9b39b3c731d2c23a` | 2 |
+| P | `abe8912b733efac94` | `opus` | `a9b39b3c731d2c23a` | 2 |
+| Q | `ae53a70b86e824e87` | `sonnet` | `a9b39b3c731d2c23a` | 2 |
+
+Three distinct ids, one common parent, depth 2, **two distinct models** — so *"3 independent cold agents"*
+is a **verified fact** for this gate, not an assertion. Prompt: `records/stage6d-prompt.md`.
+
+### Reviewer P — **BLOCKER**. Record: `records/reviewer-P-verbatim.md` (26,720 chars, extracted from the harness transcript).
+
+**P confirmed the artifact and criteria hashes matched at read time and re-verified them at the end.** P
+read `1.5-criteria-v2.md` at `eaff14ac…`, i.e. **before** this run's post-dispatch edit to that file — so
+P's findings are against the pre-edit criteria, and the deviation entry above applies.
+
+**P-1 — BLOCKER, and it is correct. The can-fail test for the register cannot fail.**
+
+```
+if spans_clean; then
+    echo "  note DUP exemption: SURVIVED ... (known limit, recorded)"; ok=$((ok+1))
+else
+    echo "  ok   DUP exemption: KILLED (expected KILLED)";             ok=$((ok+1))
+fi
+```
+
+**Both branches increment `ok`.** Verified by direct read of `oracles/mutation-test.sh:135-139`. The arm
+was written while the global-amnesty limit was still real, the limit was then fixed, and **the arm was
+never converted from a reporter into a gate.** N-M6(d) is gating and requires the mutant to be *caught*;
+the harness scores `SURVIVED` as a pass. **The headline 87/87 therefore includes one arm structurally
+incapable of reporting the failure it exists to detect.**
+
+**This is the printer-checker failure class this project has now shipped four times — and this instance was
+written by the runner, inside the instrument built this run to repair GATE-B2, while the surrounding
+documents were describing that instrument as the thing that makes duplication detectable.** No mitigation
+is offered. It is the same defect, one level up, exactly as the N-01c probe was last run.
+
+**P-2 — MAJOR, confirmed by measurement.** `8 of 12` register entries carry no `sites` key and are
+therefore global amnesties (generated count, not hand-checked). **P did not merely observe this — P
+exploited it**, appending the `scaffolding`-classed span *"plus the review-context paths named in the run's
+configuration"* to `node.md` and `leaf.md`, whose closed sets contain no such element, and the oracle
+reported **`0 undeclared shared spans`**. **A false closed-set element was injected into two role files and
+the harness called the set clean.** P's reading that this particular entry is *"where an inconvenient
+duplication went"* is accepted: a closed-set element is a rule, N-04 gates on exactly those lists, and
+classing it `scaffolding` was wrong.
+
+**P-3 — MAJOR.** The register exists in **two copies that disagree**, which is what N-06 was amended to
+prevent. `charter.md`'s table names **one** duplication (B18) plus two scaffolding classes in prose; the
+JSONL holds **two** `rule` entries and **eight** `scaffolding` entries. The second rule-class entry
+(`2-of-3 on numbered steps INCLUDING ORDER`) **is absent from `charter.md` entirely**, and the JSONL's
+header claim that it is *"mirrored in Architect/stages/charter.md"* **is false**.
+
+**P-4 — MAJOR, and it is the answer to Q2.** P's verdict on FRZ-2: the *reasoning* is **"principled,
+correctly derived from the set's own diagnostic, and fixes a genuine incoherence"** — but the amendment is
+**incomplete**, and the incompleteness licenses the shipped artifact. Amended **N-10** says the prohibition
+is stated *"in no other file"* (absolute), while amended **N-11** requires `combiner.md` to state *"the
+combiner does not demote"* and **N-12** requires *"`Severity` filters and does not re-rank."* The shipped
+text states the prohibition at `combiner.md:80`, `combiner.md:97` and `node.md:91`. **The contradiction was
+relocated from the N-10/N-11 pair to the N-10/N-12 pair rather than eliminated.** And the harness cannot
+see it: N-10's absence probe (`N-10e`) is scoped to **`redteam.md` alone**, and `shared_spans.py` cannot
+see paraphrases. P's summary is accepted verbatim: *"the net effect on N-10 is that the bar moved to where
+the artifact already stood."*
+
+**P-5 — MAJOR, and it is the sharpest finding in the review.** The conditional-lens carve-out in
+`redteam.md` **restates and then modifies** common core §0 — both clauses of the composition rule
+prohibited. By the set's own diagnostic, the conditional-inclusion rule was **never common** (only
+`redteam.md` holds conditional sections) and should have moved down instead of staying in the core with an
+override bolted on. **Worse, and this was not anticipated: `charter-common.md` §0 instructs every agent
+that a role file appearing to contradict the core is a prompt-set defect to be reported "in your return
+value, before anything else." So every plan reviewer and every split reviewer is now instructed to open
+its output with a spurious defect report.** Declaring the gap documents it; it does not disarm it. **The
+declaration was the runner's chosen repair and it was the wrong one.**
+
+**P-6 — MAJOR. Independently found the node/floor contradiction** already self-reported above, and reached
+the same diagnosis: *"the repair replaced a false universal with a different false statement, and grounded
+it in a test that contradicts its own conclusion."* **Two independent parties, same defect** — it is real.
+
+**P-7 — MAJOR.** Four gating criteria have **no probe anywhere**: **N-14** (correctly declared unverified),
+**N-15a**, **N-20**, and **N-25**. **N-25 is the criterion covering this run's headline restructure and it
+is unprobed.** `8-harness.md`'s unverified list names N-05/N-06/N-09/N-13/N-14 and **omits N-15a, N-20 and
+N-25**, so the harness record under-declares its own coverage gap.
+
+**P-8 — MAJOR, and it is a finding against the brief this run was given, not only against the artifact.**
+*"That is the whole of record 1572"* is **false**. Independently verified by the runner before P returned:
+record 1572 has **three numbered items**, and the quoted done-criteria paragraph is the middle of item 1.
+**The omitted item 1 is the owner's only recorded statement on the measurement-apparatus problem** — the
+exact subject of the Part-B cut:
+
+> *"This is an issue that keeps happening, like, a LOT, at the start of this bughunt Fable 5 burned an
+> entire weekend tyring to build a bughunt test that would only be passable for Opus using Dragonfly
+> (couldn't manage it).. Make a note somewhere persistent … for a general todo item to do \*something\*
+> about this."*
+
+The **narrow** claim (that *"instrument, not a gate"* is absent from 1572) remains true and P re-confirmed
+it. But *"the whole record"* is not, and the claim propagates from the runner's brief into
+`1.5-criteria-v2.md` and into `records/stage6d-prompt.md`. **Every document asserting it must be
+corrected.** P is right that the omitted text *"licenses neither the cut nor a rebuild"*.
+
+**P-9 — MINOR, and it should be actioned.** Record **1449** item 3 does **not** ratify placement of the
+spot-verify duty. The question at record **1445** offered four labelled options; the owner selected
+**none** of them and replied *"That \*was\* part of what Combine did, but you said nothing could get
+discarded, make up your mind."* In the owner's **own original** (record 1044) `Combine` is a *single*
+function; the split into `Consensus`/`Union`/`Severity` is orchestrator-authored. **Mapping "Combine" onto
+`Union` specifically is an author inference — and it is the inference the owner was complaining about.**
+Measured against the set's own RAT1 (`redteam.md`), that is a *partial or adjacent* answer and is **not
+ratified**; the axis must be **re-asked, not defaulted**. So `charter.md`'s ADDED entry for D11 still
+over-claims: it declares the *mark* as author elaboration but keeps *placement* as owner-ratified.
+
+**P-10 — MINOR.** The re-scope quote ships **with no transcript locus**, violating the prompt's own §3
+rule that every ruling carry one. P located it: **record 1977** (instruction), **record 1994** (*"Go for
+it."*), both verbatim. Record 1994 **continues past the quoted stop** with the owner ratifying the
+**general pattern** for all multi-agent skills — an under-claim, not an inflation.
+
+**P-11 / P-12 / P-13 — MINOR / MINOR / NITPICK.** The 60% threshold's only load-bearing application is
+B15 at 66.7% (already self-declared); `8-harness.md` carries a **stale N-16 block, unmarked, above the
+correct one**, still describing the split reviewer as *"redteam.md + divider.md §B"* — the arrangement this
+run removed; and the *"41% verbatim owner text"* figure measures 31% by P's method, an error running
+**against** the author's interest.
+
+### What P checked and found clean
+
+All nine artifact hashes; owner quotes at **1274, 1572 (text), 1762, 1829, 1449 item 2, 1175** all verbatim
+at their indices; `ruleplace.sh` exit-code hygiene (0 vs 2, distinct); all three harness numbers reproduced
+exactly; **N-M6(b)/(c) genuinely kill**; the `shared_spans.py` positive control is real; and the N-M4
+negative control does print a `SURVIVED`. P notes that last point makes **P-1 worse, not better** — *"the
+project knows how to write that arm."*
+
+### What P declared unchecked — recorded as unchecked, not as clean
+
+**Q1 was NOT RUN in its specified form.** P read `charter.md` early to pursue Q2 and reports itself
+anchored, so it **cannot certify the decomposition** and says so plainly. **Q1's three sub-questions —
+`Severity` not marked "cold agent", three reviewer files vs tier growth, and the homeless
+orchestrator/root-bootstrap/`granularity`-setter/`"or get stuck"` state — are unrun by P.** Also unchecked
+by P: the fork source and `0-baseline.md` (so **B01–B19 fidelity is unverified by this reviewer**),
+`1.5-criteria.md` v1 and reviewers J/K, and whether an unmerged plan pair actually survives `Memo_write`
+and the red-team, which is a **behavioural** claim for which this run has no evidence.
+
+**Nothing in P's review was acted on while O and Q were still in flight.** Repairing under a live reviewer
+is the violation this run has already self-reported once.
+
+### Reviewer O — **BLOCKER**. Record: `records/reviewer-O-verbatim.md` (35,685 chars, extracted from the harness transcript).
+
+**O ran all three questions, including Q1 in its specified form** — it wrote its derived decomposition to
+disk *before* opening `charter.md` and names the pre-registration file. P could not do this and said so, so
+**O is the only reviewer whose Q1 answer is uncontaminated.**
+
+**O's Q1 verdict: the decomposition is CORRECT, and the three-reviewer-file restructure was independently
+re-derived** from `Divisible` (L14, reviews a *division*) vs `Spawn_redteam` (L28, reviews a *plan*) —
+*"two genuinely different targets with two genuinely different closed sets… a correct repair, not growth."*
+**Two parties reached the same structure from the spec without conferring.** O flags one omission from the
+derived set: **the orchestrator has no prompt** (its MAJOR-9).
+
+**O also dissolved one of the prompt's own test questions.** The runner offered *"the spec marks
+`Divisible`/`Consensus`/`Union`/`Spawn_redteam` as 'cold agent' but not `Severity`"* as a thing to weigh.
+O extracted the owner's original (record **1044**) and found **every function signature in the file is
+agent-written** — L10, L12, L14, L16, L18, L19, L22, L24, L26, L28, L39. **The differential marking is
+entirely orchestrator-authored and carries zero owner authority.** It is not evidence and must stop being
+offered as a test. That is a defect in the runner's own reviewer prompt.
+
+**O-BLOCKER-1 — the conditional-lens contradiction is a NON-TERMINATION BUG, not a documentation gap.**
+This is P-5 carried three steps further, and the further steps are what make it a blocker:
+
+1. `redteam.md` restates and then modifies common core §0 — hard-coded, so it fires on **every** reviewer
+   dispatch, not conditionally.
+2. `charter-common.md` §0 orders the holder to report exactly that as a prompt-set defect **"in your return
+   value, before anything else"** — and a reviewer's return value **is** its findings.
+3. `charter-common.md` §3 defines **blocker** to include *"contradicts a settled decision"* and *"cannot be
+   executed as written"*, so the self-report survives `Severity`.
+4. `node.md` sets `task = Severity(Union(redteam issues))` and states there is **no iteration cap** — *"the
+   blocker|major filter is the only thing that ends this loop."*
+
+**Therefore every red-team round returns at least one blocker|major about the prompt set rather than the
+plan, `task` never empties, and the node loop never terminates.** And the declaration the runner relied on
+as the repair lives in `charter.md`, **which is not dispatched** — so the agent holding the contradiction
+never sees it. **The runner's chosen repair for this major was to declare the gap; O shows the declaration
+is read by nobody who holds the defect.** Minimum repair per O: the carve-out must be in
+`charter-common.md` §0 itself, because §0 is the rule being modified.
+
+**O-BLOCKER-2 — `Union` INVERTS the owner's only stated merge rule, and ships undeclared into a set with no
+provenance ledger for the design spec.** The owner's original `Combine` (record **1044**): *"if any one
+element of \_input disagrees on an element that the other two agree on, **the odd element is discarded**"*,
+confirmed with a worked example at record **1061 #4**. `combiner.md` states the **opposite** for the same
+owner function: *"**DISCARD NOTHING.**"* At record **1449** item 3 the owner reacted to precisely this —
+*"make up your mind"* — which under the set's own **RAT1** is a *partial or adjacent* answer that **does not
+ratify** the resolution chosen.
+
+**The finding is not that the split is wrong; it is that it ships flat.** `charter.md`'s **ADDED** list
+does not contain the `Combine` → `Consensus`/`Union`/`Severity` split or the rule inversion, and
+*"No rule is in a silent third category"* is scoped to **B01–B19** (the fork source) — true as scoped,
+false as read. **There is no provenance ledger anywhere in the set for divergences from
+`~/Documents/Architect.md`**, even though the spec is priority-2 authority for every reviewer and 59% of it
+is orchestrator-written. **The entire provenance apparatus points at guarded-change and none of it points
+at the design spec.** O's summary: a cold reviewer *"has a meticulous map of what came from guarded-change
+and no way whatsoever to tell owner mechanism from orchestrator mechanism in the design it is measuring
+against."*
+
+O also notes **N-22 is satisfied while its purpose fails**: it enumerates the closed list *"(D4, D5, D6,
+D11, and the severity table's trigger clauses)"*, so **a criterion naming the exact set the author declared
+cannot detect an undeclared invention.** That is direct evidence for the Q2 goalpost concern.
+
+**O-MAJOR-1 — THE HARNESS CANNOT DISTINGUISH A RULE FROM ITS NEGATION. Demonstrated, and reproduced by the
+runner.** O inverted four rules — *"You do not demote"* → *"You SHOULD demote freely"*; *"Check a sample of
+the cited file:lines"* → *"NEVER check"*; *"A silent unilateral demotion is a violation"* → *"is
+ENCOURAGED"*; *"Cite or it doesn't count"* → *"Cite nothing; citations do not count"* — and got
+**`==== 92 passed, 0 failed ====`**, byte-identical to the clean run. **The runner re-ran this attack
+independently and reproduced it exactly.** Cause: every probe is an unanchored `grep -Eq` substring match,
+and the mutant classes are DELETION / RELOCATION / INSERTION / CONTROL / DUPLICATION — **there is no
+NEGATION class.** The three inverted rules include the gating content of **N-10, N-12 and B08/B14**.
+
+**So the harness proves probes can fail on absence and relocation, and proves nothing about meaning.** The
+repair O prescribes is cheap — one `sed` per mutant — and is *"the single highest-value addition available
+to this harness."*
+
+**O-MAJOR-2 — 60% is not a threshold; it is the number that admits B15.** O ran the N-03 bar at
+60/67/75/80/90: every value ≥67 fails **only** B15, every value ≤66 passes everything. **Across 0–100 there
+is exactly one discriminating point.** Bash integer arithmetic makes 2/3 = 66, so 60 is the round number
+below it. The runner's own honesty note said the threshold was *"a judgement, not a derivation"*; **O shows
+it is worse than that — it is indistinguishable from having been reverse-engineered**, and N-03 measures
+vocabulary overlap between two author-written texts rather than rule placement.
+
+**O-MAJOR-3 — three live paraphrase duplications the sweep cannot see**, found by hand per the prompt's
+challenge: the floor safety rationale (common → `redteam.md`); **the "grip the handle" worked example in
+both `leaf.md` and `redteam.md`** — undeclared, and *introduced by this run*; and the cold-independence
+definition (common → `node.md`, `leaf.md`). Longest shared spans 4–5 words, all under the 7-word floor.
+**N-26's claim that the composition rule is "mechanically enforced" is therefore too strong** — what is
+enforced is the verbatim-span subset.
+
+**O-MAJOR-5 — N-24 is FALSE: the return value does not reach anybody for three of eight compositions.**
+This is the sharpest refutation of a repair this run made. The runner replaced the uncallable `Ask_human`
+remedy with *"say so in your return value"* and called it the universal channel. O traced it:
+- **Leaf** — its return value goes to `Consensus`, whose rule is *"the odd plan is discarded."* **A defect
+  report in one leaf's output is by construction the odd content and is discarded by design.** The set
+  instructs the leaf to report through a channel engineered to filter out exactly what one agent alone says.
+- **Divider** — returns `pair<string>` or `null`. **There is no field for a complaint**; putting one in a
+  sub-task corrupts the division.
+- **`Consensus`** — same sink as the leaf.
+
+**O-MAJOR-6 — the node/floor contradiction.** Independently found, matching P-6 and the runner's own
+self-finding: **three parties, same defect.** O adds the consequence the runner missed: spec L2–3 says
+granularity is *"threaded down so a branch can override it"*, the node is the only party positioned to
+perform that override, **and no file anywhere states who may override granularity.**
+
+**O-MAJOR-7 — the GATE-B1 repair keys on ARITY but hard-codes a diagnosis true only of the two-CHILD
+case.** `combiner.md` branches on *"fewer than three plans"* and then asserts the inputs are *"complementary
+halves rather than competing accounts of one task."* On the **stuck-leaf** path — `wait(… or get stuck)`,
+**owner-written text at L77** — three leaves on the *same* task can return **two** plans that are genuinely
+competing accounts. The repair would declare them "complementary halves", **which is false**, and refuse a
+merge that is well-defined (2-of-2 on the owner's own rule). **The false note then travels to `Memo_write`
+and the red-team as the plan's own account of itself.** O's repair: condition on the **call site**, which
+the node knows and can pass, not on the count. **The runner's own invention is wrong on a path the runner
+did not consider.**
+
+**O-MAJOR-8 — `"or get stuck"` is owner-written, appears three times, and is defined nowhere.** No
+detection criterion, no timeout, no statement of what a stuck agent contributes, no recovery path. **The
+memo covers *crash*, which is a different failure**: a crashed node is re-walked from the root; a stuck
+agent never returns and never crashes, so nothing re-walks and the parent's `wait` never completes.
+Combined with MAJOR-7, O calls it the most likely real-world hang.
+
+**O-MAJOR-9 — the orchestrator has operative duties in every dispatched prompt and no prompt of its own.**
+`charter-common.md` §6 instructs it to relay verbatim and never answer as the owner — **an instruction to a
+party with no file.** This is the exact defect the manifest diagnoses in its predecessor (*"asides
+unreachable by the role they bound"*), reproduced in the repaired set. It matters because the set's own
+threat model depends on it: §6 concedes `coordinator` does not prove faithful relay, and **the only
+mitigation is instructing the orchestrator.** N-05 is gating and does not list the orchestrator, so the
+harness cannot see it. **Undeclared — not deferred like OOS-14.**
+
+**O-MAJOR-10 — the divider's self-review loop is a SECOND unbounded non-termination path.** `divider.md`
+loops until no major|blocker remains, with no cap; the divider holds no `node_id`/`depth` so `Ask_human` is
+uncallable; and its return type cannot carry a complaint (MAJOR-5). **A divider whose reviewers keep filing
+majors spins forever with no exit — and it sits below `Human_gate`, so the owner never sees it.**
+
+**O-MAJOR-11 — the severity port drops guarded-change's SEV4 iteration cap silently.** Owner record 1449
+item 2 said to copy the mechanism as guarded-change implements it. The set imports the scale (widened,
+declared) and SEV3 as D4 (declared) **from the same file**, and drops SEV4 without naming it in the
+manifest's provenance. `node.md` says *"no iteration cap — deliberately"*, but that is a role file, not the
+ledger a reader auditing 1449.2 would consult. **Given O-BLOCKER-1 and O-MAJOR-10, the absence of any cap
+is now load-bearing.**
+
+**O's minors, all verified by the runner:**
+- **Probe IDs are REUSED.** `N-05e`, `N-05f`, `N-05g`, `N-05h` **each appear twice** with different
+  assertions and different target files (confirmed: `cut -f1 rules.tsv | sort | uniq -d`). So *"92 passed"*
+  overstates distinct-criterion coverage and `failed:<id>` is ambiguous. **Introduced by this run.**
+- The `scaffolding` class absorbs at least three rule-bearing spans — most damningly
+  **`"What the floor means for you"`, which `charter-common.md` §2 makes *dispositive* for whether a role
+  holds a floor.** A semantic token classed as structure, and it is the mechanism O-MAJOR-6 turns on.
+- **The runner's prompt said "seven of its entries are classed `scaffolding`"; the file has ten.**
+- Record **1762**'s quote is truncated without ellipsis (*"…for obvious reasons"*).
+
+**What O checked and found clean:** fork-source provenance (N-01) verified by `git show 8d73e5d | sha256sum`
+→ `0e73bacf…`, 103 lines, commit exists; the OOS-14 pointer resolves; the 41% spec-authorship measurement
+independently recomputed and exactly right; **all six owner rulings verbatim** at 1274/1572/1829/1762/1449
+plus the re-scope at **1977** and *"Go for it"* at **1994**; the three-reviewer restructure; and **all three
+harness numbers honest and reproducible.** O states plainly that `shared_spans.py` *"is a real instrument,
+not a printer"* and *"the best instrument this project has produced"* — while also demonstrating three ways
+past it.
+
+**What O could not check:** **no behavioural evidence exists and O produced none** — every finding is static
+analysis plus oracle execution, and O says explicitly that whether a real agent behaves as O-BLOCKER-1
+predicts **is unverified**. Not read: `0-baseline.md`, `2-plan.md`, `8-harness.md`, `RESUME.md`, reviewer
+records A–N, `README.md`, `ATTEMPT-2-STATE.md`.
+
+### GATE 7 VERDICT SO FAR: **BLOCKER, 2 of 2 returned, independently.**
+
+O and P agree on the composed-prompt contradiction (O-BLOCKER-1 / P-5), the node/floor defect (O-MAJOR-6 /
+P-6, and the runner's own self-finding — **three parties**), unprobed gating criteria (O-MAJOR-4 / P-7),
+the 60% threshold (O-MAJOR-2 / P-11), and the register's scaffolding class (O-MINOR-2 / P-2). They reached
+these separately, from different assigned angles.
+
+### Reviewer Q — **BLOCKER**. Record: `records/reviewer-Q-verbatim.md` (25,138 chars, re-extracted after Q completed — see Q-B-2).
+
+**GATE 7 VERDICT: BLOCKER, 3 of 3, independently, from three different assigned angles.**
+
+Q ran **Q1 with pre-registration** (derived before opening `charter.md`), **fork fidelity B01–B19 in both
+directions**, Q2, Q3, the register audit, and spot-checked owner records **1274, 1572, 1829, 1762, 1449,
+1175, 1258, 1977, 1994** — *"all confirmed accurate as quoted."*
+
+**Q's Q1 verdict matches O's: the decomposition is right.** Q independently derived **six roles** and
+concluded the reviewer three-way split *"is justified rather than tier-growth-for-its-own-sake, because the
+two closed sets are genuinely different."* **So Q1 was answered twice, independently, by pre-registered
+derivation, and both said the shipped structure is correct.** Q judges the root-bootstrap / `granularity`-
+setter questions **legitimately out of scope** for this element (Layer-2 concerns by the spec's own
+framing) — a narrower view than O's MAJOR-9, and Q flags only the lack of an explicit OOS declaration.
+
+**Q-B-1 — the accept bar changed after dispatch. Independently caught, and worse than the runner recorded.**
+Q found **three distinct hashes for one "frozen" file**: the prompt's `eaff14ac…`, the live `fb75fb64…`,
+and `HEAD`'s `e08e93eb…`. Q also established the timing from mtimes — the criteria file was written
+**3.5 minutes after the prompt that asks the reviewer to audit it**. Q's framing is accepted: *"the exact
+material Q2 asks me to audit was written after the prompt that asked me to audit it, and is not the version
+anyone else can reproducibly re-read."* **The runner self-reported this deviation before Q returned, and Q
+confirms it independently. Q read the post-edit version; O and P read the pre-edit version. The three
+reviewers were not measured against identical bars.**
+
+**Q-B-2 — THE VERBATIM-RECORD PIPELINE WAS CAUGHT WRITING MID-TASK FRAGMENTS AS "FINAL MESSAGES", AND Q
+PROVED IT ABOUT ITSELF.** This is the runner's defect and it is the most damaging finding of the three
+reviews, because it attacks the evidence base rather than the artifact.
+
+`oracles/extract_records.py` takes the **last assistant text message in the transcript**. The runner ran it
+against `records/` **while all three reviewers were still in flight**, so it wrote three files headed
+*"VERBATIM final message … byte for byte"* that in fact contained scratch fragments — Q's own read:
+
+> *"Matches the sha256 claimed in charter.md's provenance blockquote. Now let's read the baseline file that
+> assigns B01–B19 IDs."*
+
+**Q is the one participant who can verify this first-hand, and did**: it knows it wrote that line several
+tool-calls into the review, before reading `charter-common.md` or any role file. Q's warning is exactly
+right — *"any later stage … that trusts these three files as ground truth is citing fabricated
+non-verdicts."*
+
+**This is the same class as the defect the 2026-07-29 claim-audit found in `reviewer-F-verbatim.md`** (a
+condensed paraphrase titled "verbatim"), **committed again, by the runner, in the very tool built to
+prevent it.** The tool is not wrong; **running it against the durable record directory before its subject
+had finished was.**
+
+**Corrected:** all three records were **re-extracted after all three agents completed** — O 35,685 / P
+26,720 / Q 25,138 chars, each ending in its real verdict (verified by inspecting the tail of each file).
+**The fragments never left the working tree and nothing was committed from them, but two decisions.md
+entries were written while the O and P records on disk were still fragments; those entries were composed
+from the completion notifications, not from the files.** **Fix for the tool: `extract_records.py` must
+refuse to write unless the agent has terminated, or must write only to a scratch path until then.** Until
+that is built, **never point it at `records/` mid-flight.**
+
+**Q-B-3 — N-03 HAS NEAR-ZERO DISCRIMINATIVE POWER, AND THE RUNNER REPRODUCED IT.** This is the strongest
+form of the fork-fidelity finding and it goes past O's threshold analysis. Q ran each rule's description
+terms against **all nine files**, not just the claimed destination. Reproduced independently by the runner:
+
+```
+9 of 19 rules ALSO pass against at least one file they were never claimed to be in
+B09 "rank every finding"     -> passes 8 of 8 files
+B15 "provenance record ..."  -> passes 4 (extra: redteam.md, combiner.md, node.md)
+B01 / B08 / B14              -> each pass 3, with 2 wrong files apiece
+```
+
+**So for nearly half the rules the probe returns the identical PASS verdict had the allocation table named
+the wrong file.** The cause is structural: all nine files share one design's vocabulary, so a 2–4-word
+description drawn from a rule's own summary appears somewhere in most other files regardless. **This
+falsifies the comment the runner wrote into `ruleplace.sh` claiming word overlap is an improvement over
+"destination file is non-empty" — it is barely distinguishable from it.**
+
+**And `grep -c 'N-03' oracles/mutation-test.sh` → 0** (verified). **The one check this gate named as
+priority 1 is the one check the self-test never touches**, so the 87/87 figure carries **zero** evidence
+about N-03.
+
+**Q's other findings**
+
+- **M-1 — a paraphrased composition-rule violation the sweep cannot see**, independent of O-MAJOR-3's three:
+  `combiner.md`'s *"you do not raise a severity, you do not lower one"* paraphrases `charter-common.md` §3's
+  *"No role may quietly lower one"* — **the very prohibition FRZ-2's note says "binds every role and stays
+  common."** Not reported even as an exempted span. **The fix's own instrument cannot see the defect class
+  the fix was for, when it is worded differently.**
+- **M-2 — `Severity` is dispatched as a full cold agent though the spec conspicuously does not mark it
+  one.** Q derived this before reading the artifact. ⚠ **This is the question O dissolved** by showing every
+  signature in the spec is agent-written — so Q's framing (*"the spec conspicuously does not mark it"*) is
+  itself resting on orchestrator text. **Q and O disagree here, and O's evidence is stronger.** The
+  underlying concern survives: burning a full cold dispatch on a filter is undefended.
+- **M-3 — the §0/`redteam.md` contradiction**, independently found. **Three of three reviewers hit this.**
+- **M-4 — `"get stuck"` never operationalized**, independently matching O-MAJOR-8.
+- **M-5 — the GATE-B1 repair hands the plan reviewer an artifact its closed set doesn't anticipate.**
+  `redteam-plan.md` says *"Exactly one thing beyond the common list: the plan"* (singular); the repair may
+  hand it **two unmerged plans plus a note**, and nothing tells the reviewer that is itself a finding. **A
+  second, independent defect in the same repair as O-MAJOR-7.**
+- **M-6 — four gating criteria unprobed** (N-15a, N-20, N-25, **N-26**) and **absent from `8-harness.md`'s
+  own "what ships UNVERIFIED" table** — so *"a reader trusting that table's completeness would materially
+  undercount what's actually unverified."* Q adds **N-26** to O's and P's list.
+- **m-1** — B01's scope was broadened from reviewer-specific to every role without being declared a CHANGE.
+- **m-2** — the register has **10** scaffolding entries; **the runner's own prompt said "seven"**, and
+  `charter.md` tells a reader it exempts **two** categories while the live file exempts **at least eight**
+  spans. Q's verdict on the register: *"on the numbers, the register has grown well past what the
+  human-readable manifest documents."*
+
+### CONVERGENCE ACROSS O, P AND Q — what is beyond dispute
+
+| Finding | Convergence |
+|---|---|
+| The §0 / `redteam.md` conditional-lens contradiction, live in every composed reviewer prompt | **3/3** (O-B1 blocker, P-5 major, Q-M3 major) |
+| `"or get stuck"` is owner-written and defined nowhere | **2/3** (O-M8, Q-M4) |
+| The node/floor contradiction | **3/3** — O-M6, P-6, **and the runner's own pre-review self-finding** |
+| Gating criteria with no probe (N-15a, N-20, N-25, N-26) | **3/3** |
+| N-03 / the 60% threshold is not real measurement | **3/3**, and Q's adversarial version is decisive |
+| The register's `scaffolding` class absorbs rule-bearing spans | **3/3** |
+| Paraphrases defeat `shared_spans.py` | **2/3** (O-M3 three instances, Q-M1 a fourth) |
+| The GATE-B1 `Consensus` repair is defective | **2/3**, on **two different paths** (O: stuck-leaf; Q: the reviewer's closed set) |
+| The decomposition itself is CORRECT | **2/2 of the reviewers who pre-registered** (O, Q); P disqualified its own answer |
+| FRZ-2's N-10/N-11 amendment is principled, not goalpost-moving | **3/3** |
+
+**Every one of this run's four substantive repairs was found defective by at least one reviewer**, and the
+two blockers it closed were replaced by two new blockers plus a harness that cannot see negation. **The
+gate is BLOCKER and the element does not advance.**

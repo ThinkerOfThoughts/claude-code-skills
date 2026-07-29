@@ -15,7 +15,8 @@ under a stated rule and hand the result on.
 Exactly the **vector your function was called with** — plans for `Consensus`, issues for `Union`, the
 merged issue set for `Severity` — plus the **review-context paths named in the run's configuration**.
 You are **not** given the node's reasoning, the authors' identities, or anything about which agent produced
-which item. Anything else is supplementary and is quoted in your record as such.
+which item — and **that blindness is the point**: it is what stops a merge from being swayed by who wrote
+what.
 
 ---
 
@@ -29,17 +30,37 @@ plans containing the same steps in different orders do not agree on those steps.
 out. It is **wrong for findings**, and you must never apply it to them — that is `Union`'s job and its rule
 is the opposite of yours.
 
-> **Stated limit — read this before you vote.** "2-of-3" presumes **three** plans. If you were given fewer
-> than three, **there is no majority to take.** Do not invent a merge rule and do not silently pass one
-> input through as the winner. Report that you cannot take a majority over the vector you were given, name
-> the count, and reach the owner via `Ask_human` (common core §6).
+> ### Stated limit — the design does not define this case, and you must not close it yourself.
+>
+> "2-of-3" presumes **three** plans. The design calls you both ways. On **three leaf plans**
+> (`~/Documents/Architect.md` L79) three agents were given the **same** task, and a majority vote is
+> exactly the right operation. On **two child plans** (L92–97) the two children were given
+> `division.first()` and `division.second()` — **different halves of a divided task**. There, a majority
+> vote is not merely undefined for arity: taken literally, *"the odd plan is discarded"* **discards half
+> the plan.** The two inputs are complementary halves to be joined along the divider's seam, which is a
+> different operation, and the design gives it no name.
+>
+> **This is an open hole in the design. It is recorded and put to the owner; it is not yours to close.**
+> Until it is closed:
+>
+> - **Merge nothing you were not told how to merge.** Where you hold fewer than three plans, return the
+>   plans you were given **unmerged**, led by an explicit note stating the count, that the inputs are
+>   complementary halves rather than competing accounts of one task, and that no merge rule for this case
+>   exists.
+> - **Do not pick a winner, do not concatenate them as though that were the specified operation, and do
+>   not present the result as a consensus.** A flagged non-merge is a truthful output; a silent merge is a
+>   fabricated one.
+> - **Do not halt the loop for this.** The note travels with the plan to the red-team, which is the
+>   mechanism that surfaces it — a reviewer handed an unmerged pair will file it, and the finding becomes
+>   the next task. That is the design working, not failing.
 
 ## `Union(issues) -> issues` — for FINDINGS only
 
 **DISCARD NOTHING.** Dedup **only exact restatements** — two findings that say the same thing in different
-words are two findings, and both survive. **A finding one reviewer caught is signal**, and the whole reason
-findings are unioned rather than voted on is that a lone observation is the one a majority rule would
-delete.
+words are two findings, and both survive. Common core §3 tells you why findings are unioned rather than
+voted on; what it obliges *you* to do is this: **a merge you perform is the only place a lone finding can
+be lost, so the burden of proof runs against deduping, never for it.** When two findings are close but not
+identical, keep both.
 
 You have one active duty beyond merging:
 
@@ -68,8 +89,10 @@ Four limits, stated so the guard is neither overtrusted nor abused:
 
 ## `Severity(issues) -> issues` — the filter that makes the loop terminate
 
-**Return only the `blocker` and `major` findings.** They become the next task and are re-planned. **`minor`
-and `nitpick` are recorded against the plan and not looped on** — recorded, not deleted.
+**Return only the `blocker` and `major` findings.** Common core §3 states what each severity then means
+for the loop; your operative instruction is narrower than that and is exactly this: **the returned set is
+the next task, and everything you leave out must still be recorded against the plan, not deleted.** If you
+have no place to record what you filtered out, say so in your return value rather than dropping it.
 
 **You filter. You do not re-rank.** You do not raise a severity, you do not lower one, and you do not drop
 a finding because you doubt it. An UNSUBSTANTIATED mark is not a reason to filter a finding out — it

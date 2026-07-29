@@ -1,0 +1,17 @@
+# The declared-duplication register, mirrored in Architect/stages/charter.md.
+# One JSON object per line: {"class": ..., "span": ..., "why": ...}
+# class "rule" = a genuine duplicated rule, allowed for a stated reason.
+# class "scaffolding" = shared structure, not a rule: banners, section headings, and the stem of a
+#   section whose CONTENT differs per role. Excluded by clause 2 of the composition rule.
+{"class": "rule", "span": "You are graded on precision are your findings real not on how many you raise", "why": "B18. Position is load-bearing (fork source's final line); under append composition the two reviewer kinds end with different aiming files, so no single placement can be last for both.", "sites": ["redteam-plan.md", "redteam-split.md"]}
+{"class": "rule", "span": "2-of-3 on numbered steps INCLUDING ORDER", "why": "combiner.md states it as the operative merge rule; leaf.md states it because a leaf that does not know order is content cannot write a plan the merge can compare. Different actors, same fact, and the fact must reach both.", "sites": ["combiner.md", "leaf.md"]}
+{"class": "scaffolding", "span": "Appended to charter-common.md, which was given to you verbatim above. Everything here is an addition to it; nothing here replaces it", "why": "The composition banner. Structure, not a rule."}
+{"class": "scaffolding", "span": "Your inputs (the closed set of 5) Exactly: the", "why": "Section stem. The list that follows differs for every role; that difference is the whole point of the section."}
+{"class": "scaffolding", "span": "plus the review-context paths named in the run's configuration", "why": "Names one entry of a per-role closed set. Which roles hold it is a design fact stated once per role because each role's list must be complete on its own."}
+{"class": "scaffolding", "span": "What the floor means for you", "why": "Section heading, named normatively by charter-common.md 2 as the marker of whether a role holds a floor at all."}
+{"class": "scaffolding", "span": "What you do not do", "why": "Section heading."}
+{"class": "scaffolding", "span": "Appended to charter-common.md and redteam.md, both given to you verbatim above. Everything here is an addition to them; nothing here replaces either", "why": "The aiming-file composition banner. Structure, not a rule."}
+{"class": "scaffolding", "span": "The artifact you hold, completing the closed set of redteam.md Exactly one thing beyond the common list: the", "why": "Section stem. The one thing named after it is a plan for one reviewer kind and a division for the other; that difference is the section's entire purpose."}
+{"class": "scaffolding", "span": "already named there that is your whole input set", "why": "Closing clause of the same stem."}
+{"class": "scaffolding", "span": "two sub-tasks and the stated seam", "why": "The name of one object, used by the role that produces it and the role that receives it. Not a rule.", "sites": ["redteam-split.md", "divider.md"]}
+{"class": "scaffolding", "span": "whatever reaches you. Common core 5 governs the rest", "why": "A cross-reference to the common core, which is what the composition rule asks role files to do instead of restating.", "sites": ["redteam-split.md", "divider.md"]}

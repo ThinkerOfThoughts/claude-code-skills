@@ -1,7 +1,118 @@
-# Stage 8 — Harness. BUILT AND RUN. (2026-07-28)
+# Stage 8 — Harness. BUILT AND RUN. (2026-07-28; re-run and EXTENDED 2026-07-29)
 
 **Everything below is past tense because it happened.** The scripts exist, they were run, and their exact
 invocations and exact output are pasted. Nothing here is a description of intended behaviour.
+
+> ## ⚠ THE 2026-07-28 RESULTS BELOW WERE MEASURED AGAINST A SET THAT WAS SUBSEQUENTLY FOUND BLOCKED.
+>
+> They stand **as run** and are kept for the record. They do **not** describe the shipped artifact. The
+> 2026-07-29 section immediately below supersedes them, and one of the 2026-07-28 numbers is now known to
+> have been **meaningless**: `ruleplace.sh` returned **76 passed / 0 failed** on a set carrying **eight
+> duplications of common-core rules**, because every probe in it is a *positive per-site assertion* and no
+> set of those can express a negative property. That is not a bug in the rule table; it is a structural
+> limit of the instrument, and it is why `shared_spans.py` was built.
+
+---
+
+# 2026-07-29 — after the gate-7 repairs
+
+> ## 🔴 READ BEFORE USING ANY NUMBER BELOW. GATE 7 RETURNED **BLOCKER, 3/3**, AND THREE REVIEWERS BROKE THIS HARNESS.
+>
+> The numbers below (**92/0**, **0 undeclared spans**, **87/87**) were **reproduced exactly and
+> independently by all three cold reviewers**, so they are honest and not fabricated. **They are also worth
+> much less than they look**, and every one of the following was demonstrated by execution, not argued:
+>
+> 1. **The suite cannot tell a rule from its negation.** Reviewer O inverted four rules — *"You do not
+>    demote"* → *"You SHOULD demote freely"*, *"Cite or it doesn't count"* → *"Cite nothing; citations do
+>    not count"* — and got **`92 passed, 0 failed`, byte-identical to the clean run.** The runner
+>    reproduced it. Every probe is an unanchored substring `grep`, and **there is no NEGATION mutant
+>    class.** The inverted rules include the gating content of **N-10, N-12, B08 and B14**.
+> 2. **N-03 barely discriminates, and the "strengthening" described below overstates itself.** Reviewer Q
+>    ran each rule's description terms against **all nine files**. Reproduced by the runner:
+>    **9 of 19 rules also pass against a file they were never claimed to be in**, and **B09 passes against
+>    all eight.** For nearly half the rules the probe returns the same PASS had the allocation table named
+>    the **wrong** destination. **`grep -c 'N-03' oracles/mutation-test.sh` → 0**, so the 87/87 figure
+>    carries **no** evidence about it at all.
+> 3. **One mutant arm is a printer.** In the N-M6(d) exemption arm, **both branches increment `ok`** —
+>    `SURVIVED` scores as a pass (reviewer P). N-M6(d) is gating. **So 87/87 contains an arm structurally
+>    incapable of failing** — the printer-checker class this project has now shipped **four** times, this
+>    time inside the instrument built to repair GATE-B2.
+> 4. **`shared_spans.py` misses paraphrases, and four live ones were found by hand** — including the
+>    *"grip the handle"* example duplicated into `leaf.md` and `redteam.md` **by this run**, and
+>    `combiner.md`'s paraphrase of the demotion prohibition that FRZ-2 says *"binds every role and stays
+>    common"*. **A clean run means no verbatim restatement survives. Nothing more.**
+> 5. **Probe IDs `N-05e`–`N-05h` are each used twice**, so "92 passed" overstates distinct-criterion
+>    coverage and `failed:<id>` is ambiguous.
+> 6. **Gating criteria N-15a, N-20, N-25 and N-26 have no probe**, and the *"What ships UNVERIFIED"* table
+>    below **omits all four** — so that table is itself incomplete.
+>
+> **Nothing below has been repaired.** The section is left as run, because the record of what was measured
+> is what makes the reviewers' refutations checkable. Full findings: `decisions.md`'s last three entries
+> and `records/reviewer-{O,P,Q}-verbatim.md`.
+
+
+Accept bar: `1.5-criteria-v2.md` **as amended under FRZ-2** (sha256
+`eaff14ac6e44189ea6d6195d138305b83dd243ce9bd4e1671c4a8a3210b0ba5e`). Artifact: `Architect/stages/` —
+**nine files, 891 lines** (manifest + eight dispatched).
+
+**Verbatim commands and output: `records/harness-run-2026-07-29.txt`.** Exit codes there are captured from
+each script directly and never through a pipe — a piped `$?` is the *last* command's status, and this
+project has already once read a usage error as a pass.
+
+## What was measured
+
+| Instrument | Result | Exit |
+|---|---|---|
+| `oracles/ruleplace.sh ../../stages` | **92 passed, 0 failed** | 0 |
+| `oracles/shared_spans.py ../../stages 7 --exempt-file oracles/declared-duplications.jsonl` | **0 undeclared shared spans** | 0 |
+| `oracles/mutation-test.sh ../../stages` | **87 mutants as expected, 0 unexpected** | 0 |
+| all three with no argument | usage text | **2** (distinct from a pass) |
+
+## What was ADDED this run, and why each addition was necessary
+
+| Path | sha256 | Why it exists |
+|---|---|---|
+| `oracles/shared_spans.py` | `91db7fcd57c2068c…` | **The negative assertion.** Reports every normalized shared word-span ≥7 words between `charter-common.md` and each role file, and between role files, exempting only declared spans **and only for the file pair each was declared for**. This is the instrument GATE-B2 proved was missing: a reviewer ran the equivalent sweep by hand in one pass and it returned the duplications, so **the instrument was cheap and had simply not been built.** |
+| `oracles/declared-duplications.jsonl` | `2db1c385322239cb…` | The declared-duplication register. It is **the same file the manifest publishes to readers and the harness reads as its exemption list**, so a duplication is either declared in a place a human reviews or it fails the build. |
+
+## Three defects the extended harness found in itself or in the artifact — it earning its place
+
+1. **`shared_spans.py` did not know about the two new files.** Its `ROLES` list was written before
+   `redteam-plan.md` and `redteam-split.md` existed, so duplications in the two newest files were
+   invisible. **Found by the duplication mutants, not by reading the script** — the per-role kill mutants
+   reported `SURVIVED` for exactly those two names.
+2. **The register was a *global* amnesty, not a per-pair one.** A span declared for `redteam-plan.md` ~
+   `redteam-split.md` was exempt everywhere, so re-adding it to a third file would have been legal. Found
+   by mutant (d), which was written specifically to test whether the exemption list could be abused.
+   Fixed by scoping each exemption to its declared `sites` pair; the mutant now reports `KILLED`.
+3. **The N-03 fork-fidelity probe was very nearly vacuous.** As built it asserted only that the
+   destination file *"exists and is non-empty"* — **nineteen probes that would pass for any nine non-empty
+   files.** That is the same class as the two bare `exit 0` checkers this project has already shipped, and
+   it had been reported as fork fidelity "verified rule-by-rule". Replaced with a 60% overlap against the
+   rule description **taken from the artifact's own allocation table**, so the probe set stays generated
+   rather than hand-written. On first run the strengthened probe **failed B19**, which surfaced that
+   `charter-common.md` never used the word "composition" for its own composition rule.
+
+## What this harness still does NOT verify — unchanged and not to be quietly assumed
+
+- **`oracles/rules.tsv` is AUTHOR-WRITTEN.** It proves the rules it names sit in the files it names. It is
+  **not** evidence that `1.5-criteria-v2.md` is fully covered. Only the N-03 probe set is generated.
+- **The 60% threshold in N-03 is a judgement, not a derivation.** `B15` passes at **2 of 3** terms, one
+  step above the line. A different threshold would change that verdict.
+- **`shared_spans.py` compares word spans and therefore cannot see a PARAPHRASED restatement.** Two of the
+  duplications repaired this run — the *floor-is-wrong* clause in `divider.md` and `leaf.md` — were found
+  by reading, **not** by the sweep, because they were worded differently from the common core's version.
+  **A clean run of this instrument does not mean the composition rule holds; it means no *verbatim*
+  restatement survives.**
+- **No behavioural evidence exists for any file in this set.** `fixtures/` is empty and no agent has ever
+  been handed a composed prompt. See `1.5-criteria-v2.md` Part B for the runner's position on that, which
+  **sustains the cut of the A/B arms on their own design and rejects the further claim that no behavioural
+  evidence is needed at all.** The replacement smoke test is **specified and NOT run.**
+
+---
+
+# ARCHIVED — the 2026-07-28 run, kept verbatim. Superseded by the section above.
+
 
 Accept bar: `1.5-criteria-v2.md` (the re-scoped set). Artifact: `Architect/stages/` — seven files.
 
@@ -279,3 +390,36 @@ predecessor (single charter, `git show 711932f:Architect/stages/charter.md`): 23
   now sit in the file their actor reads. **Reach, not brevity.**
 - **Whether shorter role-scoped prompts make a reviewer behave better is UNMEASURED and no arm exists for
   it.** Do not report the split as a demonstrated improvement in review quality.
+
+---
+
+## N-16 — length, measured per COMPOSED prompt (ADVISORY). An unflattering result, reported anyway.
+
+The number that matters is not the file's length but the length of the prompt an agent actually receives:
+`charter-common.md` verbatim **plus** its role file(s).
+
+| Dispatched role | Composed prompt | Lines | Words |
+|---|---|---|---|
+| Plan reviewer | `charter-common` + `redteam` + `redteam-plan` | **326** | 3529 |
+| Split reviewer | `charter-common` + `redteam` + `redteam-split` | **344** | 3765 |
+| Node | `charter-common` + `node` | 256 | 2561 |
+| Combiner | `charter-common` + `combiner` | 247 | 2639 |
+| Leaf | `charter-common` + `leaf` | 205 | 2122 |
+| Divider | `charter-common` + `divider` | 201 | 2062 |
+| *(predecessor)* | the 237-line monolith, `git show 711932f:Architect/stages/charter.md` | 237 | 2925 |
+
+> ### This does not support the manifest's stated justification, and the gap is stated rather than hidden.
+>
+> `charter.md` justifies the split with *"every line a role does not need is a line that crowds out one it
+> does."* That argument predicts **shorter** per-role prompts. **Four of the six composed prompts are not
+> shorter** — the two reviewers read **326 and 344** lines against the monolith's 237, and the node and
+> combiner also exceed it. Only the leaf and the divider came out shorter.
+>
+> **The honest reading is that the length argument is the weaker half of the case and the file set was not
+> in fact justified by it.** The strong half is unaffected and is measurable: three roles — leaf, node,
+> combiner — had **no instructions in any file**, so a leaf handed the monolith read 237 lines of which
+> almost none applied to it, and now reads 205 lines of which all do. **Applicability went up; raw length
+> mostly did not go down.** A reader who wants the length claim should treat it as unproven.
+>
+> This is reported because the alternative — quietly dropping an advisory measurement that came out
+> against the artifact — is the self-certification failure this project has already committed.
