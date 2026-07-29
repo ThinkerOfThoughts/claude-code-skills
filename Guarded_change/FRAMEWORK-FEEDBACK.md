@@ -94,8 +94,12 @@ runner. An orchestrator that steers harder does not buy quality — it lengthens
 before anything independent touches them. Any fix here should probably also consider whether the
 orchestrator's own inputs to the runner belong in the reviewers' context as claims to challenge.
 
-## ISOLATION-vs-ASSEMBLED TESTING — the owner's rule, 2026-07-29. This is the stopping rule the
-## measurement-apparatus problem never had.
+## ISOLATION-vs-ASSEMBLED TESTING — the owner's rule, 2026-07-29
+
+**Scope, per the owner: this is ONE ELEMENT of a fix for the measurement-apparatus problem, not the fix.**
+It supplies a default and a stop. It does not address making an assembled-run test discriminating,
+attributing an assembled-run failure back to a component, or the harness-reviews-the-harness recursion.
+Treat the parent problem as open.
 
 > "if a component can be tested in isolation, it should be. If testing it requires more than three
 > iterations of the test mechanism, reconsider if it should be tested in isolation or on a test run of the
