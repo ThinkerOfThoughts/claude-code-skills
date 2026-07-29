@@ -49,7 +49,7 @@ N-10b	present	charter-common.md	recorded against the plan but not looped on	reco
 N-10c	present	charter-common.md	treated as not filed	A finding with no severity is unusable and is treated as not filed
 N-10d	present	charter-common.md	Borderline is a human decision	Borderline is a human decision
 N-10e	absent	redteam.md	-	nitpick . Style, wording, clarity
-N-11a	present	node.md	Demoting a	Demoting a blocker or major requires the owner
+N-11a	present	node.md	Demoting a blocker or major additionally requires the owner	Demoting a blocker or major additionally requires the owner
 N-11b	present	node.md	You are that channel's only holder	You are that channel.s only holder
 N-11c	present	redteam.md	No contest channel exists for your	No contest channel exists for your role
 N-11d	absent-set	-	-	(logged|entry|recorded) [a-z ]*in the run.s decision log
@@ -71,19 +71,81 @@ N-19a	present	charter-common.md	Findings are unioned, never majority-voted	Findi
 N-19b	present	redteam.md	Do not self-censor a lone observation	Do not self-censor a lone observation
 N-19c	present	combiner.md	Dedup only exact restatements	Dedup only exact restatements
 # --- added at the gate-7 repair: the reviewer restructure and the amended N-06/N-10/N-11 ---
-N-05e	present	redteam-split.md	You have NO PLAN and are not entitled to one	You have NO PLAN and are not entitled to one
-N-05f	present	redteam-split.md	its two sub-tasks and the stated seam between them	its two sub-tasks and the stated seam between them
-N-05g	absent	divider.md	the split reviewers. aiming must not live in the divider.s own file	Aiming for the split review
-N-05h	present	redteam.md	dispatches two kinds of reviewer	Architect dispatches .{0,3}two kinds.{0,3} of reviewer
+N-31a	present	redteam-split.md	You have NO PLAN and are not entitled to one	You have NO PLAN and are not entitled to one
+N-31b	present	redteam-split.md	its two sub-tasks and the stated seam between them	its two sub-tasks and the stated seam between them
+N-31c	absent	divider.md	the split reviewers. aiming must not live in the divider.s own file	Aiming for the split review
+N-31d	present	redteam.md	dispatches two kinds of reviewer	Architect dispatches .{0,3}two kinds.{0,3} of reviewer
 N-11e	present	node.md	You hold node_id and depth, which is what makes the call available	You hold node_id and depth, which is what makes the call available
-N-09g	present	charter-common.md	you were not given a floor, the rules below do not bind your work	you were not given a floor, the rules below do not bind your work
+N-09g	present	charter-common.md	nothing here binds your work; do not infer a floor and apply one anyway	nothing here binds your work; .{0,3}do not infer a floor and apply one anyway
 N-06e	present	charter.md	They may not share a rule.	They may not share a rule\.
 N-06f	present	charter.md	declared-duplications.jsonl	declared-duplications\.jsonl
-N-21a	present	combiner.md	discards half the plan.	discards half the plan\.
-N-21b	present	combiner.md	return the plans you were given unmerged	return the plans you were given unmerged
+N-21a	present	combiner.md	Consensus has exactly one call site	Consensus has exactly one call site
+N-21b	present	combiner.md	Two plans: take 2-of-2.	Two plans: take 2-of-2\.
 N-21c	absent	combiner.md	the invented Ask_human halt is gone from Consensus	reach the owner via Ask_human
 N-22a	present	charter.md	rules with no fork-source ancestor	rules with no fork-source ancestor
 N-22b	present	charter.md	That is a widening, not a copy	That is a widening, not a copy
-N-23a	present	redteam.md	That guarantee does not yet hold for these two	That guarantee does not yet hold for these two
+N-23a	present	redteam.md	These two are the conditional sections common core	These two are the conditional sections common core
 N-23b	present	redteam.md	report that tier as UNRUNNABLE	report that tier as UNRUNNABLE
-N-24a	present	charter-common.md	say so in your return value, before anything else	say so in your return value, before anything else
+N-24a	present	charter-common.md	separately from your work product and explicitly labelled as a prompt-set report	separately from your work product and explicitly labelled as a prompt-set report
+# --- POLARITY-BEARING probes, added 2026-07-29 after reviewers O and Q.
+# O inverted four rules and the suite still returned 92/0. Diagnosed: those rules had NO probe -- they were
+# "covered" only by the N-03 description-overlap probe, which Q showed passes 9 of 19 rules against files
+# they were never claimed to be in. Each anchor below deliberately INCLUDES the operative polarity words
+# ("not", "only", "never", "nothing"), so an inversion deletes the anchor and the probe dies. A probe that
+# matched the topic without the polarity would survive negation, which is exactly what O demonstrated.
+N-27a	present	charter-common.md	Cite or it doesn't count.	Cite or it doesn.t count\.
+N-27b	present	charter-common.md	An unchecked claim is never thereby a verified one.	An unchecked claim is never thereby a verified one
+N-27c	present	charter-common.md	No role may quietly lower one.	No role may quietly lower one
+N-27d	present	charter-common.md	A finding with no severity is unusable and is treated as not filed.	A finding with no severity is unusable and is treated as not filed
+N-27e	present	combiner.md	You do not demote.	You do not demote\.
+N-27f	present	combiner.md	DISCARD NOTHING.	DISCARD NOTHING
+N-27g	present	combiner.md	an unchecked citation is not thereby a verified one	an unchecked citation is not thereby a verified one
+N-27h	present	combiner.md	You filter. You do not re-rank.	You filter\. You do not re-rank
+N-27i	present	leaf.md	Never write below the floor	Never write below the floor
+N-27j	present	node.md	You do not plan.	You do not plan\.
+N-27k	present	redteam.md	You do not contest severities	You do not contest severities
+N-27l	present	divider.md	you return null	you return null
+# --- owner rulings of 2026-07-29: Union on the node path, and the decision log ---
+N-28a	present	combiner.md	The other merge point	The other merge point
+N-28b	present	combiner.md	it calls Union, not you	it calls Union, not you
+N-28c	present	combiner.md	one rule, input-agnostic	one rule, input-agnostic
+N-28d	present	combiner.md	it does not vary with what you were handed	it does not vary with what you were handed
+N-28e	present	combiner.md	A genuine conflict is kept, not resolved	A genuine conflict is kept, not resolved
+N-29a	present	node.md	Log_decision(node_id, "severity-contest", entry)	Log_decision\(node_id, .severity-contest., entry\)
+N-29b	present	node.md	Log first, then ask.	Log first, then ask
+N-29c	present	charter-common.md	not the decision log	not the decision log
+N-29d	present	node.md	an entry you wrote yourself authorises nothing	an entry you wrote yourself authorises nothing
+N-30a	present	charter-common.md	a role file that marks a section conditional and tells you to apply its own trigger	a role file that marks a section conditional and tells you to apply its own trigger
+N-30b	absent	redteam.md	redteam.md must no longer declare a contradiction with the common core	does not yet hold
+# --- owner ruling 2026-07-29b: Union is input-agnostic ---
+N-33a	present	combiner.md	Do not look for a rule that depends on your input type; there isn't one.	Do not look for a rule that depends on your input type; there isn.t one
+N-33b	present	combiner.md	you are reconstructing the invented constraint	you are reconstructing the invented constraint
+N-33c	present	combiner.md	Neither is a different rule. Both are the same rule with different stakes.	Neither is a different rule\. Both are the same rule with different stakes
+N-33d	present	combiner.md	This clause is an author decision, not the owner's words	This clause is an author decision, not the owner.s words
+N-33e	present	node.md	it is input-agnostic and merges whatever it is handed	it is input-agnostic and merges whatever it is handed
+N-34a	present	charter-common.md	the path and sha256 of every file it was composed from	the path and sha256 of every file it was composed from
+N-34b	present	charter-common.md	reproduce that part verbatim	reproduce that part verbatim
+N-34c	present	charter.md	from a verbatim copy to a hash	from a verbatim copy to a hash
+# --- gate-7 pass-3 blocker repairs ---
+N-35a	present	charter-common.md	A prompt-set report NEVER carries a severity	A prompt-set report NEVER carries a severity
+N-35b	present	charter-common.md	the loop would never terminate	the loop would never terminate
+N-35c	present	charter-common.md	It is stated as a class rather than as a list of cases	It is stated as a class rather than as a list of cases
+N-36a	present	charter-common.md	A carrier	A carrier
+N-36b	present	node.md	You hold a floor and you are bound by none of it	You hold a floor and you are bound by none of it
+N-36c	present	node.md	Do not substitute a floor you think better.	Do not substitute a floor you think better
+N-36d	present	node.md	granularity-override	granularity-override
+N-37a	present	node.md	is its own instruction, not yours and not the owner's ruling	is its own instruction, not yours and not the owner.s ruling
+N-37b	present	node.md	hedged in the original	hedged in the original
+N-37c	present	combiner.md	it does not vary with the input type	it does not vary with the input type
+N-37d	absent	combiner.md	no input-type branch may appear in an operative rule	Where the inputs are plans
+# --- N-15a / N-20 / N-25 / N-26: gating criteria that had NO probe until now (found by O, P, S and T;
+#     T proved it by injecting simultaneous N-15a and N-20 violations and seeing the count not move).
+N-15a1	absent-dispatched	-	no Layer-2 config FIELD LIST as normative content	redteam_context:|granularity:.*gate_depth:|metrics: \[\]
+N-15a2	absent-dispatched	-	no router/stage plumbing	stages/stage-[0-9]|SKILL\.md|quick_validate|Layer-2 required-section (list|set) is( as follows|:)
+N-15a3	absent-dispatched	-	no spine section names shipped as normative content	the seven sections are|spine sections are:|section 1\) .*section 2\)
+N-20a	absent-set	-	no differential-prompt mechanism (dogfood-derived)	differential prompt|differential-prompt|prompt A vs prompt B
+N-20b	absent-set	-	no motive or statistic sourced from FINDINGS.md	FINDINGS\.md|dogfood|singleton rate|85%
+N-25a	present	redteam.md	The artifact you review is the one your aiming file names	The artifact you review is the one your aiming file names
+N-25b	present	redteam-plan.md	Exactly one thing beyond the common list: the plan	Exactly one thing beyond the common list: the plan
+N-25c	present	redteam-split.md	You have NO PLAN and are not entitled to one	You have NO PLAN and are not entitled to one
+N-25d	absent	redteam.md	redteam.md must not state a per-kind input list that an aiming file then modifies	Exactly: the task, the plan, and the granularity floor

@@ -22,6 +22,66 @@ re-scope record. This file stays the project-level entry point.
 
 ---
 
+## 0b. ⚠ DEBT ELEMENT 1 HANDS TO EVERY LATER ELEMENT — read this before starting element 2
+
+**Element 1 (the agent prompt set) is built, has been through three cold gates, and is NOT clean.** Its own
+resume point is `changes/charter-2026-07/RESUME.md` and its gate log is `changes/charter-2026-07/decisions.md`.
+**What follows is only the part that leaves that folder** — findings a later element inherits, or that
+element 1 could not fix because they belong elsewhere. **This list exists because the next element's runner
+will not read element 1's run folder, and these will otherwise be rediscovered from scratch.**
+
+### Owned by a specific later element
+
+| # | What | Owner |
+|---|---|---|
+| **OOS-8 / OOS-11** | The config's `redteam_context` omits load-bearing paths — `Guarded_change/stages/{stage-1.5,3,4,8}.md`, and **six of element 1's own nine files**. Every reviewer set had to be given them as B15 supplementary context. **Amending it mid-run would have moved the goalposts.** | **Element 3** (Layer-2 config contract) |
+| **NEW — subject-matter sources are not in the config** | A dispatched **divider** was observed searching the filesystem for a file its task named, because nothing in its closed set contained it. That is a config gap, not an agent fault. **The config must be able to name the sources a run's roles actually need.** | **Element 3** |
+| **OOS-10** | The set lives in `Architect/stages/` and **Architect has no stages.** It is there only because the config names that path. | **Element 4** (router) |
+| **OOS-14 (withdrawn as a gap, still real as a mechanism)** | There is **no assembly step** that composes `charter-common.md` + role file(s) and filters conditional sections per invocation. Element 1 states the composition rule and ships the files; **nothing yet performs it.** | **Element 4** |
+| **The orchestrator has no prompt** | `charter-common.md` §6 gives the orchestrator operative duties — relay verbatim, never answer as the owner — and **no file in the set is addressed to it.** Found 2/3 at gate 7. The set's own threat model depends on it. | **Element 4 or 5** |
+
+### Not owned yet — decide before assembly
+
+- **`Severity` may not be an agent.** The spec marks `Divisible`, `Consensus`, `Union` and `Spawn_redteam`
+  as *"cold agent"* and does **not** so mark `Severity`. Element 1 dispatches all three combiners from one
+  file. ⚠ **Do not treat that asymmetry as owner intent — every function signature in the spec is
+  agent-written** (verified against the owner's 59-line original, harness record 1044).
+- **`"or get stuck"` is owner-written, appears three times, and is defined nowhere** — no detection
+  criterion, no timeout, no recovery. The memo covers *crash*, which is a different failure: a crashed node
+  is re-walked from the root; a stuck agent never returns and never crashes. **This is the most likely
+  real-world hang.**
+- **The divider's self-review loop is unbounded** — it loops until no `major|blocker` stands, with no cap,
+  no `Ask_human` (it holds no `node_id`/`depth`), and no return field for a complaint. It sits **below**
+  `Human_gate`, so the owner never sees it.
+- **SEV4's iteration cap was dropped** in the severity port while SEV3 was imported from the same file.
+  Owner record **1449 item 2** said to port the mechanism as guarded-change implements it.
+
+### Rules and lessons that generalize — these are the cheap wins
+
+1. **A HISTORICAL pin is sound; a LIVENESS pin is not.** A hash recording *what an agent was handed* can
+   never be falsified. A hash asserting *the current state of a file a third party edits* goes stale on any
+   edit, including edits to lines you make no claim about, and **fails uninformatively**. It cost this
+   element three false alarms. **Pin third-party files by CLAIM + a re-derivable check**, with any hash
+   demoted to "observed at «time»".
+2. **Quote whole records, and say what you omitted.** Twice in this element a quote presented as a ruling
+   was part of a longer message whose omitted portion mattered — once it would have changed a decision.
+3. **Every dispatched agent must be able to do its job from its closed set alone.** A role file citing a
+   source its reader cannot open turns provenance into a homework assignment; two of six roles were
+   observed leaving their closed set. Element 1's answer: such citations are **provenance for an auditor,
+   not an instruction**, and a genuinely missing source is a **config defect**, not a licence to fetch.
+4. **The measurement-apparatus problem is real and this element hit it SIX times** — including twice in one
+   day, and once *inside the fix for the previous instance*. See the owner's testing rule below.
+5. **Owner's testing rule, record 2544 — this governs every later element.** *"if a component can be tested
+   in isolation, it should be. If testing it requires more than three iterations of the test mechanism,
+   reconsider if it should be tested in isolation or on a test run of the assembled thing."* Plus a **size**
+   bound from the same record: a test mechanism must not be *"larger and more complex than Architect its
+   self."* **Isolation is the DEFAULT, not the fallback.** Element 1's per-item application is
+   `changes/charter-2026-07/9-test-venue.md` and is worth reading before building any test.
+6. **When a script-based oracle fails twice for a structural reason, change the ORACLE, not the script.**
+   Element 1 moved fork-fidelity and paraphrase-detection and semantic-inversion to **cold-reviewer**
+   oracles after script attempts failed. It paid: a reviewer verified B01–B19 by hand, clean, in one pass,
+   after two script generations could not.
+
 ## 1. The build plan — the owner's instruction, verbatim
 
 > "start with each element individually (charter, spine, whatever), once the thing as pieces exists, run the

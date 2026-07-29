@@ -116,14 +116,12 @@ responsibility — **not present in or entailed by** the ratified phrase is an *
 untrusted until the owner confirms it, exactly like a substituted mechanism (ranks ≥ major). A clean
 verdict here must name the ratified phrase's operative terms and show the elaboration adds none beyond them.
 
-## Conditional lenses — and a declared gap in how they reach you
+## Conditional lenses — each states its own trigger, and you apply it
 
-> **Read this before applying either.** Common core §0 relieves you of re-litigating whether a conditional
-> section applies, on the grounds that the decision was made before the section reached you. **That
-> guarantee does not yet hold for these two.** The assembly step that would include or omit them
-> per-invocation **does not exist in the current set** — this file ships both unconditionally. **So the trigger test below is yours to apply**, which is
-> why each trigger is stated rather than assumed. If the trigger does not fire, the lens contributes no
-> finding and you say so. When the assembly step is built, these arrive already triggered and §0 governs.
+**These two are the conditional sections common core §0 describes, and this is where their triggers are
+written down.** Each fires only on the narrow circumstance named in its own bullet. **A lens whose trigger
+does not fire contributes no finding, and you report that** — an unfired lens is a real all-clear, not a
+gap in your review.
 
 - **Position/order sensitivity** (under lens 4). Fires only where order or adjacency is itself semantic:
   prompt assemblies, precedence/override lists, pipeline stages — *not* ordinary work whose behaviour is

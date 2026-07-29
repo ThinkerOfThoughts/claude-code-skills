@@ -36,6 +36,15 @@ it in the table below, and nothing else from this directory.
 >   record — a decision log included — re-admits the forgery the clause was written against. That argument
 >   may well be right, but it is **not an owner ruling**, and it must not be cited as one.
 >
+> - **CHANGED — the provenance record's element (i), from a verbatim copy to a hash.** The fork source
+>   requires the record to embed *"the verbatim prompt you were given"* (B15). `charter-common.md` §5 now
+>   requires the **path and sha256 of every file the prompt was composed from**, plus verbatim text only
+>   for parts with no durable file. **This is a change made on measurement, not on preference:** handed the
+>   old wording, two of three cold agents **declined to paste the prompt back** and substituted the hash
+>   unprompted, which under the old rule made their records *un-run*. A re-typed copy can drift; a hash
+>   cannot. The rule's purpose — that "the prompt given" is reproducible by a third party — is better
+>   served by the new form, and the escape for file-less text keeps the coverage the old form had.
+>
 > **ADDED — rules with no fork-source ancestor, each an author decision and none of them owner rulings.**
 > They were previously shipped flat, indistinguishable from carried material; that is corrected here.
 > Full reasoning per item is in `changes/charter-2026-07/0-baseline.md` §0.5.
@@ -62,11 +71,64 @@ it in the table below, and nothing else from this directory.
 > Architect's design defines no A/B harness arms, so the rule would have no referent. The general rule it
 > specialises (supplementary author-authored context must be quoted in the record as such) **is** carried.
 >
-> **DECLARED GAP — conditional inclusion is stated but not built.** `charter-common.md` §0 says a
-> conditional section reaches an agent only when its trigger has already fired. **No assembly step in this
-> set does that**; `redteam.md` ships both conditional lenses unconditionally, and says so in the file, so
-> the reviewer applies the trigger test itself. The rule is correct for the mechanism that does not exist
-> yet; the gap belongs to element 4 (the router), recorded **OOS-14**.
+> **RESOLVED 2026-07-29 — the conditional-inclusion contradiction.** §0 previously promised that a
+> conditional section reaches an agent only once its trigger has fired, and `redteam.md` then declared
+> that untrue and told the reviewer to apply the trigger itself. Cold reviewer **O** showed that was not a
+> documentation gap but a **non-termination bug**: §0 also orders every agent to report a role-file/core
+> contradiction as a prompt-set defect *"in your return value, before anything else"*; a reviewer's return
+> value **is** its findings; `Severity` passes it; and `node.md` has no cap — so `task` never empties.
+> The declaration that was supposed to defuse it lived **here, in a file no agent is given.** Fixed at the
+> source: **§0 now states that a conditional section names its own trigger and the holder applies it**, and
+> says explicitly that a role file doing so is *not* a defect. `redteam.md` no longer modifies §0.
+> **OOS-14 is withdrawn** — there is no longer a gap to defer.
+>
+> **TRACKING THE DESIGN SPEC — by CLAIM plus a re-derivable check, not by a hash of the whole file.**
+>
+> **Why not a hash.** `~/Documents/Architect.md` is owned and edited by a third party *during* this run. A
+> whole-file hash pinned here is a claim about a file this set does not control: it goes stale on **any**
+> edit, including edits to lines this set makes no claim about, and it then fails **uninformatively** — a
+> reader sees a mismatch and cannot tell whether anything they rely on moved. That happened three times in
+> this run, and the pin was wrong while every claim around it was sound. **So each claim below carries the
+> command that verifies it.** A spec edit invalidates a row **only when it touches what the row asserts.**
+>
+> | What this set relies on | Re-derivable check | Expected |
+> |---|---|---|
+> | The node-path merge is `Union` | `grep -c 'plan = Union(child.get_plans)' ~/Documents/Architect.md` | `1` |
+> | The leaf merge is `Consensus` | `grep -c 'plan = Consensus(leaves.get_plans)' ~/Documents/Architect.md` | `1` |
+> | `Union` is input-agnostic | `grep -c 'INPUT-AGNOSTIC' ~/Documents/Architect.md` | `1` |
+> | A decision log exists | `grep -c 'Log_decision' ~/Documents/Architect.md` | `1` |
+> | The node is given `granularity` | `grep -c 'Spawn_node(string task, string plan, string granularity' ~/Documents/Architect.md` | `1` |
+> | The floor bounds three things | `grep -c 'It bounds THREE things' ~/Documents/Architect.md` | `1` |
+>
+> **Observed at 2026-07-29: 131 lines, sha256 `8ad9d620be794047b3606e948e20d3cd70b5413c36b9dd19f0dc97d8d107a474`.**
+> That is a **timestamped observation, NOT a freeze** — do not halt on a mismatch; run the checks instead.
+>
+> **This distinction is general and is worth carrying:** a hash recording *what an agent was handed* (§5)
+> is a **historical** pin and is sound, because nothing later can falsify a fact about the past. A hash
+> asserting the current state of a file someone else owns is a **liveness** pin and is not. The two look
+> identical and behave oppositely.
+> - **The node-path merge is `Union`, not `Consensus`** (**L109**), **owner record 2524 item 2** — and
+>   **the ruling is hedged in the original**: *"that should **probably** be Union rather than Consensus."*
+>   It is recorded with its qualifier because RAT1 requires the confirming turn to be captured as it was. The two children hold `division.first()` / `division.second()`, so a
+>   2-of-3 vote would discard half the plan. `combiner.md` is rewritten accordingly: `Consensus` now has
+>   **one** call site (three leaves, one task, **L91**), and `Union` has **two** — plans at L109, issues at
+>   L122.
+> - **`Union` is GENERALIZED — input-agnostic** (**owner record 2680**). The declaration at **L24** now
+>   reads *"sticks the provided inputs together into one, DISCARDS NOTHING, dedups only exact
+>   restatements"* and names both call sites. The owner: *"Union should be generalized to stick the
+>   provided inputs together, the only reason its issue specific is because you wrote the comment for it
+>   as such."* **Verified: `Union` does not appear in the owner's original spec at all** (harness record
+>   1044, 59 lines) — it came from the `Combine` split, and *"merges issues"* was an orchestrator comment,
+>   **never a design constraint.** `combiner.md` accordingly states **one rule that does not vary with the
+>   input**, and explicitly warns against reasoning *"these are issues, so…"*. **The one specialization it
+>   keeps — ordering a plan merge along the divider's seam — is declared there as an author decision**,
+>   because the declaration is silent on order and `Consensus` treats order as content.
+> - **A decision log now exists** (**L36–46**): `Log_decision` / `Read_decisions`, **append-only, one per
+>   run, shared by every node** — the opposite of `Memo_*`. **Owner record 2524 item 3**, the same message
+>   as the merge ruling: *"Why is there no decision log? There should definitely be a decision log."* This closes the half of the ported severity mechanism that
+>   had no destination, so `node.md` now logs a contested severity **and** asks the owner, in that order.
+>   **It is agent-writable and is therefore still NOT admissible for the owner's words** — `charter-common.md`
+>   §6 says so explicitly, because a durable timestamped forgery is more persuasive, not more true.
 >
 > Self-contained copy, not a live dependency.
 

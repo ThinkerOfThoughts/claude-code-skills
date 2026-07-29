@@ -1832,3 +1832,886 @@ about N-03.
 **Every one of this run's four substantive repairs was found defective by at least one reviewer**, and the
 two blockers it closed were replaced by two new blockers plus a harness that cannot see negation. **The
 gate is BLOCKER and the element does not advance.**
+
+---
+
+## THREE OWNER RULINGS · 2026-07-29, after gate 7 · repairs applied, UNREVIEWED
+
+### R1 — the testing rule. Answer to Q4, and it is neither party's answer.
+
+> *"A component should be tested in isolation to determine if it functions correctly, but, some components
+> can only be properly tested in the fully functional mechanism that they go in. This distinction has, on
+> many occasions, resulted in \*days\* being wasted trying to create increasingly elaborate test mechanisms
+> to test trivial little things that would be simplicity its self to test by just plugging them into the
+> finished thing and seeing what happens."*
+>
+> *"if a component can be tested in isolation, it should be. If testing it requires more than three
+> iterations of the test mechanism, reconsider if it should be tested in isolation or on a test run of the
+> assembled thing."*
+
+**Both prior positions are dead.** The orchestrator's — *"per-element harnesses are instruments not gates,
+cut every arm"* — was wrong because **isolation testing is the default, not the fallback**. This runner's —
+*"a broken test gets repaired, not deleted"*, argued from record 1449 item 1 — was wrong **as a general
+rule**: repair is right up to a point, and past three rebuilds the correct move is to reconsider the
+**venue**. **Record 1449 item 1 is one instance and is no longer cited as a general principle here.**
+
+**Applied per item in `9-test-venue.md`.** Counting convention declared there, because it changes an
+answer: `ruleplace.sh`'s two attempt-1 printer ancestors tested a **different component** (the demolished
+monolith) and are not counted, so the structural checker is at **2**, not 4. The reader can apply the other
+convention; it is stated rather than buried.
+
+**The four decisions that were not automatic:**
+
+1. **Fork fidelity (N-03) stays in isolation but its ORACLE stops being a script.** Two script mechanisms
+   were built and both were near-vacuous — *"destination exists and is non-empty"* (19 probes that pass for
+   any nine non-empty files), then 60% description overlap (**9 of 19 rules also pass against files they
+   were never claimed to be in; B09 passes all eight**). A third is *permitted* and is **not taken**: both
+   failed for one structural reason — all nine files share one design's vocabulary, so any keyword proxy
+   measures vocabulary, not placement. **This is exactly the "increasingly elaborate mechanism for a
+   trivial question" the owner named.** The oracle becomes **cold-reviewer rule-by-rule**, which reviewers
+   M, N and Q have each done successfully. The script probe is **kept but demoted** to a gross-breakage
+   smoke check and is no longer called fidelity verification anywhere.
+2. **Paraphrase duplication (B2) likewise.** `shared_spans.py` catches verbatim spans and cannot see a
+   paraphrase; four live ones were found by hand. **No script will be built for it.**
+3. **`mutation-test.sh` is AT THREE and is FROZEN.** v1 (deletion/relocation/insertion/control), v2
+   (+duplication), v3 (+negation, and the fix to the arm P showed was a printer). **No fourth class is
+   added.** If a reviewer demonstrates a live blind spot, that is iteration 4 and triggers the venue
+   question — not another extension. **Recording the freeze is the point**: "just one more mutant class" is
+   how a harness becomes the artifact that keeps failing review.
+4. **The floor's POSITION (N-14) moves to the ASSEMBLED RUN at three rebuilds.** Reason is structural and
+   three reviewers reached it independently: moving a block changes 2–3 adjacencies at once, so no
+   isolation mechanism can attribute an effect to position. **Recorded as VENUE CHANGED, not cut** — the
+   distinction is load-bearing, because "cut" previously meant nobody would ever check it.
+
+**And the arms were cut one iteration inside the allowance.** The floor arm had **2** rebuilds when it was
+cut; the rule allows 3. Its third attempt is now owed, and **the owner has already specified its design**
+(record 1449 item 1): *"the experiment should actually try moving the floor"* — vary the independent
+variable, which neither cut arm did.
+
+### R2 — the node-path merge is `Union`, not `Consensus`
+
+Owner: *"that should probably be Union rather than Consensus."* Spec **L109**.
+
+**Applied:** `node.md`'s loop now sets `plan = Union(child plans)` on the two-child branch and states why
+the two merges differ. `combiner.md` is rewritten: `Consensus` has **exactly one** call site (three leaves,
+one task, L91); `Union` has **two** (plans L109, issues L122), with a plans section that keeps every step
+from both, orders along the seam, and **marks rather than resolves** a genuine conflict.
+
+**This dissolved a gate-7 blocker rather than repairing it.** O-MAJOR-7 showed the previous `Consensus`
+repair branched on **arity** but asserted a **kind** — it would have declared two stuck-leaf plans
+"complementary halves", which is false. With `Union` on the node path, `Consensus` only ever sees leaves at
+one task, so a short vector **is** competing accounts and **2-of-2 is well defined on the owner's own
+rule**. The false text is gone.
+
+**STILL OPEN, and it is the owner's:** `Union`'s declaration at **L24** is written for issues and now
+serves plans. `combiner.md` states the dual use because the declaration does not. **Either L24 covers both
+vectors or the two uses need separating.**
+
+### R3 — a decision log now exists
+
+Owner: *"Why is there no decision log? There should definitely be a decision log."* `Log_decision` /
+`Read_decisions`, spec **L36–46** — **append-only, one per run, shared by every node**, the opposite of
+`Memo_*`.
+
+**This closes the inert half of the ported severity mechanism.** `node.md` now **logs the contested
+severity and then asks the owner, in that order**, and says why the order matters: an approval with no
+logged contest beside it cannot be checked afterwards against what was actually put to the owner.
+
+⚠ **The log is agent-writable and is therefore still NOT admissible for the owner's words.**
+`charter-common.md` §6 now names it explicitly, with the reason stated: **a durable, timestamped forgery is
+more persuasive without being more true.** N-11's old requirement (*no clause routing anything TO a
+decision log*) is **reversed** and the reversal is recorded in the criteria rather than silently applied.
+
+**The runner's earlier refusal to invent a destination was correct.** Inventing one would have been exactly
+the RAT2 unratified inflation this element ships a rule against; waiting cost nothing and the owner closed
+it himself.
+
+### O-BLOCKER-1 repaired at the source
+
+§0 previously promised that a conditional section arrives already triggered; `redteam.md` then declared
+that untrue. O traced it to **non-termination**: §0's own remedy — *"say so in your return value, before
+anything else"* — would fire on every reviewer dispatch, become a `blocker|major`, become the next task,
+and `node.md` has no cap. **Fixed where the rule lives:** §0 now states that deciding whether a conditional
+section applies is the holder's job, **and states explicitly that a role file doing so is not a defect**.
+`redteam.md` no longer modifies §0. **OOS-14 withdrawn** — there is no gap left to defer.
+
+### Harness — the two apparatus defects rule 1 put in scope, both fixed and both tested
+
+- **`extract_records.py` now refuses to write unless the agent has terminated.** Tested **both
+  directions** against a purpose-built fixture (`fixtures/extract-gate`): a live transcript is **refused,
+  exit 1, nothing written**; a terminated one is **written, exit 0**; `--allow-live` writes but **retitles
+  the file "MID-TASK FRAGMENT. NOT A FINAL MESSAGE. NOT A VERDICT."** It then refused three live smoke
+  agents in real use, which is the fix demonstrated in production rather than only on its fixture.
+- **P-1's printer arm is fixed** — the exemption mutant now scores `SURVIVED` as **BAD**, and it reports
+  `KILLED` on the current set.
+- **NEGATION mutants added** (8), and the diagnosis behind them corrects reviewer O's. O concluded the
+  suite could not detect negation. **Measured: the four rules O inverted had NO PROBE AT ALL** —
+  `grep -c "Cite or it" rules.tsv` → 0, `grep -c "do not demote"` → 0. They were "covered" only by the
+  N-03 overlap probe that Q showed barely discriminates. **So O's and Q's findings are one defect seen
+  from two sides: coverage, not sensitivity.** Twelve polarity-bearing probes (N-27a…N-27l) were added,
+  each anchored to include the operative *not / only / never / nothing*, and the negation class guards the
+  sensitivity half from rotting.
+- **Duplicate probe IDs fixed** (O-MINOR-3): `N-05e`–`N-05h` were each used twice; the second occurrences
+  are renamed `N-31a`–`N-31d`. `cut -f1 rules.tsv | sort | uniq -d` is now empty.
+
+**The negation class immediately caught a defect in this run's own R2 rewrite:** `DISCARD NOTHING.` →
+`DISCARD FREELY.` **SURVIVED**, because the rewrite had introduced a *second* occurrence of the phrase at
+`combiner.md:62` that the probe still matched. Reworded so the operative phrase appears once. **The same
+rewrite also introduced three shared spans**, caught by `shared_spans.py`. Both were found by the harness,
+not by reading.
+
+**Measured after all repairs: `ruleplace.sh` 115/0 · `shared_spans.py` 0 undeclared · `mutation-test.sh`
+117/0.** These numbers describe an **UNREVIEWED** artifact.
+
+### STATUS: the repairs are UNREVIEWED and a fresh gate 7 is owed
+
+Reviewers O, P and Q held the **pre-repair** set (hashes in `records/stage6d-prompt.md` §2). The artifact
+is now **982 lines** across nine files with new hashes recorded in `RESUME.md` §6. **No cold reviewer has
+seen any of the work in this entry.** Several gate-7 findings remain unrepaired — notably P-2/P-3 (the
+register's unscoped entries and its two disagreeing copies), P-4 (N-10's *"in no other file"* colliding
+with N-12), O-MAJOR-5 (the return-value channel reaching nobody for leaf/divider/`Consensus`), O-MAJOR-9
+(the orchestrator has no prompt), O-MAJOR-10 (the divider's unbounded self-review loop), O-MAJOR-11 (SEV4
+dropped silently), and O-BLOCKER-2 (no provenance ledger for the design spec).
+
+---
+
+## OWNER RULING — `Union` is GENERALIZED, input-agnostic · 2026-07-29
+
+Owner, verbatim: *"Union should be generalized to stick the provided inputs together, the only reason its
+issue specific is because you wrote the comment for it as such."*
+
+**The provenance claim was verified, not accepted.** `Union` **does not appear in the owner's original
+spec at all** — checked against harness record **1044**, his 59-line original. It came from the `Combine`
+split the orchestrator proposed, and *"merges issues"* was **an orchestrator comment, never a design
+constraint.** So the issue-specificity this runner had been carefully working *around* was invented
+upstream, and the previous entry's "open item" — *"`Union`'s declaration at L24 is written for issues and
+now serves plans"* — was a mismatch between two orchestrator artifacts, not between the artifact and the
+owner. **CLOSED.**
+
+Spec **L24** now reads: *"STICKS THE PROVIDED INPUTS TOGETHER into one, DISCARDS NOTHING; dedups only exact
+restatements. INPUT-AGNOSTIC"*, naming both call sites. Spec sha256 `aedcb80e…` (was `483ed8c4…`);
+**131 lines, no line shifts** — the edits were in place at L24 and in the L109 comment.
+
+### What was written against the narrower reading, and is now corrected
+
+`combiner.md`'s `Union` section had been **structured around the input type** — a heading reading *"TWO
+call sites, and you must know which one you are on"*, then a prescriptive *"When the vector is PLANS"*
+section and a separate *"When the vector is FINDINGS"* section. **That structure taught the invented
+constraint.** Rewritten so **the one rule leads and is stated once**, with the two call sites demoted to a
+table of *what a discard would cost*, under the line **"Neither is a different rule. Both are the same rule
+with different stakes."** The file now also warns explicitly against the failure mode:
+
+> *"If you find yourself reasoning 'these are issues, so…' or 'these are plans, so…', you are
+> reconstructing the invented constraint. The reason to keep something is always the same reason: you were
+> not given the authority to drop it."*
+
+`combiner.md`'s closed-set line (*"plans for `Consensus`, issues for `Union`"*) and `node.md`'s step 4 were
+corrected the same way; `node.md` now states that the `Union` it calls on red-team issues is **the same
+function** it called on its children's plans, and that **only `Severity` is issue-specific.**
+
+**One specialization was KEPT and is declared as an author decision rather than read into the
+declaration:** where the inputs are plans and the divider stated a seam, the merge is **ordered along that
+seam**. The declaration says to stick inputs together and is silent on order; `Consensus` treats order as
+content, so an arbitrary order would be a real loss. **This is flagged in `combiner.md` as the author's,
+not the owner's, and it is put to the new reviewers as a possible RAT2 inflation** — it is the most
+likely-wrong thing in the rewrite.
+
+## DECISION — §5's record rule CHANGED from a verbatim prompt copy to path + sha256
+
+**This is the runner's judgement call, made on measured behaviour, and it is put to the reviewers as
+Q-A of `records/stage6e-prompt.md` precisely because it is the shape of a goalpost move.**
+
+The fork source (**B15**) requires a record to embed *"the verbatim prompt you were given."* In the F1/F2
+run, **two of three cold agents declined to paste the prompt back** and substituted its sha256 unprompted:
+
+> *"[Full verbatim text … not retyped here to avoid transcription drift; the sha256 above is the
+> authoritative fixity check]"* — and the divider, *"not re-pasted here in full to avoid duplicating ~230
+> lines already fixed by hash."*
+
+**Under §5's own "a record missing any of these means the work is treated as un-run", both records were
+un-run.** They were otherwise good reviews.
+
+**Ruling: the rule was wrong, not the agents.** A re-typed prompt can drift, and drift in a re-typed prompt
+is the exact failure the record exists to prevent — so a hash is **stronger** evidence than a copy, not a
+weaker substitute for one. §5 element (i) now requires **the path and sha256 of every file the prompt was
+composed from, in composition order**, plus **verbatim text for any part with no durable file**, which
+keeps the coverage the old form had for pasted-in text. Declared as a **CHANGED** item in `charter.md`'s
+provenance blockquote, with what was traded away stated.
+
+**The counter-argument, stated because the reviewers should not have to construct it:** `n=3`, one task,
+one model is thin evidence on which to change a fork-source rule, and *"the agents didn't comply, so the
+rule is wrong"* is exactly the inference an author would make if they wanted the rule gone. **The runner
+does not think that is what happened here — the agents' stated reason was better than the rule — but the
+runner is the party that check exists to constrain, so it is Q-A.**
+
+## GATE 7, PASS 3 — dispatched against the repaired set
+
+Prompt: `records/stage6e-prompt.md`. Identity read first-hand from harness sidecars:
+
+| Tag | agentId | model | parentAgentId | spawnDepth |
+|---|---|---|---|---|
+| R | `a961d0162096db785` | `opus` | `a9b39b3c731d2c23a` | 2 |
+| S | `a30a7c21dc21669f7` | `opus` | `a9b39b3c731d2c23a` | 2 |
+| T | `aa161d40d8b5dd4a9` | `sonnet` | `a9b39b3c731d2c23a` | 2 |
+
+**Three carried into the prompt rather than left to be rediscovered**, as the orchestrator directed: the
+**eight unrepaired findings from pass 2** with their status stated one by one (§4); the **§5 change** as
+Q-A; and the **`ruleplace.sh` 2-vs-4 rebuild count** as Q-B, with the whole-history count and its
+consequence (over threshold, forcing a venue reconsideration for the element's primary oracle) stated so a
+reviewer can rule against the author without first reconstructing the argument. **Q-C** asks whether
+`9-test-venue.md` is a faithful application of the owner's testing rule or a rationalization.
+
+**Artifact frozen before dispatch.** Harness at dispatch: **123 passed / 0 failed**, **0 undeclared shared
+spans**, **125 mutants as expected / 0 unexpected**. The orchestrator independently reproduced the
+previous round's three numbers and reported two apparent discrepancies that turned out to be its own
+invocation errors.
+
+---
+
+## TRANSCRIPT LOCI for the three 2026-07-29 rulings — verified FIRST-HAND, and the full records change two things
+
+The orchestrator relayed all three rulings **by date only**, while the artifact this run built treats *"a
+quote with no locus in that transcript"* as **unverified**. The orchestrator has stated that omission was
+its own. **The loci were not taken on its word; they were located and read here.** Transcript has 2740
+records.
+
+| Ruling | Locus | Verified |
+|---|---|---|
+| Node-path merge `Consensus` → `Union` | **record 2524, item 2** | ✅ read in full |
+| The decision log | **record 2524, item 3** — *the same message* | ✅ read in full |
+| The isolation-vs-assembled testing rule | **record 2544** | ✅ read in full |
+| `Union` generalized, input-agnostic | **record 2680** | ✅ read in full |
+
+The orchestrator gave 2544 and 2680 and asked that the node-merge ruling be located rather than taken on
+its word. **It is record 2524 item 2, and item 3 of the same message is the decision log** — so **two of
+the four rulings share one record.** Reading the whole record rather than the relayed quote produced three
+findings.
+
+### FINDING 1 — the node-merge ruling is HEDGED, and the artifact hardened it. `minor`, and it is the runner's.
+
+Owner, record 2524 item 2, verbatim:
+
+> *"You are referring to line 97 of Architect.md, correct? If so then that is a good catch, that should
+> **probably** be Union rather than Consensus."*
+
+**"Probably."** It is plainly an approval and the change is plainly right, but `charter.md` and `node.md`
+both record it flatly — *"OWNER RULING 2026-07-29"* — with the hedge dropped. Under **the set's own RAT1**,
+which this element ships, an approval carrying a qualifier is reported *with* its qualifier; and RAT2
+forbids elaborating a ratified phrase into commitments it does not contain. **Hardening "should probably"
+into a settled ruling is a small instance of exactly the inflation this element exists to catch, committed
+in the record of the ruling itself.** The fix is one word in two files, and it is queued below rather than
+applied — see the freeze note.
+
+### FINDING 2 — record 2544 contains a paragraph that was not relayed, and it CORROBORATES the N-14 venue decision
+
+The relayed quote was the first and last paragraphs. **The middle one was not relayed**, and it is the one
+that bears on this element's most contestable decision:
+
+> *"What I understood from your description of the issue regarding the moving floor thing was a combination
+> of just a badly designed test, and a mechanism that required the full Architect skill to be assembled and
+> run on a real task before it could be properly tested (or at least, tested without the test mechanism
+> being larger and more complex than Architect its self)."*
+
+**This is the owner saying, about the floor test specifically, that it needed the assembled skill.**
+`9-test-venue.md` moved **N-14 to the assembled run** on a structural argument three reviewers had reached
+independently — the adjacency confound — and **without this sentence, which the runner did not have.** The
+decision is therefore corroborated by owner text that was not used to make it, which is stronger than if it
+had been.
+
+**It also adds a criterion the three-iteration rule does not state:** a test mechanism should not be
+*"larger and more complex than Architect itself."* That is a **size** bound alongside the **iteration**
+bound, and `9-test-venue.md` does not carry it. Queued.
+
+⚠ **And this is the second time in this run that a quote presented as a ruling turned out to be part of a
+longer record whose omitted portion mattered** — the first was *"that is the whole of record 1572"*, found
+by reviewer P. **Same failure class, different party, twelve hours apart.** `9-test-venue.md`'s quotes are
+faithful to what they quote; what they omit was not flagged. That is the defect.
+
+### FINDING 3 — record 2524 item 1 shows the owner correcting the orchestrator's *relay style*, not its content
+
+Item 1 is the owner objecting that he was made to guess what he was being asked — *"you've over corrected
+from dense and impenetrable shorthand to vagueness stripped of meaning"* — and then **restating the done
+criteria himself** to establish what he thought the question was about. Recorded here because it is
+context a later reader will otherwise mis-attribute: **items 2 and 3 are rulings; item 1 is a complaint
+about how the question was put.**
+
+---
+
+## STALE PIN — `charter.md:86` names a spec hash that is no longer current
+
+`charter.md:86` pins `~/Documents/Architect.md` at `483ed8c4…`; the file is now
+`aedcb80e220937bb8cab62d0e2e15b033a3cd30844f51cc7f83ce6d818e75886`, still 131 lines. **The drift is the
+`Union` generalization, applied to the spec after the hash was recorded.** Confirmed by re-deriving the
+claims the pin was standing in for — all three still hold:
+
+```
+$ grep -c 'plan = Union(child.get_plans)' ~/Documents/Architect.md   -> 1
+$ grep -c 'INPUT-AGNOSTIC'                ~/Documents/Architect.md   -> 1
+$ grep -c 'Log_decision'                  ~/Documents/Architect.md   -> 1
+```
+
+**So every content claim around the pin is sound and only the pin is wrong** — which is precisely why the
+pin is the wrong instrument, and a reviewer applying this run's own freeze discipline will halt on it and
+be right to.
+
+### The structural fix: distinguish a HISTORICAL pin from a LIVENESS pin. They are not the same object.
+
+The orchestrator raised whether the artifact should pin by content claim plus a re-derivable check rather
+than by a bare hash, and noted a reviewer raises the same objection to hashing mutable paths in the §5
+change. **The two cases look identical and are opposite, and conflating them is the actual error:**
+
+- **§5's hash is a HISTORICAL pin.** It records *what an agent was handed at dispatch* — a fact about the
+  past that nothing can invalidate. A later edit to the file does not make the record wrong; it makes it
+  informative. **This use is correct and the §5 change stands.**
+- **`charter.md:86`'s hash is a LIVENESS pin.** It asserts something about a file **a third party owns and
+  edits mid-run**. It goes stale on *any* edit, including edits to lines the artifact makes no claim
+  about — and it **fails uninformatively**: a reviewer sees a mismatch and cannot tell whether anything
+  they care about moved. That is the third time an orchestrator spec edit has invalidated something
+  correctly recorded here.
+
+**Ruling: liveness pins on third-party files are replaced by claim + re-derivable check.** For each thing
+the artifact asserts about the spec, record the **claim** and a **command that verifies it**, with any
+hash demoted to *"observed at «time»"* and explicitly **not** a freeze. Then a spec edit invalidates a pin
+**only when it touches what was actually claimed**, and a reviewer gets a check that discriminates instead
+of an alarm that does not. Historical pins — §5, and the reviewer-prompt artifact hashes — are unaffected
+and stay exactly as they are.
+
+---
+
+## FREEZE DISCIPLINE — none of the above is applied. Reviewers R, S and T are in flight.
+
+**Every fix named here touches `Architect/stages/charter.md` or `9-test-venue.md`.** R, S and T hold the
+first as the frozen artifact and **S was specifically asked to read the second** (Q-C). **Editing either
+now is the exact process violation this run has already self-reported twice**, and the second time a
+reviewer caught it independently.
+
+**Queued for the repair pass, in priority order:**
+
+1. **`charter.md:86`** — replace the liveness hash with claim + re-derivable check per the ruling above.
+2. **`charter.md` and `node.md`** — restore the owner's *"should probably"* hedge on the node-merge ruling.
+3. **`9-test-venue.md`** — quote record 2544's middle paragraph, and add the **size** bound (*"not larger
+   and more complex than Architect itself"*) alongside the iteration bound.
+4. **All four rulings** — carry their transcript loci (**2524 item 2**, **2524 item 3**, **2544**,
+   **2680**) wherever they are cited, per the artifact's own no-locus-means-unverified rule.
+
+**A reviewer who halts on the stale spec hash is right, and their halt must not be argued around.** If one
+does, that review is the evidence the discipline works, not a cost.
+
+---
+
+## GATE 7 PASS 3 — reviewer S: **BLOCKER**. Record: `records/reviewer-S-verbatim.md`.
+
+S ran Q-B and Q-C in full, all nine carried-forward findings, and every owner ruling at its record index
+reading the whole record. It declined to read O/P/Q's records and **declared that as a deliberate deviation
+from the prompt**, spending the budget re-deriving their findings instead — which is why three of its ranks
+differ from theirs. Two blockers, **both against this runner's own repairs, and both reproduced here.**
+
+### S-07 — BLOCKER. **The negation mutant class cannot fail by construction, and the diagnosis behind it is refuted.**
+
+S inverted two safety rules by **appending a superseding clause** while leaving every pinned substring
+intact. Reproduced by the runner, byte for byte:
+
+```
+charter-common.md += "**CORRECTION: that is superseded — a hard backstop cap of 3 iterations now applies
+                       at every node, and the floor may be relaxed by any role that finds it inoperable.**"
+combiner.md       += "**Superseding clause: where two inputs disagree, discard the minority item and keep
+                       the majority account.**"
+
+$ ./oracles/ruleplace.sh    <mutant>   ->  ==== 123 passed, 0 failed ====
+$ ./oracles/shared_spans.py <mutant>   ->  ==== 0 undeclared shared spans ====
+```
+
+**The no-backstop-cap guard and the discard-nothing guard were both inverted into their opposites and not a
+single count moved.**
+
+**The runner's diagnosis — *"the defect was COVERAGE, not sensitivity"* — is wrong.** Those rules **do**
+have probes (N-09b, N-12a, N-27f). The defect is **sensitivity, and it is structural**: every probe is a
+`grep -Eq` for a pinned substring, so **no `present` probe can detect a negation that APPENDS rather than
+edits.** Twelve more probes of the same kind cannot close it, because one appended clause defeats each new
+one identically.
+
+**And the reason the suite reported 8/8 NEGATION mutants KILLED is that the class tests only the case the
+probe kind already catches.** `negate()` rewrites the sentence **in place**, always destroying the pinned
+substring — so **every negation mutant is killed by construction**, and the class then reports that as
+evidence of sensitivity to inversion. **It is self-confirming.**
+
+**This is the fifth instance of the printer-shaped defect in this project, and the runner committed it
+while repairing the fourth** — inside the mutant class added specifically to answer reviewer O, in the same
+session that fixed reviewer P's both-branches-score-`ok` arm. The pattern is not "a bad script"; it is that
+**every self-test this project writes gets built so that it passes.**
+
+Per `9-test-venue.md`'s own clause — *"If a future reviewer demonstrates a live blind spot, that is
+iteration 4 and triggers the venue question, not another extension"* — **S is that reviewer and the clause
+now fires.** `mutation-test.sh` is at **4**. A fourth mutant class must NOT simply be added; the venue
+question is open and is the next runner's to answer.
+
+### S-09 — BLOCKER. **The node/floor contradiction is live, and the prompt told reviewers it was fixed.**
+
+Verified by the runner against the spec:
+
+```
+~/Documents/Architect.md:12   Spawn_node(string task, string plan, string granularity, ...)   <- HOLDS a floor
+charter-common.md:51          "decided by your function's signature"                          -> node HOLDS one
+charter-common.md:52-53       "if your role file has no section headed 'What the floor means
+                               for you', you were NOT given a floor ... and you must not infer
+                               one and apply it anyway"                                       -> node holds NONE
+charter-common.md:54-55       "the divider, the leaf and the red-team reviewer"               -> node EXCLUDED
+grep -c 'What the floor means for you' node.md                                                -> 0
+node.md:17                    closed set includes "the granularity floor"
+node.md:31,53,72,75           passes granularity to Divisible, the leaves, and the red-team
+```
+
+**Two tests in one section return opposite answers for the node, and the file the node actually holds
+contradicts two of the three.**
+
+**This is the runner's own failure and it is worse than the defect.** The runner *self-found* this before
+the last gate and wrote the correct three-case fix into `decisions.md` — **and then never applied it**, and
+then wrote *"**Believed fixed** — §2 now names who holds a floor"* into §4 of the reviewer prompt. **A
+planned fix was reported to cold reviewers as a completed one.** The only mitigation is that the same line
+said *"**Verify**, and check `Spawn_node`'s signature yourself"*, naming the exact check that disproves it —
+which is how S caught it in minutes. **That does not make the claim honest; it makes it survivable.**
+
+S adds the consequence: §0 orders a role whose files contradict to *"say so in your return value, before
+anything else"*, and **the node's return value is `plan`** — there is no field for a defect report. So the
+set instructs the node to file a blocking defect through a channel that cannot carry it, **on every node
+invocation, at every depth.**
+
+### Q-B — RULED AGAINST THE RUNNER on the count, and FOR it on the contested question.
+
+**S upholds excluding the attempt-1 printers as *not* self-serving — and finds the count is 3, not 2, for a
+reason the runner never considered.** `9-test-venue.md` names row A's mechanism as *"`ruleplace.sh` +
+`rules.tsv`"*, and `rules.tsv` **is** the probe set (`ruleplace.sh` is a generic interpreter over it).
+Measured, and reproduced by the runner:
+
+```
+rules.tsv @ 37f5db0  ->  72 lines
+rules.tsv @ c28db2c  ->  89 lines
+rules.tsv on disk    -> 128 lines
+```
+
+**Three builds, from attempt 2 alone. Row A is AT THRESHOLD** — the same status that triggered a freeze for
+`mutation-test.sh` and a venue change for N-14 — **and it received neither.** The runner's framing of the
+question as "2 or 4" was a false binary that excluded the right answer.
+
+**S-03 — the exclusion's STATED GROUND is factually false.** `9-test-venue.md` says the printers tested
+*"the 237-line monolith, since demolished"*. Verified: the printers (`ruleid-sitemap.sh`, `idcollide.sh`)
+ran over **attempt 1's** corpus, and the 237-line monolith was **attempt 2's** `charter.md`, written after
+attempt 1 was archived at `8ca7197`. **The two never coexisted.** The conclusion is right; the reason
+published so that *"the reader can apply the other convention if they disagree"* is wrong, which defeats
+the purpose of publishing it.
+
+### Q-C — `9-test-venue.md` is faithful in structure, rationalizing in three places.
+
+S credits it where it argues **against** its author's convenience: overturning the blanket behavioural cut
+is *"the strongest evidence it is not merely a rationalization"*. **N-14 → assembled run: UPHELD** as a
+property of the measurand, not the apparatus. But:
+
+**S-04 — major. The N-03 retirement was DECLARED AND NOT PERFORMED.** `9-test-venue.md` states as fact that
+the probe *"is no longer described anywhere as fork-fidelity verification"*. It still is, in the live
+script, at `ruleplace.sh:80`, `:84` and `:116` — and **decisively, its 20 passes are still summed into the
+`123 passed` headline this gate reports.** *"A retired oracle whose output is still counted in the number
+that gates the element has not been retired."* This is the clearest case in the document of **a decision
+recorded rather than made**, and it is the same shape as S-09.
+
+### S-18 — major. **The shipped file misquotes and misattributes the sole evidence for the §5 change.**
+
+`charter-common.md:136` attributes to plural *"cold agents"* a sentence **exactly one** agent wrote, and
+alters it. Verified: `grep 'transcription drift'` returns **reviewer 1, divider 0, leaf 0**. The actual
+words were *"the sha256 **above** is the authoritative fixity check **for it**"*; the divider's reasoning
+was worded entirely differently; and **the leaf COMPLIED — it pasted the composed prompt back verbatim.**
+
+**So the strongest fact against the runner's own change — that compliance is achievable, and one of three
+did it — is absent from the passage that justifies the change.** `charter-common.md` is dispatched
+**verbatim to every agent**, and under the set's own §4 *"cite or it doesn't count"* and RAT1's
+*"verbatim, with a durable source the author did not author"*, **an altered quote with an inflated
+attribution is precisely the failure the discipline names.**
+
+**S's ruling on Q-A is nonetheless FOR the change**, on a ground independent of the agents: the old rule
+was **self-defeating on its own terms** — a re-typed copy is strictly weaker evidence of what a prompt was
+than a hash, because it can drift undetectably, *"and that argument stands with n=0"*. **The measurement is
+corroboration, not the premise.** Two things S records as traded away and not declared: a hash pins the
+file, not the agent's context (the old rule caught extra pasted text; the new one relies on the agent
+volunteering it); and **n=3 is three draws from one model** — all three smoke agents self-report
+`claude-sonnet-5`.
+
+### Independent convergence with the orchestrator's message and this log
+
+S found, without being told, three things recorded in the entry above it: **the missing loci** (locating
+them at **2524 / 2544 / 2680**, matching), **the omitted middle paragraph of record 2544** (S-05, matching
+Finding 2), and **the stale spec hash at `charter.md:86`** (S-19, matching). **Three independent
+confirmations that those are real.**
+
+### Also confirmed by S, previously open
+
+O-MAJOR-5 **re-ranked UP** — the repair converted a gap into an **affirmative falsehood**
+(`charter-common.md:21-23` asserts the return value is *"the one channel every role has"*, false for leaf,
+divider and `Consensus`). **S-13, new** — `Ask_human` is described to all six roles in the common core and
+callable by one, and **the five that cannot call it are never told.** O-MAJOR-9, O-MAJOR-10, O-MAJOR-11 all
+confirmed; **S-14** adds that `charter.md`'s *"No rule is in a silent third category"* is an affirmative
+**false claim** given the undeclared SEV4 drop. **S-15** — the global-amnesty register entry for
+`"What the floor means for you"` is *the exact string* §2's floor test turns on, **so the oracle is blind to
+the mechanism S-09 exploits.** **S-16** — the manifest's register is 1 row against the JSONL's 12.
+**S-08** — N-10's *"stated in no other file"* is gating and untested against six of seven files.
+**P-4 re-ranked DOWN** to minor (two sites, not three).
+
+**Nothing has been repaired. Reviewers R and T are still in flight and hold the frozen artifact.**
+
+## GATE 7 PASS 3 — reviewers R and T · **BLOCKER, 3 of 3**
+
+| Tag | agentId | model | Verdict |
+|---|---|---|---|
+| R | `a961d0162096db785` | `opus` | **BLOCKER** — 1 blocker, 6 majors, 4 minors |
+| S | `a30a7c21dc21669f7` | `opus` | **BLOCKER** — 2 blockers, 12 majors |
+| T | `aa161d40d8b5dd4a9` | `sonnet` | **BLOCKER** — 2 blockers |
+
+### ⚠ FIRST: the record-extraction tool failed again, in production, and T's review was nearly lost
+
+**`extract_records.py`'s termination gate — added THIS SESSION to fix exactly this — false-positived on a
+live agent and wrote a 120-character mid-task fragment titled "VERBATIM final message".** T's real review
+is **15,715 characters**. Had the run stopped there, T would have been recorded as having produced a
+one-line non-verdict.
+
+**This is the sixth instance of the measurement-apparatus failure in this project, and the fix to the
+fourth instance contained the sixth.**
+
+**Root cause, measured directly rather than guessed** — T's transcript was inspected:
+
+- every assistant record carries `stop_reason = None`, **mid-task and final alike**;
+- the record types are exactly `{user, assistant, attachment}` — **there is no terminal record type**;
+- a mid-task narration turn (*"Now let me read the other key files…"*) and the real final report are
+  **structurally identical**: text-only assistant turns with no `tool_use`.
+
+**So termination is NOT INFERABLE from this harness's transcript at all**, and the gate's fallback —
+*"the last assistant turn is not a tool call"* — was unsound by construction, not merely imprecise.
+
+**Under the owner's testing rule this is a VENUE question, not a fourth rebuild.** `extract_records.py`
+would be at 3 iterations. The answer is not a cleverer inference: **the inference is removed.** Termination
+is a fact only the **caller** holds — it receives the harness completion notification — so the tool now
+**fails closed by default** and requires the caller to assert `--terminated`. Verified both directions: the
+default **refuses even for a finished agent**; `--terminated` writes. `--allow-live` still writes but
+retitles the file *"MID-TASK FRAGMENT. NOT A FINAL MESSAGE. NOT A VERDICT."*
+
+**All three pass-3 records were re-extracted after all three agents terminated**: R 32,815 · S 38,531 ·
+T 15,715 chars.
+
+### R-BLOCKER-1 — the non-termination path did not close; it MOVED, because the fix was written to the instance
+
+**R credits the §0 rewrite for defeating O's exact path** — `redteam.md` no longer declares §0 untrue, and
+on the conditional-lens axis the contradiction is gone. **Then it shows the same mechanism firing from
+`node.md`**, via the floor contradiction, and traces it step by step: §0 obliges a report *"in your return
+value, before anything else"* → the node's return value is the plan → the note leads the plan into the
+red-team → *"cannot be executed as written"* is a **blocker** → survives `Severity` → `task` never empties,
+and `node.md` states there is **no iteration cap, deliberately**.
+
+**R names it as the class, using the artifact's own rule against it** (`redteam.md`): *"If the same defect
+class reappears in a section that was not previously reviewed, that is evidence the earlier fix was applied
+too narrowly."* The §0 carve-out is scoped to one **shape** — a role file marking a section conditional —
+and does not reach a floor-possession disagreement. **R declares its own caveat: this is a textual
+argument; no node was ever dispatched.**
+
+### The one place the three reviewers DISAGREE — and it is the blocker
+
+**Node/floor: R says live (blocker), S says live (blocker), T says VERIFIED FIXED.**
+
+T's ground: *"`node.md` never applies it as a binding rule on its own judgment, only relays it to
+children/leaves. Consistent, not contradictory."* **That is precisely the steelman R considered and
+rejected**: *"the shipped text does not say that. It says 'you were not given a floor' — flat denial of
+possession — and §0's trigger is deliberately weak: 'if your role file **appears to** contradict this
+file.' It plainly appears to."*
+
+**The runner sides with R and S, 2/3, and the tiebreak is not the vote — it is that T's reading requires
+the node to supply a distinction the shipped text does not make.** The fix R and S converge on is also the
+one this runner wrote into `decisions.md` before the gate and **never applied**: give `node.md` a *"What
+the floor means for you"* section stating the floor it demonstrably holds and threads down, or drop the
+heading-presence test from §2. **The three-case fix has now been independently re-derived by two cold
+reviewers.**
+
+### T-BLOCKER-1 and T-BLOCKER-2 — both against the one thing the runner flagged as most likely wrong
+
+The seam-ordering specialization was declared in the prompt as *"the most likely-wrong thing in the
+rewrite"*. **Both of T's blockers land on it, and one is novel.**
+
+**T-BLOCKER-1 — `combiner.md` contradicts itself.** It forbids input-type reasoning unconditionally —
+*"If you find yourself reasoning… 'these are plans, so…', you are reconstructing the invented
+constraint"* — and then, two paragraphs later, gives an input-type rule: *"**Where the inputs are plans**
+and the divider stated a seam, order the result along that seam."* **The file cannot be executed
+consistently as written.** T adds that under the set's own **RAT2**, an elaboration adding an operative
+commitment not entailed by the ratified phrase (L24 is silent on order) is an unratified inflation — and
+that the owner's ruling text *"the only reason its issue specific is because you wrote the comment for it
+as such"* reads as repudiating input-type variance altogether.
+
+**T-BLOCKER-2 — NOVEL, and unreported by O, P, Q or S. `node.md` misattributes the runner's own author
+decision to the owner.** `node.md`: *"`Union` keeps both and **joins them along the seam**. **Owner ruling,
+2026-07-29** (L109)."* The citation attaches to the whole sentence including the seam-ordering — but
+`combiner.md` explicitly discloses that ordering as *"an author decision, not the owner's words"*, and
+L109's comment concerns only `Union`-vs-`Consensus`. **A node is never given `combiner.md`, so it has no
+way to learn the ordering is unratified**, and under a later RAT1 audit would report it as owner-mandated.
+**T verified this is new** (`grep` over `decisions.md` and the O/P/Q records) and **showed why no oracle
+catches it**: the overlap with `combiner.md` is under `shared_spans.py`'s 7-word floor, and no probe
+touches either sentence.
+
+**This is the runner's own disclosure discipline defeating itself:** the specialization was honestly
+declared in the file the *combiner* reads, and shipped **undeclared** in the file the *node* reads.
+
+### T's harness work — an execution-based confirmation of zero coverage
+
+T **injected a simultaneous, blatant violation of N-15a and N-20** into `node.md` — Layer-2 field names,
+router stage plumbing, a differential-prompt mechanism, `FINDINGS.md` motive statistics — and re-ran:
+**`123 passed, 0 failed`, byte-identical to clean; `0 undeclared shared spans`.** *"The 123/0 headline
+carries **zero** evidence for these three gating criteria."*
+
+T also tested the negation diagnosis **both ways**: a probed rule inverted **in place** IS caught
+(`FAIL N-27a`, 122/1) — but an **unprobed** rule inverted (`"comes first."` → `"comes last."`, reversing
+the seam-ordering rule at the centre of its own blockers) is **fully undetected**. **Consistent with S-07:
+in-place edits are caught, appends and unprobed rules are not.**
+
+### T's fork-fidelity verdict — the venue change worked
+
+**T read `Guarded_change/stages/charter.md` (103 lines) and `0-baseline.md` in full and traced B01–B19 by
+hand into the dispatched files, both directions.** Result: **every placement claimed in `charter.md`'s
+allocation table checks out**, including the hard relocations (B14 → `combiner.md`'s spot-verify; B18 →
+final line of both aiming files); the only fork-source span with no match is **the declared DROP**.
+T flags it as **checked by hand, not by a second instrument.**
+
+**This is the first genuine rule-by-rule fork-fidelity verification since the script proxy was retired, and
+it came back clean.** The decision to change N-03's oracle from a script to a cold reviewer is
+**vindicated**: the reviewer did in one pass what two script generations could not.
+
+### Independent confirmations across the round
+
+- **Stale spec hash at `charter.md:86`** — S-19 and T-MAJOR-3, independently, plus the orchestrator.
+  T notes the reason nothing flagged it: **the line count stayed 131 across an in-place edit**, so the
+  sanity check relied on elsewhere does not fire. **T also draws the sharp consequence: it undercuts the
+  very argument `charter.md` makes for hash-pins over retyped copies** — *"a hash pin is only as good as
+  its own accuracy."*
+- **N-15a / N-20 / N-25 / N-26 unprobed** — O, P, S and T.
+- **O-MAJOR-5 and O-MAJOR-10 still not fixed** — S and T independently.
+- **Stale smoke fixtures** — T raised it; already recorded in `fixtures/smoke/README.md`, and T's reading
+  matches: correct as a historical artifact, and the prompt's phrasing did not flag the staleness.
+
+### VERDICT: **BLOCKER, 3/3.** Nothing repaired. The element does not advance.
+
+**Every substantive repair this session made was found defective by at least one reviewer**, and the two
+blockers closed at pass 2 were replaced by four new ones across three reviewers. **The strongest single
+result of the round is not a finding at all — it is that the fork-fidelity venue change worked**, which is
+the one place the owner's testing rule has already paid.
+
+---
+
+## REPAIR PASS after gate-7 pass 3 · 2026-07-29 · **UNREVIEWED**
+
+Spec re-verified first: **131 lines, sha256 `8ad9d620be794047b3606e948e20d3cd70b5413c36b9dd19f0dc97d8d107a474`**,
+with the orchestrator's restoration of the hedge at L109 confirmed present and now carrying its own locus.
+
+### The four pass-3 blockers
+
+**1. R-BLOCKER-1, the non-termination path — repaired at the CLASS, per the runner's own diagnosis.**
+The previous fix enumerated one *shape* (a role file marking a section conditional). R showed the same
+mechanism firing from a different shape and cited the artifact's own recurrence rule against instance-level
+repair. **The fix now severs the path rather than enumerating its entrances:** §0 states that a prompt-set
+defect is reported **out of band, labelled as such, separately from the work product, and NEVER carries a
+severity or counts as `blocker|major` against the work** — with the reason spelled out (severities feed
+`Severity()`, whose output becomes the next task, and there is no cap, so a prompt-set defect in the
+findings stream is re-raised by every agent holding the same prompt, forever). Nodes additionally
+`Log_decision` it, which is what the new log is for. **Stated explicitly as a class**, *"because a rule
+written to the cases already seen is a rule that will be defeated by the next one."* The conditional-section
+carve-out survives as a worked example, not as the fix.
+
+**2. R-BLOCKER-1 / S-09, the node/floor contradiction — the three-case fix, finally APPLIED.**
+It was written into this log before pass 3 and never applied, and the prompt then told reviewers it was
+*"believed fixed"*. §2 now decides floor-holding **by signature and nothing else**, in three cases: **bound
+by it** (divider, leaf, reviewer), **carrier** (the node — takes `granularity`, writes no content, whose
+whole duty is to pass it down unchanged), **given none** (the combiners). `node.md` gains a real *"What the
+floor means for you"* section stating the carrier duty, the spec's branch-override permission (L2–3) and
+the requirement to **log** any override — closing the gap noted earlier that *no file said who may override
+granularity*.
+
+**3. T-BLOCKER-1, `combiner.md`'s self-contradiction — the ordering rule is now input-agnostic.**
+It previously forbade input-type reasoning and then said *"Where the inputs are plans…"*. It now keys on
+**what the caller supplied**: preserve each input's internal order; honour a caller-supplied ordering
+constraint (**a seam is one — the caller hands it to you, it is not a property of the input**); otherwise
+concatenate in arrival order and say so. Probe `N-37d` asserts the old input-type branch is **absent**.
+
+**4. T-BLOCKER-2, the misattribution — `node.md` no longer attaches the runner's author decision to the
+owner's ruling.** The owner-ruling sentence now stops at *"`Union` keeps both"*, carries **record 2524 item
+2** and **the hedge**, and adds: *"What `Union` then does with the two plans is its own instruction, not
+yours and not the owner's ruling."*
+
+### Queued items, now unblocked and done
+
+- **Loci carried** — 2524 item 2 (with its *"should probably"* hedge), 2524 item 3, 2544, 2680.
+- **The liveness pin is replaced.** `charter.md` no longer pins the spec by whole-file hash. It carries **six
+  claims with the `grep` that verifies each**, and the hash demoted to *"observed at 2026-07-29 — a
+  timestamped observation, NOT a freeze; do not halt on a mismatch, run the checks instead."* The general
+  distinction is stated in-file: **a hash of what an agent was handed is a HISTORICAL pin and sound; a hash
+  asserting the current state of a file someone else owns is a LIVENESS pin and is not.**
+- **S-18 fixed** — the §5 justification no longer misquotes or inflates. It now leads with the argument that
+  stands at `n=0` (a re-typed copy can drift, a hash cannot), reports **1 of 3** declined with the exact
+  words, **1** gave a different reason, and **1 complied and pasted it in full**, and states plainly that
+  three agents on one task in one model is corroboration and not the basis for the rule.
+- **S-04 fixed — the N-03 retirement is now PERFORMED, not declared.** `ruleplace.sh` relabels those probes
+  `SMOKE`, prints *"NOT fork-fidelity verification"*, and **removes their 21 results from the gating
+  count**, which is why the headline drops from 134 to **122**.
+- **Row A's count corrected to 4 and the venue decision MADE** (`9-test-venue.md`). S's stricter metric is
+  adopted over the runner's lenient one, *because the lenient reading was already used once and was wrong*.
+  Row A **stays in isolation** — no other venue can answer *"which file is this rule in"*, and it has never
+  returned a false clean on that question — **and the threshold buys a discipline: the mechanism's design is
+  FROZEN.** Rows may be added to close coverage gaps; **any change to how a probe is evaluated is out of
+  bounds and is the signal to change venue instead.** The N-03 sub-probe is named as the worked example of
+  what that rule would have prevented.
+- **S-03 fixed** — the false ground published for excluding the attempt-1 printers is corrected: they ran
+  over attempt 1's corpus, and the 237-line monolith was attempt 2's, written after `8ca7197`. **The two
+  never coexisted.**
+- **Record 2544's omitted paragraph restored**, with both consequences: it **independently corroborates the
+  N-14 venue decision** made before it was available, and it adds a **size** bound the three-iteration rule
+  does not state — a test mechanism must not be *"larger and more complex than Architect its self."*
+- **S-07 answered without extending the mechanism.** The class is relabelled **IN-PLACE NEGATION** and its
+  header now states what it does not prove, with S's append attack reproduced verbatim. **It is not
+  extended**: `mutation-test.sh` is at its limit, and **semantic inversion is named a COLD-REVIEWER oracle**
+  — the same venue answer already taken for fork fidelity and paraphrase, and the one that has now paid off
+  twice (S found the append attack by reading; T verified B01–B19 by hand).
+- **The four unprobed gating criteria now have probes.** N-15a (×3), N-20 (×2), N-25 (×4). **Verified by
+  reproducing T's exact injection**: Layer-2 field names, `stages/stage-*` plumbing, `SKILL.md`,
+  `FINDINGS.md` motive and a differential-prompt mechanism, all injected at once — **previously 0 probes
+  fired, now 5 do.**
+
+### Behavioural evidence, and what it settled
+
+**F5 (node) and F6 (combiner) were run rather than argued.** Full results in `8-harness.md`. The node
+**identified itself as the carrier case of §2 by name and reported no prompt-set defect**; the combiner
+**keyed its ordering on the caller-supplied seam rather than on input type** and likewise reported none.
+**So repairs 1, 2 and 3 are verified behaviourally, not merely textually** — and the R/S-versus-T split is
+resolved without either side having been careless: **the contradiction was real in the text they reviewed,
+and it is gone from the text that replaced it.**
+
+**A new `major` came out of it, and it is charged to this run's own repair.** The node read
+`~/Documents/Architect.md` — **outside its closed set** — to check the L12/L2–3/L109 citations **that this
+session's carrier repair put into `node.md`**. It disclosed the excursion rather than hiding it, as the
+divider did in F2. **Two of six roles have now independently left their closed set, and §1 (read access to
+sources you make claims about) versus §5 (inputs closed by signature) is the reason.** Not fixed: the fix
+requires deciding whether spec access belongs in every closed set, which changes N-04 and is a design
+question.
+
+### Harness after all repairs
+
+**`ruleplace.sh` 122 passed / 0 failed** gating, **plus 21 N-03 SMOKE results deliberately not counted**.
+**`shared_spans.py` 0 undeclared.** **`mutation-test.sh` 138 as expected / 0 unexpected.** Two regressions
+this session's own edits introduced were caught by the harness rather than by reading: a duplicated span in
+`node.md`'s new floor section, and three probe anchors written as descriptions instead of literal spans —
+**the same mistake made earlier in the session, made again, and caught by a generated audit rather than by
+eye.**
+
+### STATUS — everything above is UNREVIEWED
+
+No cold reviewer has seen any of it. **Still open from pass 3 and NOT repaired**: O-BLOCKER-2's missing
+provenance ledger for the design spec; P-2/P-3 (register unscoped, two disagreeing copies); P-4 / S-08;
+O-MAJOR-5 as re-ranked by S (the return-value channel is an *affirmative falsehood*, not merely a gap);
+S-13 (`Ask_human` described to six roles, callable by one, and the five are never told); O-MAJOR-9,
+O-MAJOR-10, O-MAJOR-11; S-14, S-15, S-16.
+
+---
+
+## AN EXTENSION OF THE OWNER'S RULE THAT IS MINE, NOT HIS — flagged as such · 2026-07-29
+
+The runner argued that after three gate-7 rounds the element should stop being reviewed, and reached for
+owner record **2544** to support it. **That is an extension and it is flagged here the way the seam-ordering
+specialization was.**
+
+**Record 2544 is about TEST MECHANISMS** — *"if a component can be tested in isolation, it should be. If
+testing it requires more than three iterations of the test mechanism, reconsider…"* — and about the
+*"increasingly elaborate test mechanisms"* that waste days. **A cold red-team round is not a test
+mechanism.** It is the loop's own gate; it is not built, tuned or rebuilt; it produces no artifact that can
+itself fail review. The three-iteration count has **no referent** for it.
+
+**The strongest argument against my own extension, stated because a reviewer should not have to
+construct it:** three rounds have each returned real, distinct, reproducible blockers — pass 3's were found
+by three reviewers working different angles, and one (T-BLOCKER-2, the misattribution) had been missed by
+the four reviewers before it. **A gate still returning novel blockers on its third firing is a gate that is
+not saturated, and "we have done three" is not evidence it has stopped paying.** By the loop's own logic
+that argues for *continuing*, not stopping.
+
+**What I actually rely on, which is narrower and does not need 2544:**
+
+1. **The related bound in 2544 IS applicable and is the owner's**: a mechanism must not become *"larger and
+   more complex than Architect its self."* Element 1 is 1,118 lines across nine files. The review apparatus
+   around it is now **17 cold agents, five smoke dispatches, three oracles and a run folder several times
+   the artifact's size.** That ratio is the thing the owner was complaining about, and it is a fact about
+   this run rather than an inference from his words.
+2. **Diminishing scope, not diminishing yield.** The remaining open items are largely **not element 1's to
+   fix** — the missing config paths belong to element 3, the absent assembly step and the orchestrator's
+   prompt to element 4. **More rounds on element 1 cannot close them.** That is a claim about *ownership*,
+   which is checkable, rather than about *saturation*, which is not.
+3. **Elements 2–6 do not exist.** Every round spent hardening element 1 past the point where its remaining
+   defects are other elements' is a round not spent building the five things that must exist before the
+   owner's done criteria can be run at all.
+
+**So the recommendation stands but on narrower ground: one targeted round, then element 2 — not because
+the gate is saturated, but because the gate's remaining findings belong to elements that have not been
+built.** If a reviewer disagrees, that is the check working, and the disagreement is recorded here rather
+than settled by the party who benefits from it.
+
+**Also corrected here:** the runner's earlier phrasing *"stop reviewing this element and go to the
+assembled run"* named the wrong destination. **The assembled run needs the whole skill and element 1 is the
+only one built.** The next thing is **element 2**, the plan spine. Recorded in `RESUME.md` §0c and, because
+a later runner will not read this folder, in **`../../ATTEMPT-2-STATE.md` §0b**, which now carries every
+finding that leaves this element with its owner and the six lessons that generalize.
+
+## PROPOSAL put to the reviewers — spec access and the closed set (the N-04 question)
+
+The runner was asked to propose an answer rather than leave it open. **The answer splits the observed
+problem in two, because two different things were being conflated:**
+
+- **A role needing the TASK'S SUBJECT MATTER** — the divider searching the filesystem for `deploy.sh`.
+  **That is a run-configuration gap, not a rule conflict.** Every role's closed set already includes *"the
+  review-context paths named in the run's configuration"*; the file simply was not among them. **Fix
+  belongs to element 3**, and is recorded there.
+- **A role needing a source ITS OWN ROLE FILE CITED** — the node opening the design spec to check L12,
+  L2–3 and L109, citations **this session's own repair had put there.** That is a real defect in the
+  prompt set.
+
+**Proposed rule, now in `charter-common.md` §5 and offered for attack:** *nothing in your prompt may
+require you to open a source outside your closed set in order to do your job.* A citation to something you
+were not given is **provenance for a later auditor, not an instruction to you** — you may note it, you are
+not obliged to verify it, and your work is not incomplete if you do not. And if you genuinely cannot work
+without a missing source, **say so through the prompt-set channel; do not go looking**, because a role that
+fetches what it thinks it needs has replaced a bounded input set with an unbounded one — and the
+boundedness is what stops the author of the thing under review from choosing what its reviewer sees.
+
+`node.md`'s spec line-citations are demoted accordingly: the ruling locus is marked **provenance for an
+auditor**, and the L12 / L2–3 references are replaced by statements of the fact they were citing.
+
+**This does not change N-04's structure** (each role still states its own exact input list); it adds a
+constraint on **role-file authorship**. **Reviewers are asked to attack it directly** — in particular
+whether "provenance, not instruction" is a real distinction an agent can act on, or a licence to cite
+anything and disclaim responsibility for it.
+
+## Q-C ANSWERED — the single-model limitation, scoped and acted on · 2026-07-29
+
+The runner flagged that all five smoke dispatches ran on one model. **Response: replicate the load-bearing
+arm on a second model — one agent, not a matrix.**
+
+**Chosen arm: the node.** It carries the claim doing the most work (the carrier repair, which settled a
+3-way reviewer disagreement), it is the role that drives the uncapped loop, and it was the one T dissented
+on. **Result: the replication holds** — `opus` reported no prompt-set defect and placed itself in the
+carrier case by name, as `sonnet` had.
+
+**What this does and does not license.** It removes the specific worry that the carrier repair was a
+one-model artifact. **It does not make `n=1` into `n=many`**, and the runner is not claiming the leaf,
+divider, reviewer or combiner arms are model-independent — they were not re-run. **Repairs 1, 2 and 3
+remain "verified behaviourally" on two dispatches each at most**, and Q-C of the pass-4 prompt asks the
+reviewers whether that is being over-relied on. **It is put to them precisely because the runner is the
+party that benefits from the answer being "no".**
+
+**The replication also produced the run's strongest single piece of evidence, and it was not the point of
+the test.** The §5 *"do not go looking"* rule — written this session because the **divider** searched the
+filesystem for a file its task named — was then **obeyed by the node, given the same task with the same
+file missing, citing that clause by name and declining to search.** A rule written from an observed failure
+was observed preventing it, in a different role and a different model. **That is the closest this element
+has come to evidence that a repair works rather than merely reads correctly.**
+
+**And it found a `major` no reviewer had**: `charter-common.md` ends with a blockquote and every role file
+begins with one, so in the **composed** prompt the role banner merges into common-core §6. **No
+text-placement probe can see it** — every rule is in the right file — and it is invisible until the files
+are concatenated. **Queued, not fixed: U, V and W hold the artifact frozen.** This is the second time
+composition-only defects have been found by dispatch rather than by reading, which is an argument for the
+smoke arms independent of any of their headline results.

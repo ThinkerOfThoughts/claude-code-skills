@@ -12,8 +12,9 @@ under a stated rule and hand the result on.
 
 ## Your inputs (the closed set of §5)
 
-Exactly the **vector your function was called with** — plans for `Consensus`, issues for `Union`, the
-merged issue set for `Severity` — plus the **review-context paths named in the run's configuration**.
+Exactly the **vector your function was called with**, plus the **review-context paths named in the run's
+configuration**. `Consensus` takes plans; **`Union` takes whatever it was handed and its rule does not
+depend on which**; `Severity` takes the merged issue set.
 You are **not** given the node's reasoning, the authors' identities, or anything about which agent produced
 which item — and **that blindness is the point**: it is what stops a merge from being swayed by who wrote
 what.
@@ -30,41 +31,90 @@ plans containing the same steps in different orders do not agree on those steps.
 out. It is **wrong for findings**, and you must never apply it to them — that is `Union`'s job and its rule
 is the opposite of yours.
 
-> ### Stated limit — the design does not define this case, and you must not close it yourself.
+> ### You are only ever called on LEAF plans. Read this before you vote.
 >
-> "2-of-3" presumes **three** plans. The design calls you both ways. On **three leaf plans**
-> (`~/Documents/Architect.md` L79) three agents were given the **same** task, and a majority vote is
-> exactly the right operation. On **two child plans** (L92–97) the two children were given
-> `division.first()` and `division.second()` — **different halves of a divided task**. There, a majority
-> vote is not merely undefined for arity: taken literally, *"the odd plan is discarded"* **discards half
-> the plan.** The two inputs are complementary halves to be joined along the divider's seam, which is a
-> different operation, and the design gives it no name.
+> `Consensus` has exactly one call site: **three leaves given the same task**
+> (`~/Documents/Architect.md` **L91**). The other merge point — two child nodes at **L104–109** — holds
+> `division.first()` and `division.second()`, which are **different halves of one divided task**, and the
+> owner ruled on 2026-07-29 that it calls **`Union`**, not you. A majority vote there would be a category
+> error: *"the odd plan is discarded"* would discard half the plan.
 >
-> **This is an open hole in the design. It is recorded and put to the owner; it is not yours to close.**
-> Until it is closed:
+> **So every vector you receive is a set of competing accounts of ONE task.** That is the case a majority
+> fits, and it is why your rule is the one it is.
 >
-> - **Merge nothing you were not told how to merge.** Where you hold fewer than three plans, return the
->   plans you were given **unmerged**, led by an explicit note stating the count, that the inputs are
->   complementary halves rather than competing accounts of one task, and that no merge rule for this case
->   exists.
-> - **Do not pick a winner, do not concatenate them as though that were the specified operation, and do
->   not present the result as a consensus.** A flagged non-merge is a truthful output; a silent merge is a
->   fabricated one.
-> - **Do not halt the loop for this.** The note travels with the plan to the red-team, which is the
->   mechanism that surfaces it — a reviewer handed an unmerged pair will file it, and the finding becomes
->   the next task. That is the design working, not failing.
+> **If you are handed fewer than three plans**, the cause is a leaf that did not return — `wait()` at L89
+> waits for each leaf to *"return, or get stuck"*. Then:
+>
+> - **Two plans: take 2-of-2.** They are competing accounts of the same task, so agreement is exactly the
+>   thing your rule measures. A step both state, at the same point in the sequence, is agreed. **State in
+>   your output that you merged 2 of 3 and that one leaf did not return** — the count is evidence about
+>   the run's health and must not be silently swallowed.
+> - **One plan: there is no agreement to measure.** Return it **unchanged**, marked as the sole surviving
+>   leaf with no corroboration. **Do not present it as a consensus** — nothing was agreed.
+> - **None: say so.** Do not synthesise a plan.
+>
+> **What you must never do is infer that a short vector means the inputs are complementary.** They are
+> not, on this path, ever. If you are somehow called on plans that *are* complementary halves, that is a
+> defect in the caller — report it (common core §0) rather than voting on them.
 
-## `Union(issues) -> issues` — for FINDINGS only
+## `Union` — one rule, input-agnostic
 
-**DISCARD NOTHING.** Dedup **only exact restatements** — two findings that say the same thing in different
-words are two findings, and both survive. Common core §3 tells you why findings are unioned rather than
-voted on; what it obliges *you* to do is this: **a merge you perform is the only place a lone finding can
-be lost, so the burden of proof runs against deduping, never for it.** When two findings are close but not
-identical, keep both.
+**Stick the inputs you were given together into one. DISCARD NOTHING. Dedup only exact restatements.**
+That is the whole rule (`~/Documents/Architect.md` **L24**), and **it does not vary with what you were
+handed.** `Union` is input-agnostic by owner ruling of 2026-07-29 — it merges whatever it is given.
 
-You have one active duty beyond merging:
+> **Do not look for a rule that depends on your input type; there isn't one.** An earlier version of this
+> file split the duty into a plans case and an issues case, because the declaration used to say *"merges
+> issues"*. **That wording was a comment, not a design constraint** — `Union` is not in the owner's
+> original spec at all, and the issue-specificity was invented downstream. **If you find yourself
+> reasoning "these are issues, so…" or "these are plans, so…", you are reconstructing the invented
+> constraint.** The reason to keep something is always the same reason: **you were not given the authority
+> to drop it.**
 
-### Spot-verify the citations
+**What you were handed still tells you what a discard would cost**, and it is worth knowing which mistake
+you are positioned to make:
+
+| Call site | Inputs | What discarding would destroy |
+|---|---|---|
+| **L109**, node path | two plans, from children given `division.first()` and `division.second()` | **Half the task.** The children were given *different* halves, so a step in one and not the other is not a disagreement — it is that half's work. |
+| **L122**, red-team path | three issue sets, from three reviewers on the same plan | **The lone finding.** A majority rule deletes exactly the observation only one reviewer made. |
+
+**Neither is a different rule. Both are the same rule with different stakes.**
+
+### Three things that follow from "discards nothing", whatever you were handed
+
+- **Nothing is outvoted.** There is no odd input and no minority. If you are counting, you are running
+  `Consensus`, which is a different function with a different call site.
+- **A genuine conflict is kept, not resolved.** Where two inputs specify the same thing incompatibly, **you
+  do not pick.** Keep both and mark the conflict plainly in the output. On the node path that conflict is a
+  real finding about the seam, and the red-team round that follows is what is supposed to catch it — **a
+  conflict you smooth over is a defect you have hidden from the only reviewer positioned to see it.**
+- **You are not an author** (above). Joining is not rewriting: do not harmonise wording, renumber for
+  tidiness, or drop something you judge redundant. When two items are close but not identical, keep both —
+  **the burden of proof runs against deduping, never for it**, because a merge is the only place a lone
+  item can be lost.
+
+### Order — and note this rule does not mention what your inputs are
+
+**Sticking things together implies an order, and the declaration does not say which.** The rule is stated
+in terms of **what your caller gave you**, not what type your inputs are:
+
+- **Preserve the internal order of each input.** Whatever sequence an input arrived in, it leaves in.
+- **If your caller supplied an ordering constraint, honour it.** A **seam** is one — when a division was
+  made, the seam names what one side produces that the other consumes, so the producing side comes first.
+  A seam is something the **caller hands you**, not a property of the inputs; you apply this clause when
+  you were given one and not otherwise.
+- **If you were given no constraint, concatenate in the order you received them**, and say that is what
+  you did.
+
+**This clause is an author decision, not the owner's words** — the declaration is silent on order, and
+`Consensus` treats order as content, so an arbitrary order would be a real loss. It is recorded as the
+author's in `charter.md`'s provenance. **It adds an ordering where the declaration is silent; it discards
+nothing, and it does not vary with the input type.**
+
+### The duty that applies wherever your inputs carry citations
+
+#### Spot-verify the citations
 
 **Check a sample of the cited `file:line`s — do they exist, and do they say what is claimed?** Cheap: a
 few, not all. Citations are the one guard defending the founding failure, so a fabricated citation would

@@ -423,3 +423,240 @@ The number that matters is not the file's length but the length of the prompt an
 >
 > This is reported because the alternative — quietly dropping an advisory measurement that came out
 > against the artifact — is the self-certification failure this project has already committed.
+
+---
+
+# F1 and F2 — the first behavioural evidence this element has ever had · 2026-07-29
+
+**Run after the owner's testing ruling (R1) made isolation testing the default.** Three cold agents, each
+given a **composed prompt** — `charter-common.md` verbatim plus its role file(s), concatenated exactly as
+Architect would dispatch it — and one small real planning task. `n=1` per role, **no twin, no threshold, no
+pass/fail oracle.** Fixtures in `fixtures/smoke/`; verbatim records in
+`records/reviewer-SMOKE-{reviewer,leaf,divider}-verbatim.md`.
+
+**The fixtures were verified byte-identical to the live artifact before dispatch** (`diff` against
+`cat charter-common.md redteam.md redteam-plan.md`, etc.), so this tested the shipped set, not a copy.
+
+## F1 — does a composed prompt open with a spurious prompt-set defect report? **NO. 3 of 3.**
+
+This is the direct test of the **O-BLOCKER-1** repair. Reviewer O traced a non-termination path: §0 ordered
+every agent to report a role-file/core contradiction *"in your return value, before anything else"*;
+`redteam.md` shipped a declared contradiction with §0; so every reviewer dispatch would inject a
+`blocker|major` about the prompt set, `task` would never empty, and the node loop would never terminate.
+O stated plainly that whether a real agent behaves that way was **unverified**. It is now tested.
+
+| Role | What it returned |
+|---|---|
+| **Plan reviewer** | *"I checked `composed-plan-reviewer.md` for internal contradictions between the common core, `redteam.md`, and `redteam-plan.md`. No contradiction found — the role file only adds… **No prompt-set defect to report.**"* |
+| **Leaf** | *"None found: the role file only adds… and does not restate or modify any common-core rule. No defect to report."* |
+| **Divider** | *"None found… the role file's 'you receive no plan' instruction is **the carve-out §0 itself anticipates** (a role file naming its own trigger for a conditional section is not a contradiction)."* |
+
+**All three ran the §0 check and all three returned nothing** — so the rule is live rather than ignored,
+which is the outcome that distinguishes a repair from a deletion. **The divider cited the new carve-out
+sentence by name**, which is direct evidence the specific text added for this repair is what did the work.
+
+## F2 — does each composed prompt return the SHAPE its role owes? **YES. 3 of 3.**
+
+| Role | Shape owed | Shape returned |
+|---|---|---|
+| **Leaf** | a complete standalone numbered plan; no findings; no spawning | 11 numbered steps, every section of the handed skeleton filled, contingencies stated, **no severities filed**, nothing spawned |
+| **Plan reviewer** | severity-ranked findings with citations, a verdict per lens | 2 blockers / 3 majors / 2 minors, each with a `file:line`, verdicts for all six lenses |
+| **Divider** | a division with a stated seam, **or null** | **null**, with two independent reasons, and the plan quoted as supplementary context and refused as an input |
+
+**Three repairs made this run were exercised and behaved as designed**, none of which text presence could
+have shown:
+- The reviewer reported **Factual as UNRUNNABLE**, not clean, for lack of source access, and **Completeness
+  tiers (i) and (ii) as UNRUNNABLE** for lack of a section list, while **running tier (iii) and naming what
+  it looked for.** That is the N-23 repair working — the earned-clean clause was previously
+  *unsatisfiable*, which would have made every clean lens-6 verdict automatically un-run.
+- **Both conditional lenses correctly did not fire** and were reported as real all-clears — the §0 rewrite.
+- The divider **refused the plan**, quoting it as supplementary context.
+
+## Three findings that ONLY the behavioural test produced
+
+**1. The leaf has no source access, and it is load-bearing — CONFIRMED, `major`.** Filed 1/3 at an earlier
+gate as a text observation; here it bit. The leaf wrote: *"I was not given read access to `deploy.sh` (leaf
+inputs are exactly task, plan, floor…), so I cannot cite the file's actual current structure."* It then had
+to mark two of its eleven steps as resting on unverified premises. **The only role that writes plan content
+cannot check the world it plans in**, while `charter-common.md` §1 tells it source access is load-bearing.
+
+**2. §1 and §5 conflict for the divider, and it resolved the conflict by leaving its closed set — NEW,
+`major`.** §5 bounds inputs by the caller's signature; §1 says *"you are given read access to that
+source"*. The divider, needing `deploy.sh`, **searched the filesystem for it** — `find <worktree> -iname
+"deploy.sh"` — and reported the result. It behaved reasonably and it went outside its declared closed set
+to do it. **No cold reviewer found this; the agent did it.**
+
+**3. Two of three agents REFUSED to embed the verbatim prompt, substituting a hash — NEW, `major`, and it
+indicts a rule rather than an agent.** §5 requires the record to embed *"(i) the verbatim prompt you were
+given"* and says **"A record missing any of these means the work is treated as un-run."** The reviewer
+wrote *"not retyped here to avoid transcription drift; the sha256 above is the authoritative fixity
+check"*; the divider, *"not re-pasted here in full to avoid duplicating ~230 lines already fixed by
+hash."* **By the set's own rule both reviews are un-run.** Their substitute is arguably better than
+compliance — a hash is stronger evidence of fixity than a retyped copy, and retyping risks the exact drift
+§5 exists to prevent. **So the rule as written is both impractical and weaker than what agents do instead,
+and it currently invalidates good work.** Requirement (i) should ask for the prompt's **hash and path**,
+with the verbatim text required only where no durable copy exists.
+
+## What F1/F2 do NOT show
+
+`n=1` per role, one task, one model (`sonnet` for all three). **This is a smoke test, not a
+discrimination arm**: it shows the composed prompts produce the right *kind* of artifact and that the §0
+repair holds on three real dispatches. It says nothing about whether the granularity floor changes
+behaviour — that is **F3**, which is **owed, has 2 prior rebuilds, and has its design specified by owner
+record 1449 item 1** (*"the experiment should actually try moving the floor"*). **F3 and F4 have not been
+run.**
+
+---
+
+# F5 and F6 — the node and combiner arms, run to settle a reviewer disagreement · 2026-07-29
+
+**Why these two were run.** Pass 3 split on the node/floor contradiction: **R and S ruled it a live blocker,
+T ruled it verified-fixed.** Three textual arguments had already been spent on it. Under the owner's
+testing rule (record **2544**) a component that *can* be tested in isolation *should* be — so the fourth
+argument was replaced by a dispatch. The combiner arm tests **T-BLOCKER-1** the same way: T held that
+`combiner.md` *"cannot be executed consistently as written"* because it forbids input-type reasoning and
+then supplies an input-type rule.
+
+Composed prompts (`charter-common.md` verbatim + role file) in `fixtures/smoke/composed-{node,combiner}.md`.
+Records: `records/reviewer-SMOKE-{node,combiner}-verbatim.md`. **Both run against the REPAIRED set.**
+
+## F5 — the node. **No prompt-set defect reported. The carrier repair landed.**
+
+The node scanned §0 and returned: *"None found — every node-role clause either applies a named common-core
+mechanism (**carrier case of §2**, severity-contest channel of §3) or cites which section it
+operationalizes. **No prompt-set defect to report.**"*
+
+**It identified itself as the carrier case by name.** That is the three-case rewrite of §2 doing exactly
+the work it was written for: the role that R and S showed was caught between two contradictory tests now
+reads a third case that fits it, and reports no contradiction.
+
+**What this does and does not settle.** R and S reviewed the **pre-repair** text, where §2 said flatly
+*"you were not given a floor"* and `node.md` had no floor section — **they were right about that text.**
+T's ruling of verified-fixed was made against the same pre-repair text and rested on a distinction the
+shipped words did not make. **So the disagreement is resolved without either side having been careless:
+the contradiction was real, and it is now gone.** One dispatch settled what three textual arguments could
+not, which is the owner's point in record 2544.
+
+**Two further things the node did that no text check could show:**
+
+- **It refused to fabricate the leaf and red-team output**, citing §1 and §4 by name: *"Producing the
+  leaves' plan content or the red-team's findings myself would mean one agent (me) manufacturing the
+  'independent cold judgment' this whole design exists to get."* It returned a trace and **no `plan`**.
+  The self-certification guard held under direct pressure to produce something.
+- **It verified the restored hedge.** Checking `node.md`'s citations against the spec it reported L109
+  *"matches exactly, **including the hedge**"* — so the qualifier is not merely present, it is legible to
+  the role that has to act on it.
+
+## F6 — the combiner. **T-BLOCKER-1 repair verified: no input-type reasoning, and no contradiction.**
+
+The combiner merged two inputs under a caller-stated seam and reported the ordering rule it applied:
+*"that seam is an ordering constraint (producing side first), so I preserved arrival order… and merged
+under the stated rule: stick together, discard nothing, dedup only exact restatements."*
+
+**It keyed on "the caller supplied a seam", not on "these are plans".** That is precisely the distinction
+the repair introduced, and it means the input-agnostic rewrite is executable — T's *"cannot be executed
+consistently as written"* no longer holds. It also **reported no prompt-set defect**, so the §0 class
+rewrite holds for a second role.
+
+Correct behaviour throughout: exactly one dedup, and only for a **character-for-character** restatement;
+nothing discarded; and the spot-verify duty reported **not applicable** rather than stretched — *"neither
+input cites a `file:line` as evidence… so there is nothing to sample-check, and I'm reporting that rather
+than stretching the duty to something it doesn't cover."*
+
+## A finding these two arms produced, now confirmed TWICE and traceable to this run's own repair
+
+**§1 and §5 conflict, and roles resolve it by leaving their closed set.** §5 bounds inputs by the caller's
+signature; §1 says *"you are given read access to that source"*. In F2 the **divider** searched the
+filesystem for `deploy.sh`. In F5 the **node read `~/Documents/Architect.md`**, which is not in its closed
+set, and said so:
+
+> *"This is **not** part of my closed input set (§5(ii)) — it's supplementary, used only to check citations
+> per common core §1/§4, and disclosed here rather than used silently."*
+
+**Both agents behaved well and both went out of set.** But F5's case is worse than F2's, and it is
+**self-inflicted**: the citations the node went to check — L12, L2–3, L109 — **were added to `node.md` by
+this session's carrier repair.** A role file that cites the spec obliges its reader to read the spec, and
+the spec is in no role's closed set. **The repair for the floor contradiction created a closed-set
+violation.** Ranked `major`; not fixed, because fixing it means deciding whether spec access belongs in
+every closed set, which changes N-04 and is a design question rather than a wording one.
+
+## What F5/F6 do NOT show
+
+`n=1` per role, one task, one model (`sonnet` for both, as for F1/F2 — **all five smoke agents to date are
+one model**, so nothing here separates the prompt set's behaviour from that model's). These are smoke
+tests: they show the composed prompts are executable and that three specific repairs do what they were
+written to do. **They do not test the granularity floor's effect (F3), which remains owed with its design
+fixed by owner record 1449 item 1.**
+
+---
+
+# F5b — the node arm replicated on a SECOND MODEL · 2026-07-29
+
+**Why.** Every smoke dispatch to that point had run on `sonnet`, so nothing separated the prompt set's
+behaviour from that one model's. The runner flagged the limitation; this scopes the response. **One arm,
+re-run on `opus`, against the composed prompt.** Record: `records/reviewer-SMOKE-node-opus-verbatim.md`.
+
+## The replication holds, on the two claims that matter
+
+| Claim | `sonnet` (F5) | `opus` (F5b) |
+|---|---|---|
+| Reports **no** prompt-set defect | ✅ | ✅ |
+| Identifies itself as **the carrier** of §2 by name | ✅ | ✅ — *"I am the **carrier** (common core §2, and the role file's 'You hold a floor and you are bound by none of it')"* |
+| Passes the floor down **unchanged**, no override | ✅ | ✅ |
+| Halts at the human gate rather than answering as the owner | ✅ | ✅ |
+
+**So the carrier repair is not a `sonnet` artifact.** Two models, dispatched separately, both read the
+three-case §2 and both placed themselves in the case that was added for them. That is as much as `n=1`
+per model can give, and it is more than the textual argument it replaced.
+
+## The strongest single result in this run: the closed-set rule was obeyed, on the exact failure it was written for
+
+The §5 rule added this session says a role that cannot work without a missing source must **say so, not go
+looking** — written because the **divider** in F2 searched the filesystem for `deploy.sh`, a file its task
+named and its closed set omitted.
+
+**The node was given the same task, with the same file missing, and declined:**
+
+> *"§5 records a measured instance of exactly this — 'one searched the filesystem for a file its task
+> named' — and rules that going looking silently replaces a bounded input set with an unbounded one.
+> **I did not search for `deploy.sh`, did not read it, and did not infer its contents.**"*
+
+**A rule written in response to an observed failure was then observed preventing that failure, in a
+different role and a different model.** It also declined to open `charter-common.md` to verify the composed
+file's provenance, citing the same section — *"that citation is provenance for a later auditor, not an
+instruction to me"* — which is the **Q-A distinction being acted on, not merely understood.**
+
+## Three findings F5b produced
+
+**1. `major`, and it is a defect in EVERY dispatched prompt — visible only when composed.**
+`charter-common.md` now **ends** with a blockquote (the decision-log note), and **every role file begins**
+with a `>` banner. Concatenated, they merge into one blockquote: the role header renders as a continuation
+of common-core §6. Confirmed by inspection. The node resolved the boundary correctly and reported it
+anyway — *"a reader skimming could take the role header for common-core §6 text."* **§0 says role files are
+"appended, and quoted as an addition"; the quoting is now partially leaked.** No text-placement probe can
+see this, because every rule is present in the right file; **only composition reveals it.** Not fixed —
+reviewers U, V and W hold the artifact frozen. **Queued.**
+
+**2. `major`, new, and it reinforces the element-3 debt.** §1 promises an agent *"read access to that
+source"* where its work makes claims about the world. The node observes that **no spawn signature carries
+such access** — `Spawn_leaf(task, plan, granularity)`, `Spawn_redteam(task, plan, granularity)`,
+`Spawn_node(…)` — so §1's grant can only come **ambiently from the run configuration**, which the node
+cannot inspect. It flagged it as an uncertainty rather than asserting a defect: *"I have no way to check it
+and am not claiming it is missing."* **So §1 is a promise no role can keep or verify, and only element 3
+can make good.** Recorded in `ATTEMPT-2-STATE.md` §0b.
+
+**3. The new §5 form worked, including its escape clause.** The record gave path + sha256, **reproduced
+verbatim the wrapper text that has no durable file** — exactly the case the escape was written for — and
+then disclosed an un-hashable gap on its own initiative: *"a harness system prompt … has no durable file I
+can address, so it cannot be hashed and is not reproduced; this is a gap in this record's fixity that I am
+disclosing rather than papering over."*
+
+## What F5b still does not show
+
+**One arm, one task, two models.** It says nothing about the leaf, the divider, the reviewers or the
+combiner on a second model, and nothing about the granularity floor's *effect* (**F3**, still owed, design
+fixed by owner record 1449 item 1). **A fixture caveat, stated:** F5b was handed a **pre-composed** file, so
+it could not hash the two constituents and said so; in real dispatch an agent receives both files and can.
+**And F5b ran against `node.md` one wording-change old** — a single sentence was reworded to clear a shared
+span after dispatch. The reworded sentence is not one this test turns on, but it is recorded rather than
+glossed.

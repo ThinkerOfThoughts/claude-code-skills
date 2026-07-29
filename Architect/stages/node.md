@@ -34,6 +34,26 @@ in the tree — `"0"` at the root, and your children are `node_id + ".1"` and `n
 only **after** the value it records exists. Never write a value you are about to compute, and never write
 another node's memo.
 
+## What the floor means for you
+
+**You hold a floor and you are bound by none of it** — you are the **carrier** case of common core §2.
+`Spawn_node`'s signature takes `granularity` — that is why you hold one;
+and you **write no plan content of your own** (see *"You do not plan"* below), so nothing you produce can
+fall below it.
+
+**Your whole duty is to pass it down unchanged.** You thread it into `Divisible`, into every leaf, into
+every red-team agent, and into both children — which is why common core §2 calls the carrier role the one
+place a floor can be changed without anything downstream noticing. **Nothing below you could detect it:**
+a leaf handed a relaxed floor writes to that floor, and its reviewer, handed the same relaxed floor,
+agrees the work is finished.
+
+- **Do not substitute a floor you think better.** Not finer because the task looks delicate, not coarser
+  because the round is running long.
+- **A branch override is permitted** — the design allows a sub-tree that genuinely warrants finer detail
+  to be given a finer floor. **If you make one, it is a decision and it is logged** — `Log_decision(node_id, "granularity-override", …)` with the old value, the new value and
+  the reason. An override that is not in the log is indistinguishable from the silent alteration above.
+- **If the floor you were handed is unusable, report it as §0 directs** rather than fixing it yourself.
+
 ## Your slot
 
 You inherit your parent's `work_queue` slot and **reserve your place within it**. Consequences:
@@ -54,7 +74,19 @@ Repeat while `task` is non-empty:
 - **`division` is non-empty**: **gate first** (below), then spawn **two child nodes** with
   `(division.first, plan, granularity, depth + 1, node_id + ".1")` and `(division.second, plan,
   granularity, depth + 1, node_id + ".2")`, **wait for both to return**, and set
-  `plan = Consensus(child plans)`.
+  `plan = Union(child plans)`.
+
+> **The two merges are different functions, and calling the wrong one destroys work.** Your leaves were
+> all given the **same** task, so their three plans are competing accounts and `Consensus` votes between
+> them. Your children were given **different halves** — `division.first` and `division.second` — so their
+> two plans are complementary, and a vote would discard half the plan. **`Union` keeps both.**
+>
+> **Owner ruling, record 2524 item 2**, and it was **hedged in the original** — his words were *"that
+> should **probably** be Union rather than Consensus"*. (That locus is **provenance for an auditor**, per
+> §5 — you are not required to go and check it.) This path called `Consensus` before that, which was a
+> category error. **What `Union` then does with the two plans
+> is its own instruction, not yours and not the owner's ruling** — do not infer an ordering or a merge
+> discipline from this paragraph.
 
 **Wait for every agent you spawned to return or get stuck before you merge.** Returning while your own
 children are still in flight loses their work — this has happened, more than once, and the work was gone.
@@ -66,6 +98,8 @@ a crash during the red-team round.
 cold, no shared context with each other**. Wait for all three.
 
 **4. Filter.** `task = Severity(Union(redteam issues))`, then `division = Divisible(task, granularity)`.
+   `Union` here is the **same function** you called on your children's plans at step 1 — it is
+   input-agnostic and merges whatever it is handed. Only `Severity` is issue-specific.
 
 **5. Checkpoint 2.** `iter = iter + 1`, then `Memo_write(node_id, false, iter, task, plan, division)`.
 
@@ -94,10 +128,28 @@ The severities that reach you were assigned by reviewers and carried by `Union` 
 change. Common core §3 forbids every role from lowering one and points each role at the channel — if any —
 through which it may be contested. **You are that channel's only holder.**
 
-**Demoting a `blocker` or `major` requires the owner.** Reach them through `Ask_human` (common core §6) —
-it is the only channel that carries a severity, and it is the reason `Ask_human` exists alongside
-`Human_gate`, which is depth-bounded and can only carry a division. You hold `node_id` and `depth`, which
-is what makes the call available to you and to no other role.
+The mechanism has **two halves**, ported whole from guarded-change on the owner's instruction, and until
+2026-07-29 only one of them had a destination:
+
+1. **Contesting one is logged.** `Log_decision(node_id, "severity-contest", entry)`. State the finding,
+   the severity its reviewer assigned, the severity you believe is right, and **the grounds** — that
+   record is what makes the contest checkable afterwards.
+2. **Demoting a `blocker` or `major` additionally requires the owner.** Reach them through `Ask_human`
+   (common core §6) — the only channel that carries a severity, which is why it exists alongside
+   `Human_gate`, which is depth-bounded and can only carry a division. You hold `node_id` and `depth`,
+   which is what makes the call available to you and to no other role.
+
+**Log first, then ask.** The entry is what makes the ask auditable; an approval with no logged contest
+beside it cannot be checked afterwards against what was actually put to the owner.
+
+> **The log records that a decision was taken. It does not certify who took it.** It is
+> **agent-writable**, so it is **never** evidence of what the owner said — common core §6 governs that,
+> and nothing written to this log can satisfy it. Logging a contest is not the same as winning one, and an
+> entry you wrote yourself authorises nothing.
+
+**Also log, with `Log_decision`:** every `Human_gate` and `Ask_human` exchange, any override and who made
+it, and any deviation from the plan. `Read_decisions(filter)` reads it back — use it when you resume from
+a memo, because your memo carries your own state and the log carries what was *decided*.
 
 An **UNSUBSTANTIATED** mark on a finding is not a demotion and does not license one. It records that a
 citation did not resolve; the severity is untouched.

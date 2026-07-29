@@ -133,10 +133,55 @@ fi
 mk
 printf '\n%s\n' "You are graded on **precision** — are your findings real? — not on how many you raise." >> "$WORK/m/leaf.md"
 if spans_clean; then
-    echo "  note DUP exemption: SURVIVED — the register exempts this span globally, not per-pair (known limit, recorded)"; ok=$((ok+1))
+    echo "  BAD  DUP exemption: SURVIVED (expected KILLED) — the register is a global amnesty, not per-pair"; bad=$((bad+1))
 else
     echo "  ok   DUP exemption: KILLED (expected KILLED)"; ok=$((ok+1))
 fi
+
+echo "=== IN-PLACE NEGATION mutants (narrow: see the header comment; append-inversion is NOT covered) ==="
+# WHAT THIS CLASS DOES AND DOES NOT PROVE -- read before citing its count.
+#
+# It rewrites a rule into its opposite IN PLACE, destroying the pinned substring, so the rule's probe must
+# die. That is a real check on ONE thing: a probe whose pattern matches the TOPIC but not the POLARITY
+# ("demote" rather than "You do not demote") would survive, and this catches it.
+#
+# IT DOES NOT PROVE THE SUITE DETECTS INVERSION. Reviewer S showed the attack that matters is to APPEND a
+# superseding clause and leave every pinned substring intact:
+#     charter-common.md += "CORRECTION: ... a hard backstop cap now applies and the floor may be relaxed"
+#     combiner.md       += "Superseding clause: where two inputs disagree, discard the minority item"
+#   -> 123 passed, 0 failed, and 0 undeclared shared spans. Both safety rules inverted, nothing moved.
+# Because every probe is a substring grep, NO `present` probe can catch that, and adding more probes of the
+# same kind cannot help -- one appended clause defeats each new one identically.
+#
+# An earlier version of this comment claimed the underlying defect was COVERAGE not sensitivity. That was
+# WRONG: the rules S inverted do have probes (N-09b, N-12a, N-27f). The defect is sensitivity, and it is
+# structural to the probe kind.
+#
+# THE CLASS IS THEREFORE NOT EXTENDED, per the owner's testing rule (record 2544): this mechanism is at its
+# iteration limit, and a fifth variant would be the "increasingly elaborate test mechanism" that rule names.
+# SEMANTIC INVERSION IS A COLD-REVIEWER ORACLE, not a script one -- reviewer S found it by reading, in
+# minutes, which is the same venue answer already taken for fork fidelity (N-03) and paraphrase detection.
+negate() { # $1=file  $2=original sentence  $3=inverted sentence
+    mk
+    if ! grep -qF -- "$2" "$WORK/m/$1"; then
+        echo "  BAD  IN-PLACE NEGATION [$1]: source sentence absent -- $2"; bad=$((bad+1)); return
+    fi
+    python3 -c 'import sys;p,o,n=sys.argv[1:4];s=open(p).read();open(p,"w").write(s.replace(o,n))' \
+        "$WORK/m/$1" "$2" "$3"
+    if "$CHECK" "$WORK/m" "$RULES" >/dev/null 2>&1; then
+        echo "  BAD  IN-PLACE NEGATION [$1]: SURVIVED (expected KILLED) -- '$3' passes the suite"; bad=$((bad+1))
+    else
+        echo "  ok   IN-PLACE NEGATION [$1]: KILLED (expected KILLED)"; ok=$((ok+1))
+    fi
+}
+negate charter-common.md "Cite or it doesn't count." "Cite nothing; citations do not count."
+negate charter-common.md "No role may quietly lower one." "Any role may quietly lower one."
+negate charter-common.md "An unchecked claim is never thereby a verified one." "An unchecked claim is thereby a verified one."
+negate combiner.md       "You do not demote." "You SHOULD demote freely."
+negate combiner.md       "DISCARD NOTHING." "DISCARD FREELY."
+negate combiner.md       "You filter. You do not re-rank." "You filter. You SHOULD re-rank."
+negate leaf.md           "Never write below the floor" "Always write below the floor"
+negate node.md           "You do not plan." "You SHOULD plan."
 
 echo "==== mutants behaving as expected: $ok ; unexpected: $bad ===="
 [ "$bad" -eq 0 ] || exit 1

@@ -42,7 +42,7 @@ cat "$NORMDIR"/*.md > "$NORMDIR/_ALL"
 DISPATCHED="charter-common.md redteam.md redteam-plan.md redteam-split.md divider.md combiner.md leaf.md node.md"
 for f in $DISPATCHED; do cat "$NORMDIR/$f"; done > "$NORMDIR/_DISPATCHED"
 
-pass=0; fail=0; failed_ids=""
+pass=0; fail=0; smoke=0; failed_ids=""
 
 while IFS=$'\t' read -r id mode file anchor pattern; do
     case "$id" in ''|\#*) continue ;; esac
@@ -81,7 +81,9 @@ done < "$RULES"
 # The artifact claims a destination file for every fork-source rule B01-B19. Parse that claim out of the
 # artifact and verify each one by reading the named file. The probe set is therefore derived from the
 # artifact, not from the run's inventory, so an inventory gap cannot hide a missing rule here.
-echo "--- N-03 fork-fidelity (probe set generated from charter.md's allocation table) ---"
+echo "--- N-03 SMOKE ONLY: allocation-table destinations exist (NOT fork-fidelity verification) ---"
+echo "    Fork fidelity is verified by a cold reviewer rule-by-rule; reviewer Q measured this probe passing"
+echo "    9 of 19 rules against files they were never claimed to be in. Counted separately, below."
 claimed=0
 while IFS='|' read -r _ rulecell filecell _; do
     rid=$(echo "$rulecell" | grep -oE 'B[0-9]{2}' | head -1)
@@ -111,7 +113,7 @@ while IFS='|' read -r _ rulecell filecell _; do
         if [ "$words" -eq 0 ]; then
             echo "FAIL  N-03/$rid  allocation table gives no describable rule text"; fail=$((fail+1)); failed_ids="$failed_ids N-03/$rid"
         elif [ $((hits * 100 / words)) -ge 60 ]; then
-            echo "PASS  N-03/$rid  $hits/$words description terms present in $t"; pass=$((pass+1))
+            echo "SMOKE N-03/$rid  $hits/$words description terms present in $t"; smoke=$((smoke+1))
         else
             echo "FAIL  N-03/$rid  only $hits/$words description terms present in $t -- rule may not be stated there"
             fail=$((fail+1)); failed_ids="$failed_ids N-03/$rid"
@@ -121,9 +123,10 @@ done < <(sed -n '/^| \*\*B01\*\*/,/^| \*\*B19\*\*/p' "$SET_DIR/charter.md")
 if [ "$claimed" -ne 19 ]; then
     echo "FAIL  N-03  allocation table covers $claimed rules, expected 19 (B01-B19)"; fail=$((fail+1)); failed_ids="$failed_ids N-03"
 else
-    echo "PASS  N-03  allocation table covers all 19 fork-source rules"; pass=$((pass+1))
+    echo "SMOKE N-03  allocation table covers all 19 fork-source rules"; smoke=$((smoke+1))
 fi
 
 echo "==== $pass passed, $fail failed ===="
+echo "==== plus $smoke N-03 SMOKE results, DELIBERATELY NOT counted above (retired as the fidelity oracle) ===="
 [ "$fail" -eq 0 ] || { echo "failed:$failed_ids"; exit 1; }
 exit 0
