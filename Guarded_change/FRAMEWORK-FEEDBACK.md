@@ -64,6 +64,20 @@ the orchestrator concludes travels downstream as instruction rather than as a cl
 Hand down the owner's instruction plus *"propose a decomposition and justify it against the spec"* — not a
 finished table of files. Otherwise the runner validates the orchestrator's design instead of deriving one,
 and the loop's independence is spent on ratifying a choice already made.
+
+**The operative line:** what came from the **owner** goes down as a **constraint** — verbatim, with its
+transcript locus. What came from the **orchestrator** goes down as a **question**, or, where it genuinely
+has a view worth stating, as a proposal **explicitly labelled as the orchestrator's and marked
+challengeable**, so reviewers attack it rather than assume it.
+
+Two reasons beyond "the runner should do its own thinking":
+- **It launders orchestrator error into the artifact.** Once the runner builds the orchestrator's design,
+  downstream cold reviewers see it as *the runner's proposal* and review the structure with nothing flagging
+  its provenance. This is the exact path by which a fabricated statistic and an invented owner ruling
+  entered this project's artifacts — orchestrator judgments arriving as premises rather than as claims.
+- **The runner is usually better-informed.** It has read the artifact and run the reviewers; the
+  orchestrator, under G2/G3, deliberately has not. Handing down a structure means the *less*-informed
+  party's guess arrives as a specification.
 - **Observed:** the orchestrator specified the six-file split; the runner confirmed it rather than
   producing it.
 
