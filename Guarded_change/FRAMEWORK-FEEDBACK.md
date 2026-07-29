@@ -1,0 +1,70 @@
+# guarded-change — framework feedback from skill use
+
+Weaknesses / limitations / ergonomics encountered while **using** `guarded-change` to build other things.
+Same convention as the live-test harness's `FRAMEWORK-FEEDBACK.md`: **append as more surface, keep each
+entry cited so a framework-build chat can act without the originating context.** This file is feedback on
+the skill, not a change log for it — a run folder under `changes/` is where a fix actually lands.
+
+---
+
+## G1–G4 — the orchestrator's ceiling is undefined, so "verify" absorbs the whole loop
+
+**Source:** the Architect attempt-2 build, 2026-07-28 (`claude-code-skills/Architect/changes/charter-2026-07/`).
+The loop ran in a subagent with the main session orchestrating, per the standing rule. Over one day the
+orchestrator read the entire artifact under change, the full red-team reports, and guarded-change's own
+`stages/stage-3.md` and `stages/stage-4.md` into the main session — each read individually defensible as
+"verifying the runner's claims," all of them exactly the context the delegation model exists to keep out.
+
+**Where it belongs:** `METHODOLOGY.md`'s delegation section already has the right seam — *"Orchestrator half
+(a caller-side obligation, not skill-enforced)"* (~L219) — which today covers only **relaying stops without
+answering them**. It bounds what the orchestrator may *say to the owner*, and says nothing about what the
+orchestrator may *do to the artifact*. These four close that.
+
+### G1 — research goes DOWN, not up
+When a runner halts on something answerable from a file, the orchestrator should reply with **the file to
+read**, not the answer. Reading it and paraphrasing downward satisfies "don't over-escalate to the human"
+by breaking "don't run the loop inline" — the two obligations point opposite ways and only one is written
+down. The runner has the same filesystem access the orchestrator does.
+- **Observed:** the orchestrator read `stage-3.md` (RAT1/RAT2) and `stage-4.md` (the severity/demotion
+  mechanism) to answer runner halts, then handed down summaries.
+
+### G2 — verification is SAMPLING, not reproduction
+Define the ceiling explicitly: confirm claimed artifacts exist, hashes match, a sample of citations
+resolve, and mutation tests actually fail. That is the whole job. Absent a stated bound, each additional
+read looks like *more rigour*, and the pressure runs one way only.
+- **Observed:** "verify its output" slid from *test the runner's claims* to *reconstruct the runner's
+  reasoning* over roughly six exchanges, with no single step that looked wrong.
+
+### G3 — never read the artifact under change in order to judge it
+If it needs judging, that is a **cold reviewer's** task. Checking a few lines against a specific claim is
+fine; reading it to *decide* is not. Useful tripwire: opening a file inside the run's own working set — the
+artifact under change, a stage doc, a reviewer record in full — means the line has been crossed.
+- **Observed:** the orchestrator read all 237 lines of the artifact to answer a decomposition question that
+  should have been delegated.
+
+### G4 — delegate structure decisions with the QUESTION, not the answer
+Hand down the owner's instruction plus *"propose a decomposition and justify it against the spec"* — not a
+finished table of files. Otherwise the runner validates the orchestrator's design instead of deriving one,
+and the loop's independence is spent on ratifying a choice already made.
+- **Observed:** the orchestrator specified the six-file split; the runner confirmed it rather than
+  producing it.
+
+### Why this is more than context economy — the contamination channel
+The delegation model's stated rationale is keeping loop noise out of the main session. That is real, but it
+is the smaller half. **A puppeting orchestrator becomes a contamination channel.** In this build, two
+orchestrator errors — a fabricated statistic (*"~85% of findings were caught by exactly one reviewer"*) and
+an invented owner ruling (*"per-element harnesses are instruments, not gates"*, cited to a record containing
+none of those words) — travelled **into** the runner through its briefs and were inherited as authority. The
+runner could not catch either; they arrived as premises from above. **A cold reviewer caught both.**
+
+The consequence for the skill: the independence in this system lives in the **reviewers**, not in the
+runner. An orchestrator that steers harder does not buy quality — it lengthens the lever on its own errors
+before anything independent touches them. Any fix here should probably also consider whether the
+orchestrator's own inputs to the runner belong in the reviewers' context as claims to challenge.
+
+### ⚠ ON IMPLEMENTATION — remove the interim copy from CLAUDE.md
+G1–G4 are currently written as **user-level rules** in `~/.claude/CLAUDE.md` (Workflow section, the bullet
+beginning *"Orchestrate has a ceiling"*) as a stopgap, because the skill does not enforce them. **When these
+land in `METHODOLOGY.md`/`SKILL.md`, delete that bullet from `CLAUDE.md`** — leaving both is the two-copies
+drift problem this repo has already paid for once, and a user-level rule silently overriding a skill rule is
+worse than either alone.
