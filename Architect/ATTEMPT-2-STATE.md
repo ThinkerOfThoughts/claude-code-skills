@@ -311,6 +311,66 @@ opposite of `Memo_*`. **It is agent-writable, so it is NOT an admissible source 
 the harness-authored transcript remains the only one. It is a durable record that a decision was taken, by
 whom, on what grounds.
 
+## 6e. PARKED 2026-07-29 evening — pass 4 came back BLOCKER and was NEVER ADJUDICATED
+
+**Read this before touching element 1.** The three pass-4 reviewers all reported; **nobody has ruled on
+what they found.** Their verdicts stand unexamined, so do not treat any of it as settled either way.
+
+| Reviewer | Model | Verdict |
+|---|---|---|
+| U | opus | **blocker** |
+| V | opus | **blocker** |
+| W | sonnet | **major** |
+
+Records are in `changes/charter-2026-07/records/reviewer-{U,V,W}-verbatim.md`.
+
+**Why it stopped:** the runner died on **API 529 Overloaded four times** across ~45 minutes, including after
+4- and 10-minute backoffs. The owner hit the same error in the main session, so this is Anthropic-side
+capacity, **not a defect in the run**. Nothing was lost; everything is committed.
+
+**Two blockers, both reported independently by U and V:**
+1. **The non-termination class fix is still not closed.** The pass-3 repair was again written narrower than
+   claimed. U traces a live route through `charter-common.md`'s floor-inoperability instruction, which tells
+   a role to file a **blocker** — the exact mechanism §0 was rewritten to sever. V traces a second through
+   `combiner.md`, where `Severity`'s "say so in your return value" puts a prompt-set report into `task`.
+2. **"Report it out of band" has no destination for three of six roles.** Leaf, divider and `Consensus`
+   have no output that is separable from their work product — their return values *are* the loop's state.
+   This is O-MAJOR-5, which pass 3 left open, and repair #1 now depends on it.
+
+**V additionally re-ranked two carried findings UP to blocker:** the divider's uncapped self-review loop
+(no cap, no `Ask_human`, no report field, sits below `Human_gate`) which falsifies the set's own stated
+invariant that the floor is the only thing preventing non-termination; and the **SEV4 iteration-cap drop**,
+which departs from owner record **1449 item 2** (*"however it is implemented in guarded-change"*), is
+declared nowhere, and is affirmatively described in the artifact as deliberate.
+
+**U demonstrated an exploit rather than arguing one:** a one-line edit to `leaf.md`'s closed set, using a
+span the duplication register amnesties globally (no `sites` key), **passes both oracles clean** — widening
+an agent's input set, the precise failure the closed-set apparatus exists to prevent.
+
+**W's finding worth carrying:** the N-03 retirement was performed on the success path only — its **failures
+still gate the harness**, and `mutation-test.sh` ships zero N-03 mutants so it could not have caught that.
+Also: **N-32 is gating, names its own verification command, and nothing runs it.**
+
+**All three independently reproduced the harness numbers exactly** (122/0 + 21 smoke, 0 undeclared spans,
+138/0 mutants) and all three judged the numbers honest but the coverage narrower than the surrounding prose
+claims.
+
+### ⚠ THE DECISION QUEUED FOR THE OWNER — do not let a fresh session resolve this in the loop
+
+Whether **element 1 closes with ~10 known open defects so element 2 can start.** U and V both rule this is
+the owner's, not the runner's: U because the runner's stated grounds are refuted by its own artifact (**nine
+of ten open findings are element 1's own**, by the runner's own table), V because `charter-common.md`'s own
+text reserves borderline and accepted-risk calls to a person. The runner was instructed to halt with this
+question rather than decide it, and died before answering.
+
+### Practical note for whoever resumes
+
+The runner's context had grown very large, which makes each of its turns an expensive request and the most
+likely thing shed under capacity pressure. **Consider a fresh runner that reads state from disk** rather
+than reviving that one — and note that adjudicating those three reports in a *fresh* agent is arguably
+better on the merits anyway, since two of the reviewers found the previous runner resolving its own case in
+its own favour.
+
 ## 7. OPEN
 
 - **Three questions put to the owner at 19:40, UNANSWERED at park:**
