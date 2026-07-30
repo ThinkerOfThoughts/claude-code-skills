@@ -63,6 +63,34 @@ Started 2026-07-30T18:41:58Z. Root node = the runner session (depth 0, node_id "
   The owner's criterion is equivalence-or-better, not sameness; a planner allowed to read the
   finished skill would transcribe it and the run would test nothing.
 
+## ITERATION 3 — TO FIX, before or during the run
+
+**Owner instruction, transcript record 3486, verbatim:** *"Good catch on the division memo thing; add that
+to the to-fix list for iteration 3, along with whatever pops up on the restart"*
+
+Note this **relaxes the one-fix-per-iteration rule for iteration 3 only**, and it is the owner's call, not
+the runner's. Iteration 3 carries a list. Do not extend the list beyond it.
+
+1. **`Divisible` is outside the memoised region.** The node's first memo write is checkpoint 1, which
+   happens only after a plan has been merged, so a node that dies during division has recorded nothing.
+   Measured on this run: **83 minutes and 9 cold agents (it1) and 48 minutes and 9 cold agents (it2)** are
+   re-run from scratch on any restart. The most expensive part of a node's life is the unprotected part.
+   The fix is the runner's to design — the owner ruled that it be fixed, not how.
+2. **Whatever the restart surfaces.** Iteration 3 opens by resuming from disk with no memos present. Per
+   `stages/node.md` a restart should read `<run>/memo/0.json`, find it absent, treat the node as never-run,
+   and call `Divisible` from the top. That is the right outcome but **right by accident** — the memo path is
+   still unexercised, because no node has ever reached checkpoint 1. Record what actually happens, including
+   if it works.
+
+### Carried, NOT on iteration 3's list
+
+- **`divider.md` asks for a producer/consumer seam that `node.md` forbids.** Found and verified by
+  iteration 2's own divider, inside files written during the reset. Real, recorded, and deliberately not
+  fixed — it is not what broke.
+- **The harness leaks an installed skill's frontmatter `description` into every agent's system prompt.**
+  Two leaves disclosed this independently. The directory fence held; it cannot fence a description. Not
+  Architect's defect and not fixable inside it.
+
 ## Log
 
 - `2026-07-30T18:41:58Z` node 0 — run started.
