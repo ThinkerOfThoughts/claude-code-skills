@@ -94,6 +94,55 @@ runner. An orchestrator that steers harder does not buy quality — it lengthens
 before anything independent touches them. Any fix here should probably also consider whether the
 orchestrator's own inputs to the runner belong in the reviewers' context as claims to challenge.
 
+## G5 — THE LOOP HAS NO TERMINATION CHECK WHEN THE UNIT OF WORK CANNOT BE RUN. Highest priority.
+
+**This cost two days and a large amount of usage, and it was structurally guaranteed from the moment the
+run started.** The loop did not malfunction; it was given a job with no exit condition and did exactly what
+it does, indefinitely.
+
+**The mechanism.** Guarded-change terminates at **stage 8**, and stage 8's terminating check is
+**conformance** — does the built thing validate, load, and run. That check requires an artifact you can
+**execute**. Give the loop a unit of work that is a *fragment* of a runnable thing, and stage 8 has nothing
+external to conform to, so it degenerates into checking the text against itself. Reviewers, meanwhile, are
+graded on finding defects, and at a fine enough grain a determined reader of any document always finds one.
+The result is an unbounded loop in which every round is individually legitimate.
+
+**Measured, on the Architect skill, 2026-07-28 → 30.** The design is ~142 lines of pseudocode. An
+orchestrator split it into six numbered "elements" the owner never ratified and could not name. The first
+element — a set of agent prompt files — went through **six review rounds and ~30 cold agents**, grew from
+**237 to 1,454 lines**, and **was never once run**. Every finding came from reading the prompts
+adversarially, because a fragment cannot be executed. By the final rounds the reviewers were arguing about
+whether a prompt file could be edited to grant itself privileges — a threat model with no attacker, on an
+artifact that had never done any work. The owner's reaction on being shown it: *"This is literally just
+subdividing a task into atomic chunks and having a bunch of agents plan out each chunk, then sticking the
+thing together. How in the hell has this resulted in..."*
+
+### The check to add — at stage 1, before any work
+
+**Refuse to start a run whose unit of work cannot reach stage 8's conformance check.** Concretely, stage 1
+must answer: *when this run finishes, what will I execute, and what will tell me it worked?* If the honest
+answer is "I will read the artifact and check it against itself," the unit is wrong. Two legitimate
+resolutions, both already in the family's vocabulary: widen the unit until it is runnable, or declare the
+piece **untestable in isolation** and defer its verification to a run of the assembled system — which is
+exactly the owner's testing rule (below) applied one level up, to review rounds rather than test mechanisms.
+
+### Tripwires, for a run already in flight
+
+- **Rounds without a run.** N review rounds have completed and the artifact has never been executed. This is
+  the signature and it is cheap to detect. It fired six times here and nothing was watching for it.
+- **Growth against a fixed design.** The artifact is growing while the thing it implements is not. 237 → 1,454
+  against a 142-line design should have stopped the run on its own.
+- **Target drift in the findings.** Round 1 asks *"does this instruct the agent correctly?"*; round 5 asks
+  *"could this be adversarially edited?"* When the questions stop being about whether the thing works and
+  start being about whether it can be defeated, the loop has run out of real subject matter.
+- **A fragment that has no consumer yet.** If the component's caller does not exist, nothing can exercise it,
+  and every finding about it is necessarily hypothetical.
+
+**Note the relationship to the isolation rule below.** That rule bounds rebuilds of a *test mechanism* at
+three. This is the same failure one level up — unbounded iterations of *review* — and the same remedy
+applies: past a small number of rounds with no external check, change the venue rather than running another
+round. **Consider making the review-round count a first-class cap in the same way the gate-bounce cap is.**
+
 ## ISOLATION-vs-ASSEMBLED TESTING — the owner's rule, 2026-07-29
 
 **Scope, per the owner: this is ONE ELEMENT of a fix for the measurement-apparatus problem, not the fix.**
