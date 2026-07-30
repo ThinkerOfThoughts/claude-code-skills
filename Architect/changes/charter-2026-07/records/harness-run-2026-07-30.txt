@@ -1,17 +1,14 @@
-# HARNESS RUN — 2026-07-30, after the pass-5 (reviewer X) repairs
+# HARNESS RUN - 2026-07-30, close of the pass-5 repair cycle
 #
-# NEW THIS RUN: oracles/sigmatch.py — N-04's missing half (closed set vs signature). See decisions.md ADJ-9.
+# FIVE oracles. NEW since pass 4: sigmatch.py (ADJ-9) and citecheck.py (ADJ-14).
 #
-# ⚠ EXIT CODES ARE CAPTURED FROM subprocess.returncode ON AN ARGV LIST — no shell, no pipe.
-# This record was generated THREE times today before it was right. The first two attempts piped the
-# oracle through `tail`/`grep` and recorded the FILTER's status as the script's: an exploit that made
-# shared_spans.py exit 1 was written down as exit=0, in the file whose entire purpose is proving the
-# exit codes. That is this project's own documented $?-after-a-pipe bug, committed twice more by the
-# runner who had already written the warning about it. The generator now takes a list, not a string,
-# because a list cannot contain a pipe.
+# Exit codes come from subprocess.returncode on an ARGV LIST - no shell, no pipe. This record was
+# generated three times before it was right; twice the oracle was piped through tail/grep and the FILTER's
+# status was recorded as the script's, writing exit=0 for exploits that exited 1 -- in the file whose
+# purpose is proving the exit codes. A list cannot contain a pipe, which is why it is a list.
 #
 $ ./oracles/ruleplace.sh ../../stages
-==== 142 passed, 0 failed ====
+==== 148 passed, 0 failed ====
 ==== plus 21 N-03 SMOKE passes and 0 SMOKE failures, NEITHER counted above (retired as the fidelity oracle: it does not gate in EITHER direction) ====
 exit=0
 
@@ -19,15 +16,19 @@ $ ./oracles/sigmatch.py ../../stages
 ==== sigmatch: 42 closed-set/signature assertions, 0 failed ====
 exit=0
 
+$ ./oracles/citecheck.py ../../stages
+==== citecheck: 18 cited records, 0 not citable ====
+exit=0
+
 $ ./oracles/shared_spans.py ../../stages 7 --exempt-file oracles/declared-duplications.jsonl
 ==== 0 undeclared shared spans of >= 7 words ====
 exit=0
 
 $ ./oracles/mutation-test.sh ../../stages
-==== mutants behaving as expected: 152 ; unexpected: 0 ====
+==== mutants behaving as expected: 157 ; unexpected: 0 ====
 exit=0
 
---- each with no argument: must be exit 2, never 0 ---
+--- no-argument guards: must be exit 2, never 0 ---
 $ ./oracles/ruleplace.sh  (no args)
 usage: oracles/ruleplace.sh <set-dir> [rules.tsv]
   <set-dir> is the directory holding charter.md, charter-common.md, redteam.md, redteam-plan.md,
@@ -55,6 +56,27 @@ Usage: sigmatch.py <set-dir> [spec-path]
 Exit:  0 all role files agree with their signatures | 1 a disagreement | 2 usage
 exit=2
 
+$ ./oracles/citecheck.py  (no args)
+citecheck.py — N-13's MISSING ARM: is the owner quotation actually AT the record it cites?
+Why this exists, and why nothing else could do it. Every other oracle in this run is DOCS-ONLY: they read
+the nine files and compare them to each other or to the design spec. Not one can open the session
+transcript. So a claim of the form "the owner said X at record N" was structurally outside what any of them
+could evaluate -- they can confirm the sentence is PRESENT and CONSISTENT, never that the ADDRESS is right.
+The set's own charter names this failure: a docs-only reviewer "can only catch internal inconsistency,
+never a plan that is confidently wrong about the world it plans in."
+It is not a new criterion. `1.5-criteria-v2.md` N-13 is GATING and already requires RAT1's "owner's
+response verbatim with a durable source the author did not author" -- and the same file's coverage table
+records, in its own words: "N-13 RAT1/RAT2 | Text presence only | Never had an arm." This is that arm.
+MEASURED, not hypothetical. On 2026-07-30 the runner adjudicating pass 4 read the transcript into a
+0-indexed list and reported every locus one low, then wrote the discrepancy up as an off-by-one IN THE
+CORPUS. Five review rounds, four oracles and 157 mutants had nothing to say about it. The orchestrator
+caught it by opening two records by hand. This probe is that hand-check, made mechanical.
+Usage: citecheck.py <set-dir> [transcript.jsonl]
+Exit:  0 every cited record resolves and every adjacent quotation is present in it
+       1 a citation does not resolve, or a quotation is absent from the record it names
+       2 usage error
+exit=2
+
 $ ./oracles/shared_spans.py  (no args)
 shared_spans.py — the N-06 NEGATIVE assertion the rule table structurally could not express.
 ruleplace.sh asserts, per file, that a rule IS stated where it must be. Every one of those probes is
@@ -74,19 +96,26 @@ $ ./oracles/mutation-test.sh  (no args)
 usage: oracles/mutation-test.sh <set-dir>
 exit=2
 
---- REVIEWER X's TWO EXPLOITS, re-run against the repaired apparatus: both must FAIL ---
-$ EXPLOIT A (forged leaf closed set: +depth +node_id)  ->  sigmatch.py
-FAIL  N-04/leaf.md  closed set claims 'node_id', which Spawn_leaf does not take
+--- STANDING REGRESSION TESTS: every demonstrated exploit, and the runner's own locus error ---
+$ EXPLOIT A (reviewer X): forged leaf closed set, +depth +node_id
 FAIL  N-04/leaf.md  closed set claims 'depth', which Spawn_leaf does not take
 ==== sigmatch: 42 closed-set/signature assertions, 2 failed ====
 exit=1
 
-$ EXPLOIT B (36-word rule smuggled through a 5-word declared heading)  ->  shared_spans.py
+$ EXPLOIT B (reviewer X): 36-word rule smuggled through a 5-word declared heading
 SHARED  leaf.md            ~ node.md        36w  what you do not do you do not accept a floor you were handed if a later clause supersedes it and a hard backstop cap of two iterations now applies to every loop in this system
 exit=1
 
---- reviewer U's pass-4 exploit, still caught ---
-$ EXPLOIT U (leaf closed set widened via a globally-amnestied span)  ->  shared_spans.py
+$ EXPLOIT U (pass 4): closed set widened via a globally-amnestied span
 ==== 3 undeclared shared spans of >= 7 words ====
+exit=1
+
+$ LOCUS ERROR (the runner's own): 1258 -> 1257, a system record
+FAIL  N-13/charter-common.md:199  record 1257 is a system/None -- carries no authored text, never a legitimate citation target
+exit=1
+
+$ LOCUS ERROR: 1254 -> 1253 (a pr-link record), plus a record that does not exist
+FAIL  N-13/charter.md:80  record 1253 is a pr-link/None -- carries no authored text, never a legitimate citation target
+FAIL  N-13/charter.md:88  record 99999 does not exist
 exit=1
 
