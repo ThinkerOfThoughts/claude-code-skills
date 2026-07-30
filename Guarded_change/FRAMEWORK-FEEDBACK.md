@@ -117,7 +117,34 @@ artifact that had never done any work. The owner's reaction on being shown it: *
 subdividing a task into atomic chunks and having a bunch of agents plan out each chunk, then sticking the
 thing together. How in the hell has this resulted in..."*
 
-### The check to add — at stage 1, before any work
+### ⚠ THE CAP ALREADY EXISTS AND WAS DEFEATED BY ITS OWN SCOPE — this is the actual finding
+
+**Correction, made after the owner asked "isn't there already an anti-thrashing rule with reviewer rounds?"
+— there is, and this entry originally proposed adding one.** The iteration cap is stated identically in
+`SKILL.md:51` and `stages/stage-{4,7,8}.md`:
+
+> *after **2 bounces at the same gate on the same finding class**, the loop **stops and a human breaks the
+> tie***
+
+**It never fired across six rounds, and it was right not to.** The qualifier is *same finding class*, and
+every round genuinely found a **new** class — non-termination, then a forged closed set, then a fabricated
+citation, then the same forgery relocated. Each bounce was a distinct defect, honestly classified. The cap
+counts **repetition** and is structurally blind to **proliferation**, so a loop that keeps finding *different*
+real defects runs forever without ever tripping it. The runner recorded this explicitly at gate 7 —
+*"2 bounces, but on different finding classes, so SEV4 has not tripped"* — and was correct.
+
+So the fix is **not another cap**. It is that the existing one measures the wrong thing for this failure:
+
+- **Repetition** (same defect surviving fixes) → the current cap catches it. Working as designed.
+- **Proliferation** (new defects forever, none repeating) → nothing counts it. This is the hole, and it is
+  the signature of an artifact with no external check, because there is no fact of the matter to converge on.
+
+**Candidate: count rounds-without-a-run alongside bounces-per-class**, at the same gates, with the same
+stop-for-human consequence. A run that has completed N review rounds and never executed the artifact should
+halt exactly as a run that bounced twice on one finding does. That is one counter and one predicate; it
+would have fired here at round 3 and saved two days.
+
+### The additional check — at stage 1, before any work
 
 **Refuse to start a run whose unit of work cannot reach stage 8's conformance check.** Concretely, stage 1
 must answer: *when this run finishes, what will I execute, and what will tell me it worked?* If the honest
