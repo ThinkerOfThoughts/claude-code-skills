@@ -1,14 +1,14 @@
-# HARNESS RUN - 2026-07-30, close of the pass-5 repair cycle
+# HARNESS RUN - 2026-07-30, after the pass-6 (reviewer Y) repairs
 #
-# FIVE oracles. NEW since pass 4: sigmatch.py (ADJ-9) and citecheck.py (ADJ-14).
+# FIVE oracles. Exit codes from subprocess.returncode on an ARGV LIST - no shell, no pipe.
 #
-# Exit codes come from subprocess.returncode on an ARGV LIST - no shell, no pipe. This record was
-# generated three times before it was right; twice the oracle was piped through tail/grep and the FILTER's
-# status was recorded as the script's, writing exit=0 for exploits that exited 1 -- in the file whose
-# purpose is proving the exit codes. A list cannot contain a pipe, which is why it is a list.
+# !! READ THE LAST SECTION BEFORE THE FIRST. Two live forgeries pass every oracle in this file.
+# !! A green run above does NOT mean the closed-set apparatus works; it means the apparatus does not
+# !! detect what it does not detect. Reviewer Y broke it for the third pass running, using reviewer X's
+# !! own exploit moved four lines, and the decision was taken NOT to patch it a fourth time.
 #
 $ ./oracles/ruleplace.sh ../../stages
-==== 148 passed, 0 failed ====
+==== 156 passed, 0 failed ====
 ==== plus 21 N-03 SMOKE passes and 0 SMOKE failures, NEITHER counted above (retired as the fidelity oracle: it does not gate in EITHER direction) ====
 exit=0
 
@@ -17,15 +17,15 @@ $ ./oracles/sigmatch.py ../../stages
 exit=0
 
 $ ./oracles/citecheck.py ../../stages
-==== citecheck: 18 cited records, 0 not citable ====
+==== citecheck: 19 cited records, 0 not citable ====
 exit=0
 
-$ ./oracles/shared_spans.py ../../stages 7 --exempt-file oracles/declared-duplications.jsonl
+$ ./oracles/shared_spans.py ../../stages 7 --exempt-file …
 ==== 0 undeclared shared spans of >= 7 words ====
 exit=0
 
 $ ./oracles/mutation-test.sh ../../stages
-==== mutants behaving as expected: 157 ; unexpected: 0 ====
+==== mutants behaving as expected: 164 ; unexpected: 0 ====
 exit=0
 
 --- no-argument guards: must be exit 2, never 0 ---
@@ -71,9 +71,23 @@ MEASURED, not hypothetical. On 2026-07-30 the runner adjudicating pass 4 read th
 0-indexed list and reported every locus one low, then wrote the discrepancy up as an off-by-one IN THE
 CORPUS. Five review rounds, four oracles and 157 mutants had nothing to say about it. The orchestrator
 caught it by opening two records by hand. This probe is that hand-check, made mechanical.
+⚠ WHAT THIS DOES NOT DO, stated here because this header previously said otherwise. It checks the ADDRESS,
+NEVER THE WORDS. Three designs tried to verify the quotation itself and all three failed as instruments on
+a clean artifact (6 false alarms, then 15, then one that reported "0 mis-cited" while passing vacuously --
+its regression test did not fire). Under the owner's three-iteration rule the quotation half was CUT. So:
+  * a FABRICATED quotation attributed to a REAL owner record passes this check, and reviewer Y
+    demonstrated exactly that in pass 6;
+  * this does NOT discharge criterion N-13, whose operative word is "verbatim". It is a FRACTION of
+    N-13's arm and the fraction excludes the operative word;
+  * records numbered under 100 are not matched (the pattern floor is three digits);
+  * it globs <set-dir>/*.md only -- it does NOT read ~/Documents/Architect.md, the run folder, or any
+    file outside the dispatched set, and unsourced owner authority has already been found in the spec.
+Until 2026-07-30 this header claimed exit 0 meant "every adjacent quotation is present in it". That was
+false of the shipped code, and the false contract had been copied into the harness record -- the file whose
+purpose is proving what the oracles do. Self-certification in the documentation of the instruments.
 Usage: citecheck.py <set-dir> [transcript.jsonl]
-Exit:  0 every cited record resolves and every adjacent quotation is present in it
-       1 a citation does not resolve, or a quotation is absent from the record it names
+Exit:  0 every cited record exists and is of a kind that carries authored text
+       1 a citation names a record that does not exist, or one carrying no authored text
        2 usage error
 exit=2
 
@@ -96,26 +110,63 @@ $ ./oracles/mutation-test.sh  (no args)
 usage: oracles/mutation-test.sh <set-dir>
 exit=2
 
---- STANDING REGRESSION TESTS: every demonstrated exploit, and the runner's own locus error ---
-$ EXPLOIT A (reviewer X): forged leaf closed set, +depth +node_id
-FAIL  N-04/leaf.md  closed set claims 'depth', which Spawn_leaf does not take
-==== sigmatch: 42 closed-set/signature assertions, 2 failed ====
+--- STANDING REGRESSION TESTS: exploits that ARE closed. All must exit 1. ---
+$ EXPLOIT A (X): forged closed set INSIDE the 'Exactly' sentence
+==== sigmatch: 42 closed-set/signature assertions, 3 failed ====
 exit=1
 
-$ EXPLOIT B (reviewer X): 36-word rule smuggled through a 5-word declared heading
+$ EXPLOIT B (X): 36-word rule smuggled through a declared heading
 SHARED  leaf.md            ~ node.md        36w  what you do not do you do not accept a floor you were handed if a later clause supersedes it and a hard backstop cap of two iterations now applies to every loop in this system
 exit=1
 
-$ EXPLOIT U (pass 4): closed set widened via a globally-amnestied span
+$ EXPLOIT U (pass 4): closed set widened via a global amnesty
 ==== 3 undeclared shared spans of >= 7 words ====
 exit=1
 
-$ LOCUS ERROR (the runner's own): 1258 -> 1257, a system record
+$ LOCUS ERROR (runner's own): 1258 -> 1257, a system record
 FAIL  N-13/charter-common.md:199  record 1257 is a system/None -- carries no authored text, never a legitimate citation target
 exit=1
 
-$ LOCUS ERROR: 1254 -> 1253 (a pr-link record), plus a record that does not exist
+$ LOCUS ERROR: 1254 -> 1253 (pr-link), and a nonexistent record
 FAIL  N-13/charter.md:80  record 1253 is a pr-link/None -- carries no authored text, never a legitimate citation target
 FAIL  N-13/charter.md:88  record 99999 does not exist
 exit=1
+
+=================================================================================================
+ !!! KNOWN OPEN — NOT PASSES. THE APPARATUS DOES NOT CATCH THESE. !!!
+ Reviewer Y, pass 6. DELIBERATELY NOT PATCHED — see decisions.md ADJ-20.
+ Both mutants below are live forgeries built from the CURRENT, fully-repaired artifact.
+ exit=0 here is a FAILURE OF THE HARNESS, not health of the artifact.
+=================================================================================================
+$ Y F-1  forged leaf closed set granting Ask_human, ONE PARAGRAPH below the anchor  ->  ruleplace.sh
+==== plus 21 N-03 SMOKE passes and 0 SMOKE failures, NEITHER counted above (retired as the fidelity oracle: it does not gate in EITHER direction) ====
+exit=0
+
+$ Y F-1  forged leaf closed set granting Ask_human, ONE PARAGRAPH below the anchor  ->  sigmatch.py
+==== sigmatch: 42 closed-set/signature assertions, 0 failed ====
+exit=0
+
+$ Y F-1  forged leaf closed set granting Ask_human, ONE PARAGRAPH below the anchor  ->  citecheck.py
+==== citecheck: 19 cited records, 0 not citable ====
+exit=0
+
+$ Y F-1  forged leaf closed set granting Ask_human, ONE PARAGRAPH below the anchor  ->  shared_spans.py
+==== 0 undeclared shared spans of >= 7 words ====
+exit=0
+
+$ Y F-2  FABRICATED owner ruling attributed to a REAL record (2524)  ->  ruleplace.sh
+==== plus 21 N-03 SMOKE passes and 0 SMOKE failures, NEITHER counted above (retired as the fidelity oracle: it does not gate in EITHER direction) ====
+exit=0
+
+$ Y F-2  FABRICATED owner ruling attributed to a REAL record (2524)  ->  sigmatch.py
+==== sigmatch: 42 closed-set/signature assertions, 0 failed ====
+exit=0
+
+$ Y F-2  FABRICATED owner ruling attributed to a REAL record (2524)  ->  citecheck.py
+==== citecheck: 20 cited records, 0 not citable ====
+exit=0
+
+$ Y F-2  FABRICATED owner ruling attributed to a REAL record (2524)  ->  shared_spans.py
+==== 0 undeclared shared spans of >= 7 words ====
+exit=0
 

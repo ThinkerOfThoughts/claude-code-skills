@@ -52,12 +52,13 @@ drifting:
 > | **leaf** | the **head of the plan you return**, above step 1, never as a numbered step | `Consensus`, which does not vote on it |
 > | **divider** | **only when you return a pair**: appended to your **stated seam**. **When you return `null` you have no channel** — see below. | the node |
 > | **`Consensus`, `Union`** | the head of the merged output you return | your caller |
-> | **`Severity`** | the **decision log** — you hold `node_id`. **Never your return value.** See below. | the audit |
+> | **`Severity`** | **none — and you must not manufacture one.** Your return value *is* `task`. See below. |  |
 >
-> **`Severity` is the one role whose RETURN VALUE is itself the loop's continue condition**, so nothing
-> may ride in it that is not a `blocker|major` finding about the work. It is not without a channel: it
-> holds `node_id` and writes to the decision log. **Its role file states the mechanism and the
-> consequences**; the rule here is only that the two must never be confused.
+> **`Severity` is the one role whose RETURN VALUE is itself the loop's continue condition**, so nothing may
+> ride in it that is not a `blocker|major` finding about the work — and it holds no `node_id`, so it has no
+> log either. **That is deliberate, and its caller compensates for it**: the node records the full merged
+> issue set before `Severity` is invoked. **Its role file states the mechanism**; the rule here is only that
+> having no channel is never licence to improvise one.
 >
 > **The divider's channel is conditional, and the condition is not rare.** `Divisible` returns
 > `pair<string>`, and your seam rides inside that pair — so a block can ride with it. **But when you return

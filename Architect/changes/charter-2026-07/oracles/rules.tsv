@@ -150,7 +150,7 @@ N-25b	present	redteam-plan.md	Exactly one thing beyond the common list: the plan
 N-25c	present	redteam-split.md	You have NO PLAN and are not entitled to one	You have NO PLAN and are not entitled to one
 N-25d	absent	redteam.md	redteam.md must not state a per-kind input list that an aiming file then modifies	Exactly: the task, the plan, and the granularity floor
 
-N-24b	present	charter-common.md	the decision log — you hold node_id	decision log . you hold node_id
+N-24b	present	charter-common.md	none — and you must not manufacture one	none . and you must not manufacture one
 N-24c	present	combiner.md	your return value is the next task	your return value is the next task
 N-24d	absent	combiner.md	the removed clause that put a note into Severity's return value is gone	say so in your return value rather than dropping it
 N-38a	present	charter-common.md	NEVER as a blocker or a finding against the work	NEVER as a blocker or a finding against the work
@@ -163,8 +163,8 @@ N-14b	lastline	redteam-split.md	You are graded on precision	You are graded on pr
 N-41a	present	charter-common.md	task is not only a description of work	task is not only a description of work
 N-41b	present	leaf.md	points at the source material	points at the source material
 N-41c	present	charter-common.md	what it does not point at is not	what it does not point at is not
-N-42a	present	combiner.md	Log_decision(node_id, "filtered-findings"	Log_decision.node_id, .filtered-findings
-N-42b	present	combiner.md	It is not a second return path	It is not a second return path
+N-42a	present	node.md	Log_decision(node_id, "issues-merged"	Log_decision.node_id, .issues-merged
+N-42b	present	combiner.md	return the blocker|major set and nothing else, ever	return the blocker.major set and nothing else, ever
 N-42c	absent	combiner.md	say so in your return value rather than dropping it	say so in your return value rather than dropping it
 N-43a	present	node.md	written nothing for an extended period, AND it does not answer	written nothing for an extended period, AND it does not answer
 N-43b	present	node.md	a long silent think is not a stall	a long silent think is not a stall
@@ -175,3 +175,11 @@ N-44c	present	charter-common.md	If you hold node_id: you must LIFT	If you hold n
 N-45a	present	charter-common.md	When you return null you have no channel	When you return null you have no channel
 N-45b	present	charter-common.md	Deeper than that, your block reaches the node and stops there	Deeper than that, your block reaches the node and stops there
 N-45c	absent	divider.md	explicitly labelled as a cap exhaustion	explicitly labelled as a cap exhaustion
+N-42d	present	node.md	Why YOU log it and not Severity	Why YOU log it and not Severity
+N-42e	present	combiner.md	What you filter out is RECORDED	What you filter out is RECORDED
+N-39c	present	redteam-split.md	but only three times	but only three times
+N-47a	present	combiner.md	If you were handed FEWER inputs than your caller spawned	If you were handed FEWER inputs than your caller spawned
+N-47b	present	combiner.md	how many inputs you were handed, how many you expected	how many inputs you were handed, how many you expected
+N-47c	present	node.md	do NOT mark a subtree done when one of its children did not return	do NOT mark a subtree done when one of its children did not return
+N-48a	present	node.md	The conjunction is the AUTHOR'S reading, not the owner's words	conjunction is the AUTHOR'S reading, not the owner's words
+N-49a	absent	charter-common.md	every adjacent quotation is present in it	every adjacent quotation is present in it

@@ -4,7 +4,10 @@
 # You are reviewing a PROPOSED DIVISION, not a plan
 
 `Divisible(task, granularity)` proposed a way to cut this task in two. **You review the cut.** The divider
-loops on your findings until no `major` or `blocker` stands against the division, and only then returns it.
+loops on your findings while a `major` or `blocker` stands against the division — **but only three times.**
+After a third round it stops and returns `null`, meaning *not divisible*, and **your standing findings go
+nowhere**: `null` carries nothing. So the cap is not a formality you can spend. **Raise what is real and
+raise it early**; a `major` you hold back for a later round may never get one.
 
 ## The artifact you hold, completing the closed set of `redteam.md`
 

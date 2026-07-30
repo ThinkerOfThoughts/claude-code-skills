@@ -107,7 +107,13 @@ children are still in flight loses their work — this has happened, more than o
 >
 > **An agent is stuck when BOTH hold: it has written nothing for an extended period, AND it does not answer
 > a ping.** Both signals, never either alone — **a long silent think is not a stall**, and treating it as
-> one abandons live work. "Written nothing" means to **anything**: its output, and its own transcript.
+> one abandons live work.
+>
+> ⚠ **The conjunction is the AUTHOR'S reading, not the owner's words.** He gave an open list of symptoms
+> ending in *"etc."*; a conjunction is strictly harder to satisfy than either symptom alone, so this
+> detects **fewer** stuck agents than his plain words admit — and given what a missed stuck child costs
+> above, that is the expensive direction to be wrong in. **The "etc." is a standing invitation: a further
+> signal that clearly indicates a stall counts, and you report which one fired.** "Written nothing" means to **anything**: its output, and its own transcript.
 > Watching only the output directory is what produces the false positive.
 >
 > **This is a different failure from a crash, and confusing them is the trap.** A crashed node is re-walked
@@ -116,9 +122,20 @@ children are still in flight loses their work — this has happened, more than o
 > waiting.
 >
 > **What you do:** stop waiting on that agent, **record it with `Log_decision(node_id, "agent-stuck", …)`
-> naming which agent and which signal fired**, and **merge what you actually have.** Your combiner is built
-> for a short vector and will report how many it actually merged; that report is the only trace a stuck
-> agent leaves anywhere. **Do not respawn the stuck agent to fill the gap**
+> naming which agent and which signal fired**, and **merge what you actually have.** Your combiner will
+> report how many inputs it was handed against how many were expected — **but that report is not a
+> substitute for yours, and on the child path it is not enough on its own.**
+>
+> ⚠ **A stuck CHILD is the expensive case, and the memo is what makes it permanent.** `Union` handed one
+> child plan returns half a divided task, correctly by its own rule, and the result reads as a whole plan.
+> If you then write `Memo_write(node_id, true, …)`, every later restart answers `saved.done` and **returns
+> that half-plan immediately, spawning nothing. The missing half is never recovered by any replay.** So:
+> **do NOT mark a subtree done when one of its children did not return.** Checkpoint it as unfinished, log
+> the loss, and let the red-team round see a plan that is explicitly incomplete.
+>
+> **The stuck agent's queue reservation is not yours to reclaim, and nothing in this set reclaims it.**
+> Children reserve their place inside your slot; a stuck child never releases it. **That is a known gap,
+> declared in `charter.md`, not something for you to improvise a fix for.** **Do not respawn the stuck agent to fill the gap**
 > and do not write its share yourself; you do not plan.
 
 **2. Checkpoint 1.** `Memo_write(node_id, false, iter, task, plan, division)` — so the merged plan survives
@@ -127,9 +144,19 @@ a crash during the red-team round.
 **3. Red-team.** Spawn **three** red-team agents with `(task, plan, granularity)` — **separately spawned,
 cold, no shared context with each other**. Wait for all three.
 
-**4. Filter.** `task = Severity(Union(redteam issues), node_id)`, then
-   `division = Divisible(task, granularity)`. **You pass `Severity` your own `node_id`** so it can log the
-   minors it filters out; it uses it for that and for nothing else.
+**4. Filter.** `plan_issues = Union(redteam issues)` — **log the whole merged set before you filter it**,
+   `Log_decision(node_id, "issues-merged", plan_issues)` — then `task = Severity(plan_issues)` and
+   `division = Divisible(task, granularity)`.
+
+> **Why YOU log it and not `Severity`.** The owner ruled that the minors `Severity` drops must be recorded
+> rather than vanishing (record **3119**). `Severity` cannot record them: it holds no `node_id`, so it
+> cannot call `Log_decision`, and its return value **is** `task`, so anything it puts there becomes work.
+> **You are the role that can.** The merged set is an intermediate value in your own frame, you hold
+> `node_id`, and you already log. Logging it *before* the filter is what makes the record complete —
+> afterwards, the dropped findings are gone. ⚠ **An earlier version of this set solved the same problem by
+> adding a parameter to `Severity`'s signature in the design spec. That was the runner editing the owner's
+> design on its own inference, and it is reverted; this is the resolution that needed no change to his
+> file.**
    `Union` here is the **same function** you called on your children's plans at step 1 — it is
    input-agnostic and merges whatever it is handed. Only `Severity` is issue-specific.
 

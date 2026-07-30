@@ -17,9 +17,26 @@ MEASURED, not hypothetical. On 2026-07-30 the runner adjudicating pass 4 read th
 CORPUS. Five review rounds, four oracles and 157 mutants had nothing to say about it. The orchestrator
 caught it by opening two records by hand. This probe is that hand-check, made mechanical.
 
+⚠ WHAT THIS DOES NOT DO, stated here because this header previously said otherwise. It checks the ADDRESS,
+NEVER THE WORDS. Three designs tried to verify the quotation itself and all three failed as instruments on
+a clean artifact (6 false alarms, then 15, then one that reported "0 mis-cited" while passing vacuously --
+its regression test did not fire). Under the owner's three-iteration rule the quotation half was CUT. So:
+
+  * a FABRICATED quotation attributed to a REAL owner record passes this check, and reviewer Y
+    demonstrated exactly that in pass 6;
+  * this does NOT discharge criterion N-13, whose operative word is "verbatim". It is a FRACTION of
+    N-13's arm and the fraction excludes the operative word;
+  * records numbered under 100 are not matched (the pattern floor is three digits);
+  * it globs <set-dir>/*.md only -- it does NOT read ~/Documents/Architect.md, the run folder, or any
+    file outside the dispatched set, and unsourced owner authority has already been found in the spec.
+
+Until 2026-07-30 this header claimed exit 0 meant "every adjacent quotation is present in it". That was
+false of the shipped code, and the false contract had been copied into the harness record -- the file whose
+purpose is proving what the oracles do. Self-certification in the documentation of the instruments.
+
 Usage: citecheck.py <set-dir> [transcript.jsonl]
-Exit:  0 every cited record resolves and every adjacent quotation is present in it
-       1 a citation does not resolve, or a quotation is absent from the record it names
+Exit:  0 every cited record exists and is of a kind that carries authored text
+       1 a citation names a record that does not exist, or one carrying no authored text
        2 usage error
 """
 import sys, os, re, json, glob
