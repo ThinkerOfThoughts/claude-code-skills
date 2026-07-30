@@ -59,6 +59,16 @@ while IFS=$'\t' read -r id mode file anchor pattern; do
             else
                 echo "PASS  $id  absent from $file"; pass=$((pass+1))
             fi ;;
+        lastline)
+            # N-14: PLACEMENT, not presence. The raw file's last non-blank line must match.
+            # Presence probes structurally cannot see this -- B18 was present in the set the whole time
+            # while N-14 named the wrong two files, and no probe could tell.
+            ll=$(grep -v '^[[:space:]]*$' "$SET_DIR/$file" | tail -1)
+            if printf '%s' "$ll" | tr -d '*`' | grep -Eq -- "$pattern"; then
+                echo "PASS  $id  is the final line of $file"; pass=$((pass+1))
+            else
+                echo "FAIL  $id  NOT the final line of $file  -- got: $ll"; fail=$((fail+1)); failed_ids="$failed_ids $id"
+            fi ;;
         absent-set)
             if grep -Eq -- "$pattern" "$NORMDIR/_ALL"; then
                 hit=$(for f in $FILES; do grep -Eq -- "$pattern" "$NORMDIR/$f" && echo -n "$f "; done)
@@ -77,7 +87,7 @@ while IFS=$'\t' read -r id mode file anchor pattern; do
     esac
 done < "$RULES"
 
-# ---- N-03 fork fidelity, GENERATED from charter.md's own allocation table --------------------
+# ---- N-03 allocation-table SMOKE, GENERATED from charter.md's own allocation table --------------------
 # The artifact claims a destination file for every fork-source rule B01-B19. Parse that claim out of the
 # artifact and verify each one by reading the named file. The probe set is therefore derived from the
 # artifact, not from the run's inventory, so an inventory gap cannot hide a missing rule here.
@@ -85,13 +95,14 @@ echo "--- N-03 SMOKE ONLY: allocation-table destinations exist (NOT fork-fidelit
 echo "    Fork fidelity is verified by a cold reviewer rule-by-rule; reviewer Q measured this probe passing"
 echo "    9 of 19 rules against files they were never claimed to be in. Counted separately, below."
 claimed=0
+smokefail=0
 while IFS='|' read -r _ rulecell filecell _; do
     rid=$(echo "$rulecell" | grep -oE 'B[0-9]{2}' | head -1)
     [ -n "$rid" ] || continue
     claimed=$((claimed+1))
     targets=$(echo "$filecell" | grep -oE '[a-z-]+\.md' | sort -u)
     if [ -z "$targets" ]; then
-        echo "FAIL  N-03/$rid  allocation table names no destination file"; fail=$((fail+1)); failed_ids="$failed_ids N-03/$rid"
+        echo "SMOKE-FAIL  N-03/$rid  allocation table names no destination file"; smokefail=$((smokefail+1))
         continue
     fi
     # The rule's DESCRIPTION, taken from the same table cell, is the search term. Asserting only that the
@@ -101,7 +112,7 @@ while IFS='|' read -r _ rulecell filecell _; do
     desc=$(echo "$rulecell" | sed -e 's/\*\*B[0-9]\{2\}\*\*//' -e 's/[^A-Za-z ]/ /g' | tr 'A-Z' 'a-z' | tr -s ' ')
     for t in $targets; do
         if [ ! -s "$NORMDIR/$t" ]; then
-            echo "FAIL  N-03/$rid  destination $t missing or empty"; fail=$((fail+1)); failed_ids="$failed_ids N-03/$rid"
+            echo "SMOKE-FAIL  N-03/$rid  destination $t missing or empty"; smokefail=$((smokefail+1))
             continue
         fi
         hits=0; words=0
@@ -111,22 +122,30 @@ while IFS='|' read -r _ rulecell filecell _; do
             grep -qi -- "$w" "$NORMDIR/$t" && hits=$((hits+1))
         done
         if [ "$words" -eq 0 ]; then
-            echo "FAIL  N-03/$rid  allocation table gives no describable rule text"; fail=$((fail+1)); failed_ids="$failed_ids N-03/$rid"
+            echo "SMOKE-FAIL  N-03/$rid  allocation table gives no describable rule text"; smokefail=$((smokefail+1))
         elif [ $((hits * 100 / words)) -ge 60 ]; then
             echo "SMOKE N-03/$rid  $hits/$words description terms present in $t"; smoke=$((smoke+1))
         else
-            echo "FAIL  N-03/$rid  only $hits/$words description terms present in $t -- rule may not be stated there"
-            fail=$((fail+1)); failed_ids="$failed_ids N-03/$rid"
+            echo "SMOKE-FAIL  N-03/$rid  only $hits/$words description terms present in $t -- rule may not be stated there"
+            smokefail=$((smokefail+1))
         fi
     done
 done < <(sed -n '/^| \*\*B01\*\*/,/^| \*\*B19\*\*/p' "$SET_DIR/charter.md")
 if [ "$claimed" -ne 19 ]; then
-    echo "FAIL  N-03  allocation table covers $claimed rules, expected 19 (B01-B19)"; fail=$((fail+1)); failed_ids="$failed_ids N-03"
+    echo "SMOKE-FAIL  N-03  allocation table covers $claimed rules, expected 19 (B01-B19)"; smokefail=$((smokefail+1))
 else
     echo "SMOKE N-03  allocation table covers all 19 fork-source rules"; smoke=$((smoke+1))
 fi
 
+# ---- N-32: no probe ID is reused. The criterion NAMES this command; until 2026-07-30 nothing ran it.
+dups=$(cut -f1 "$RULES" | grep -v '^#' | sort | uniq -d)
+if [ -n "$dups" ]; then
+    echo "FAIL  N-32  probe ids reused:$(echo $dups)"; fail=$((fail+1)); failed_ids="$failed_ids N-32"
+else
+    pass=$((pass+1))
+fi
+
 echo "==== $pass passed, $fail failed ===="
-echo "==== plus $smoke N-03 SMOKE results, DELIBERATELY NOT counted above (retired as the fidelity oracle) ===="
+echo "==== plus $smoke N-03 SMOKE passes and $smokefail SMOKE failures, NEITHER counted above (retired as the fidelity oracle: it does not gate in EITHER direction) ===="
 [ "$fail" -eq 0 ] || { echo "failed:$failed_ids"; exit 1; }
 exit 0

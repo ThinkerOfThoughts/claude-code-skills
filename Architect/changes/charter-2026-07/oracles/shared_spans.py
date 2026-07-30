@@ -99,7 +99,20 @@ def main():
         for _, ln, span in shared_spans(words[a], words[b], n):
             hit = None
             for e, sites in exempt_norm:
-                if span in e or e in span:
+                # CONTAINMENT RUNS ONE WAY ONLY: the DISCOVERED span must sit inside the DECLARED one.
+                #
+                # This used to read `if span in e or e in span`, and the second half made every declared
+                # entry an UNBOUNDED EXTENSION POINT: any discovered span that merely CONTAINED a declared
+                # one was exempted whole. Reviewer X demonstrated it on 2026-07-30 by appending an
+                # identical 36-word RULE to leaf.md and node.md, positioned to run on from the declared
+                # 5-word scaffolding heading "What you do not do". The oracle printed its own defeat:
+                #     EXEMPT  leaf.md ~ node.md  36w  what you do not do you do not accept a floor ...
+                # -- a smuggled rule that relaxed the granularity floor and imposed a backstop cap the
+                # owner had declined, reported as EXEMPT, both oracles exit 0.
+                #
+                # A declaration is a statement about a SPECIFIC span. Anything longer is a different span
+                # and has not been declared. So `e` must be at least as long as what was found.
+                if span in e:
                     if sites and not {a, b} <= sites:
                         continue          # declared, but not for THIS pair of files
                     hit = True

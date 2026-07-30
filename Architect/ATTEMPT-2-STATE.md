@@ -355,7 +355,35 @@ Also: **N-32 is gating, names its own verification command, and nothing runs it.
 138/0 mutants) and all three judged the numbers honest but the coverage narrower than the surrounding prose
 claims.
 
-### ⚠ THE DECISION QUEUED FOR THE OWNER — do not let a fresh session resolve this in the loop
+### ⚠ UPDATE 2026-07-30 — PASS 4 HAS NOW BEEN ADJUDICATED, AND THE RECORDS ABOVE DID NOT EXIST
+
+**The sentence above — *"Records are in `changes/charter-2026-07/records/reviewer-{U,V,W}-verbatim.md`"* —
+was FALSE when written.** Those files were not on disk; §6e was written from the reviewers' inline returns.
+A fresh cold runner recovered them from the harness transcripts on 2026-07-30 and they exist now. This is
+failure mode 1 (a present-tense claim about an artifact that does not exist), committed in the commit that
+documents the parking.
+
+**The adjudication is `changes/charter-2026-07/decisions.md`, sections ADJ-0 … ADJ-5.** Headlines:
+
+- **Confirmed and repaired:** the non-termination class (three live routes, one of them firing on the
+  *routine* case, not just on prompt-set defects); no out-of-band destination for three of six roles; the
+  register's global amnesties (**U's exploit reproduced first-hand, then broken**); the divider's uncapped
+  loop; N-14 and N-24 both gating and **factually false**; N-03's retirement performed on the success path
+  only; N-32 gating and unwired. **18 repairs, all in element 1's own files.**
+- **Refuted or downgraded:** V's SEV4 blocker — **owner record 1258 rules there is no iteration cap**
+  (*"I think trust the blocker/major filter, fix it later if it is an issue"*), answering the question put
+  at 1254. It survives only as a **declaration** defect, now closed. V's N-13b/N-28b probe-gap claim is
+  wrong; both have exact-ID probes. U's *"the loop cannot empty"* is refuted as absolute — `node.md` gives
+  an owner-mediated demotion path.
+- **New, first-hand:** the owner's original spec at record **1044** shows **his `Divisible` has no
+  red-team loop**, so the divider's loop is an agent addition and bounding it overrules nothing he settled.
+  ⚠ **Record numbers here are 1-BASED.** The adjudicating runner briefly claimed an off-by-one in the
+  corpus's loci; that was its own indexing error and is retracted in `decisions.md` ADJ-2, with all 37
+  affected citations corrected by script.
+
+**Pass 5 (X, Y, Z) covers the repairs. Prompt: `changes/charter-2026-07/records/stage6g-prompt.md`.**
+
+### ⚠ THE DECISION QUEUED FOR THE OWNER — narrowed 2026-07-30, still HIS
 
 Whether **element 1 closes with ~10 known open defects so element 2 can start.** U and V both rule this is
 the owner's, not the runner's: U because the runner's stated grounds are refuted by its own artifact (**nine

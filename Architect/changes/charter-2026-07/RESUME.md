@@ -1,4 +1,48 @@
-# RESUME — element 1: THE AGENT PROMPT SET · 2026-07-29
+# RESUME — element 1: THE AGENT PROMPT SET · updated 2026-07-30
+
+## ⚠ 0z. READ THIS FIRST — EVERYTHING BELOW §0z PREDATES THE PASS-4 ADJUDICATION
+
+**On 2026-07-30 a fresh cold runner adjudicated pass 4 and made 18 repairs. Its full record is
+`decisions.md`, sections ADJ-0 through ADJ-5** — read those before anything else in this file. Where this
+file and ADJ-0..5 disagree, **ADJ-0..5 is current.** Specifically, these statements below are now stale:
+
+- Every **hash** in §6 is superseded. Post-repair hashes are in ADJ-4. Nine files, **1,310 lines**.
+- **The harness numbers in §4 are superseded**: now **133/0 (+21 SMOKE)**, **0 undeclared**, **144/0
+  mutants**. Verbatim capture: `records/harness-run-2026-07-30.txt`.
+- §5's owner queue is superseded by **ADJ-5**, which is a different and shorter list.
+- The accept bar was **amended again, under FRZ-3**, because two gating criteria (N-14, N-24) were found
+  **factually false against the artifact they gate.**
+
+**Four things a fresh reader must not misread:**
+
+1. **The pass-4 reviewer records did not exist on disk until 2026-07-30.** `ATTEMPT-2-STATE.md` §6e said
+   they were in `records/`; they were not. They were recovered from the harness transcripts (ADJ-0).
+2. **The owner's original spec is at harness record 1044** — an `attachment` record, 2,278 chars, and the
+   admissible source for what the owner actually designed. **His `Divisible` has no red-team loop and his
+   `Spawn_leaf` takes no `granularity`.** ⚠ **Record numbers in this project are 1-BASED (record N = line N
+   of the session JSONL).** The 2026-07-30 runner briefly reported an off-by-one *in the corpus*; the
+   off-by-one was its own, from reading the JSONL into a 0-indexed list. Retracted in `decisions.md` ADJ-2.
+   **Read loci with `sed -n 'Np'`, not with a list index.**
+3. **There IS an owner ruling that the node loop has no iteration cap** — record **1258**, answering the
+   question put at record **1254**. Pass-4 reviewer V ruled the missing cap a blocker without checking it.
+   The substance is settled; only the declaration was missing, and that is now closed.
+4. ⚠ **PASS 5 RAN AND RETURNED `blocker` (reviewer X, opus).** It demonstrated **two new working
+   exploits** against the closed-set apparatus, found a **fourth non-termination route**, and **refuted two
+   of the three items the runner had escalated to the owner as design-level** — both were the runner's own
+   to fix. All adjudicated and repaired: `decisions.md` **ADJ-8 … ADJ-12**. A new oracle, `sigmatch.py`,
+   closes the hole both U and X walked through. **Y and Z were never dispatched.**
+5. **The owner answered the halt (record 3119) rather than accepting the risk**, so **element 1 is NOT
+   closed** and the closure question is moot. Three rulings implemented: `task` carries source material;
+   `Severity` logs filtered minors; "stuck" is defined. See **ADJ-13**.
+6. **Pass 6 has not been convened.** Everything in ADJ-8…ADJ-13 is **unreviewed**.
+
+**The original pass-5 framing:** Its prompt is
+   `records/stage6g-prompt.md`. **FRZ-3's rows require it** — the run's own protocol says an author who
+   amends the bar mid-run and then measures themselves against it must be cold-reviewed.
+
+---
+
+# (historical, written 2026-07-29 — superseded where §0z says so)
 
 **Read this first. It assumes you know nothing.** Project-level entry point is `../../ATTEMPT-2-STATE.md`;
 this is the element-level one. The gate log is `decisions.md` — read its last FOUR entries after this file.
@@ -287,6 +331,11 @@ file that documents it.
 
 - **`rules.tsv` is author-written.** Not evidence of criteria coverage. Only N-03's probe set is generated.
 - **The 60% threshold in N-03 is a judgement, not a derivation.** `B15` passes at **2 of 3**.
+- ⚠ **EVERY "0 undeclared spans" RESULT BEFORE 2026-07-30 IS NOT COMPARABLE TO ONE AFTER.** Eight of the
+  register's twelve entries were **global amnesties** (no `sites` key). Reviewer U rode one to widen
+  `leaf.md`'s closed set in a single line, clean through both oracles. Scoping them broke that exploit and
+  **exposed nineteen further undeclared spans the amnesties had been hiding.** See `1.5-criteria-v2.md`'s
+  closing section and `decisions.md` ADJ-4 #6. **The exemption file is part of the instrument.**
 - **`shared_spans.py` cannot see a PARAPHRASE.** Two duplications repaired this run — the floor-is-wrong
   clause in `divider.md` and `leaf.md` — were found by **reading**. **A clean run means no *verbatim*
   restatement survives, not that the composition rule holds.**

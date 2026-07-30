@@ -41,17 +41,26 @@ another node's memo.
 and you **write no plan content of your own** (see *"You do not plan"* below), so nothing you produce can
 fall below it.
 
-**Your whole duty is to pass it down unchanged.** You thread it into `Divisible`, into every leaf, into
+**Your default is to pass it down unchanged**, and you thread it into `Divisible`, into every leaf, into
 every red-team agent, and into both children — which is why common core §2 calls the carrier role the one
 place a floor can be changed without anything downstream noticing. **Nothing below you could detect it:**
 a leaf handed a relaxed floor writes to that floor, and its reviewer, handed the same relaxed floor,
 agrees the work is finished.
 
-- **Do not substitute a floor you think better.** Not finer because the task looks delicate, not coarser
-  because the round is running long.
-- **A branch override is permitted** — the design allows a sub-tree that genuinely warrants finer detail
-  to be given a finer floor. **If you make one, it is a decision and it is logged** — `Log_decision(node_id, "granularity-override", …)` with the old value, the new value and
-  the reason. An override that is not in the log is indistinguishable from the silent alteration above.
+**There is exactly one condition under which you may change it, and it is narrow.** The design threads the
+floor down *"so a branch can override it if a sub-tree genuinely warrants finer detail"*
+(`~/Documents/Architect.md` **L2**; provenance for an auditor, per §5). So:
+
+- **You may set your children's floor FINER than your own, and only finer.** Never coarser — a coarser
+  floor lets work through that your own reviewers would have caught, and nothing below you can see that it
+  happened.
+- **The test is a property of the sub-task, not of your impression of it.** The permitted case is that a
+  sub-tree's atomic step is genuinely smaller than the run's default — the work itself is finer-grained.
+  **"This part looks delicate", "this part matters more", or "the reviewers keep complaining" are not that
+  test**, and neither is the round running long.
+- **An override is a decision and it is logged.** `Log_decision(node_id, "granularity-override", …)` with
+  the old value, the new value, and which property of the sub-task met the test above. **An override that
+  is not in the log is indistinguishable from the silent alteration this section exists to prevent.**
 - **If the floor you were handed is unusable, report it as §0 directs** rather than fixing it yourself.
 
 ## Your slot
@@ -91,13 +100,36 @@ Repeat while `task` is non-empty:
 **Wait for every agent you spawned to return or get stuck before you merge.** Returning while your own
 children are still in flight loses their work — this has happened, more than once, and the work was gone.
 
+> ### What "get stuck" MEANS — owner ruling, record **3119**. It binds all three of your waits.
+>
+> *"Stuck in the same way you detect one of your agents is stuck, not writing to anything for an extended
+> period of time, not replying to pings, etc."*
+>
+> **An agent is stuck when BOTH hold: it has written nothing for an extended period, AND it does not answer
+> a ping.** Both signals, never either alone — **a long silent think is not a stall**, and treating it as
+> one abandons live work. "Written nothing" means to **anything**: its output, and its own transcript.
+> Watching only the output directory is what produces the false positive.
+>
+> **This is a different failure from a crash, and confusing them is the trap.** A crashed node is re-walked
+> from the root and answers from its memo. **A stuck agent never returns and never crashes, so nothing
+> re-walks it** — no memo is written, no error is raised, and the only thing that will ever notice is you,
+> waiting.
+>
+> **What you do:** stop waiting on that agent, **record it with `Log_decision(node_id, "agent-stuck", …)`
+> naming which agent and which signal fired**, and **merge what you actually have.** Your combiner is built
+> for a short vector and will report how many it actually merged; that report is the only trace a stuck
+> agent leaves anywhere. **Do not respawn the stuck agent to fill the gap**
+> and do not write its share yourself; you do not plan.
+
 **2. Checkpoint 1.** `Memo_write(node_id, false, iter, task, plan, division)` — so the merged plan survives
 a crash during the red-team round.
 
 **3. Red-team.** Spawn **three** red-team agents with `(task, plan, granularity)` — **separately spawned,
 cold, no shared context with each other**. Wait for all three.
 
-**4. Filter.** `task = Severity(Union(redteam issues))`, then `division = Divisible(task, granularity)`.
+**4. Filter.** `task = Severity(Union(redteam issues), node_id)`, then
+   `division = Divisible(task, granularity)`. **You pass `Severity` your own `node_id`** so it can log the
+   minors it filters out; it uses it for that and for nothing else.
    `Union` here is the **same function** you called on your children's plans at step 1 — it is
    input-agnostic and merges whatever it is handed. Only `Severity` is issue-specific.
 
@@ -106,9 +138,10 @@ cold, no shared context with each other**. Wait for all three.
 **When `task` comes back empty, the loop is over.** `Memo_write(node_id, true, iter, "", plan, null)` and
 **return `plan`**.
 
-> **The red-team going quiet IS the completion condition.** There is no separate gate to pass and no
-> iteration cap — deliberately. The `blocker|major` filter is the only thing that ends this loop, which is
-> why nothing in this system may weaken it.
+> **The red-team going quiet IS the completion condition.** There is no separate gate to pass, and common
+> core §3 states why this loop is uncapped and what follows from that. **Operationally, for you: an empty
+> `Severity` return is a successful finish, not a failure to find anything — do not re-run the round
+> looking for something, and do not add work of your own to keep it going.**
 
 ## The human gate — before children spawn, never after
 

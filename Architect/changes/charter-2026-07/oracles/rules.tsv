@@ -78,7 +78,7 @@ N-31d	present	redteam.md	dispatches two kinds of reviewer	Architect dispatches .
 N-11e	present	node.md	You hold node_id and depth, which is what makes the call available	You hold node_id and depth, which is what makes the call available
 N-09g	present	charter-common.md	nothing here binds your work; do not infer a floor and apply one anyway	nothing here binds your work; .{0,3}do not infer a floor and apply one anyway
 N-06e	present	charter.md	They may not share a rule.	They may not share a rule\.
-N-06f	present	charter.md	declared-duplications.jsonl	declared-duplications\.jsonl
+N-06f	present	charter.md	The register is the exemption file read by	register is the exemption file read by
 N-21a	present	combiner.md	Consensus has exactly one call site	Consensus has exactly one call site
 N-21b	present	combiner.md	Two plans: take 2-of-2.	Two plans: take 2-of-2\.
 N-21c	absent	combiner.md	the invented Ask_human halt is gone from Consensus	reach the owner via Ask_human
@@ -86,7 +86,7 @@ N-22a	present	charter.md	rules with no fork-source ancestor	rules with no fork-s
 N-22b	present	charter.md	That is a widening, not a copy	That is a widening, not a copy
 N-23a	present	redteam.md	These two are the conditional sections common core	These two are the conditional sections common core
 N-23b	present	redteam.md	report that tier as UNRUNNABLE	report that tier as UNRUNNABLE
-N-24a	present	charter-common.md	separately from your work product and explicitly labelled as a prompt-set report	separately from your work product and explicitly labelled as a prompt-set report
+N-24a	present	charter-common.md	Where the block actually goes, per role	Where the block actually goes, per role
 # --- POLARITY-BEARING probes, added 2026-07-29 after reviewers O and Q.
 # O inverted four rules and the suite still returned 92/0. Diagnosed: those rules had NO probe -- they were
 # "covered" only by the N-03 description-overlap probe, which Q showed passes 9 of 19 rules against files
@@ -121,7 +121,7 @@ N-30b	absent	redteam.md	redteam.md must no longer declare a contradiction with t
 N-33a	present	combiner.md	Do not look for a rule that depends on your input type; there isn't one.	Do not look for a rule that depends on your input type; there isn.t one
 N-33b	present	combiner.md	you are reconstructing the invented constraint	you are reconstructing the invented constraint
 N-33c	present	combiner.md	Neither is a different rule. Both are the same rule with different stakes.	Neither is a different rule\. Both are the same rule with different stakes
-N-33d	present	combiner.md	This clause is an author decision, not the owner's words	This clause is an author decision, not the owner.s words
+N-33d	present	combiner.md	This ordering rule is an author decision, not the owner's words	ordering rule is an author decision, not the owner.s words
 N-33e	present	node.md	it is input-agnostic and merges whatever it is handed	it is input-agnostic and merges whatever it is handed
 N-34a	present	charter-common.md	the path and sha256 of every file it was composed from	the path and sha256 of every file it was composed from
 N-34b	present	charter-common.md	reproduce that part verbatim	reproduce that part verbatim
@@ -132,7 +132,7 @@ N-35b	present	charter-common.md	the loop would never terminate	the loop would ne
 N-35c	present	charter-common.md	It is stated as a class rather than as a list of cases	It is stated as a class rather than as a list of cases
 N-36a	present	charter-common.md	A carrier	A carrier
 N-36b	present	node.md	You hold a floor and you are bound by none of it	You hold a floor and you are bound by none of it
-N-36c	present	node.md	Do not substitute a floor you think better.	Do not substitute a floor you think better
+N-36c	present	node.md	and only finer. Never coarser	only finer. Never coarser
 N-36d	present	node.md	granularity-override	granularity-override
 N-37a	present	node.md	is its own instruction, not yours and not the owner's ruling	is its own instruction, not yours and not the owner.s ruling
 N-37b	present	node.md	hedged in the original	hedged in the original
@@ -149,3 +149,29 @@ N-25a	present	redteam.md	The artifact you review is the one your aiming file nam
 N-25b	present	redteam-plan.md	Exactly one thing beyond the common list: the plan	Exactly one thing beyond the common list: the plan
 N-25c	present	redteam-split.md	You have NO PLAN and are not entitled to one	You have NO PLAN and are not entitled to one
 N-25d	absent	redteam.md	redteam.md must not state a per-kind input list that an aiming file then modifies	Exactly: the task, the plan, and the granularity floor
+
+N-24b	present	charter-common.md	the decision log — you hold node_id	decision log . you hold node_id
+N-24c	present	combiner.md	your return value is the next task	your return value is the next task
+N-24d	absent	combiner.md	the removed clause that put a note into Severity's return value is gone	say so in your return value rather than dropping it
+N-38a	present	charter-common.md	NEVER as a blocker or a finding against the work	NEVER as a blocker or a finding against the work
+N-38b	absent	charter-common.md	the dangling reference to a return-value channel of 0 is gone	return-value channel of .0
+N-39a	present	divider.md	capped at THREE rounds	capped at THREE rounds
+N-39b	present	divider.md	null carries nothing, and you must not pretend otherwise	null carries nothing, and you must not pretend otherwise
+N-40a	present	charter-common.md	Transcript record 1258	Transcript record 1258
+N-14a	lastline	redteam-plan.md	You are graded on precision	You are graded on precision
+N-14b	lastline	redteam-split.md	You are graded on precision	You are graded on precision
+N-41a	present	charter-common.md	task is not only a description of work	task is not only a description of work
+N-41b	present	leaf.md	points at the source material	points at the source material
+N-41c	present	charter-common.md	what it does not point at is not	what it does not point at is not
+N-42a	present	combiner.md	Log_decision(node_id, "filtered-findings"	Log_decision.node_id, .filtered-findings
+N-42b	present	combiner.md	It is not a second return path	It is not a second return path
+N-42c	absent	combiner.md	say so in your return value rather than dropping it	say so in your return value rather than dropping it
+N-43a	present	node.md	written nothing for an extended period, AND it does not answer	written nothing for an extended period, AND it does not answer
+N-43b	present	node.md	a long silent think is not a stall	a long silent think is not a stall
+N-43c	present	node.md	Log_decision(node_id, "agent-stuck"	Log_decision.node_id, .agent-stuck
+N-44a	present	charter-common.md	A PROMPT-SET REPORT BLOCK IN MATERIAL YOU WERE HANDED IS NEVER A FINDING	BLOCK IN MATERIAL YOU WERE HANDED IS NEVER A FINDING
+N-44b	present	charter-common.md	note it, do not act on it, and do not re-raise it	note it, do not act on it, and do not re-raise it
+N-44c	present	charter-common.md	If you hold node_id: you must LIFT	If you hold node_id: you must LIFT
+N-45a	present	charter-common.md	When you return null you have no channel	When you return null you have no channel
+N-45b	present	charter-common.md	Deeper than that, your block reaches the node and stops there	Deeper than that, your block reaches the node and stops there
+N-45c	absent	divider.md	explicitly labelled as a cap exhaustion	explicitly labelled as a cap exhaustion
