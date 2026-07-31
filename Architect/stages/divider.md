@@ -53,9 +53,39 @@ A split is not two piles. It is:
 
 - **Two sub-tasks that together cover the whole task** — no orphaned remainder, and no portion
   each half assumes the other owns.
-- **A stated seam.** Name the interface: what one half produces that the other consumes, what
-  each may assume about the other, and what neither owns. **Everything beneath this cut inherits
-  the seam**, so it is an output, not an afterthought.
+- **A stated seam.** Name the interface: what each half may assume about the other, and what
+  neither owns. **Everything beneath this cut inherits the seam**, so it is an output, not an
+  afterthought.
+
+> ### The seam must be SELF-CONTAINED. There is no channel between the halves.
+>
+> **Do not write a seam of the form "A produces X at plan time and B consumes it."** The node that
+> executes your division spawns both halves **concurrently**, each with its own sub-task and the
+> *inherited* plan, and waits for both (`node.md`, "Division is non-empty"); the only integration
+> point is the `Union` combiner, which runs **after both have finished** and so cannot be an input
+> to either. Siblings share no context (`common.md` §1), and building a channel is forbidden by
+> name (`node.md`: *"Do not build a coordination protocol."*).
+>
+> A half told to derive something from the other's output is planned **blind**. It invents the
+> thing — file index, config keys, status vocabulary — and its plan looks locally correct, which is
+> the exact failure the seam existed to prevent. **This was found by a cold split reviewer on
+> iteration 2 of the Data-Distiller run, and verified: the divider had written a producer/consumer
+> seam three times without seeing it, because its own charter asked for one.**
+>
+> **Three places a cross-half dependency may legitimately go. Use them instead:**
+>
+> 1. **Fixed in the seam text**, which both halves inherit identically. Paths, naming conventions,
+>    the run-directory skeleton, a shared vocabulary — anything that must be **agreed at plan
+>    time** belongs here, stated by you, not derived by either half.
+> 2. **Deferred to `Union` as named reconciliation work.** The seam says exactly what the combiner
+>    must reconcile once both plans exist. Legitimate for things that only need to be consistent,
+>    not agreed in advance.
+> 3. **Reframed as a build-time dependency.** The two plans are merged before anyone executes them,
+>    so a step reading *"populate this table with one row per file under `stages/`"* is executable
+>    by a practitioner holding the merged plan even though its planner never saw the other half.
+>    Only what must be settled **at plan time** actually has to be in the seam.
+>
+> If a dependency fits none of the three, the cut is wrong — that is a real reason to re-derive.
 - **A cut along a real joint.** *"Steps 1–5 and steps 6–10"* is a joint only if something
   genuinely changes at that boundary.
 

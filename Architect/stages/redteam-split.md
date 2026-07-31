@@ -38,9 +38,19 @@ The six lenses all apply, aimed at the division. These are what they are aimed a
 
 1. **Coverage** — do the two halves cover the **whole task**, with no orphaned remainder and no
    portion both halves assume the other owns?
-2. **The seam** — is the interface **stated**, and is it **sound**? Who produces what, who may
-   assume what, what nobody owns. **An unstated seam is at least `major`** — everything below the
-   cut inherits it.
+2. **The seam** — is the interface **stated**, is it **sound**, and is it **self-contained**? What
+   each half may assume, what nobody owns. **An unstated seam is at least `major`** — everything
+   below the cut inherits it.
+
+   **Check self-containment explicitly, because it is the failure this question keeps missing.**
+   The two halves are planned **concurrently, blind to each other**, with no channel and no
+   ordering; they meet only at a `Union` that runs after both are done. So a seam saying *"A
+   produces X, B consumes it"* — a file index, a config key set, a status vocabulary, any artifact
+   one half is told to derive from the other's plan — **cannot be executed**, and B will invent it
+   and look locally correct. That is at least `major`, and `blocker` where the invented thing is
+   load-bearing. Six reviewers passed such a seam across two rounds before a seventh caught it.
+   Anything that must be agreed at plan time has to be **fixed in the seam text itself**, which
+   both halves inherit identically.
 3. **The floor** — would either half fall below it? That is a `blocker` against the division.
 4. **Real joint or arbitrary cut** — does something actually change at this boundary, or was the
    task bisected for symmetry? Name what differs on each side. If nothing does, the cut is

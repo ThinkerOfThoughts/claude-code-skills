@@ -18,9 +18,14 @@ children are `node_id + ".1"` and `node_id + ".2"`.
 `<run>/memo/<node_id>.json`, if it exists:
 
 - **`done: true`** → **return `plan` from the memo immediately.** Spawn nothing, read nothing.
-- **exists but not done** → you died mid-loop. Take `iter`, `task`, `plan`, `division` from it
-  and resume there. **Do not re-derive a division you already have.**
+- **exists but not done** → you died after `Divisible` returned. Take `iter`, `task`, `plan` and
+  `division` from it and resume at the top of the loop. **Do not re-derive a division you already
+  have** — do not call `Divisible` at all, whichever of the three answers the memo holds.
 - **absent** → you have never run. Call `Divisible(task, granularity)` (below).
+
+**`<run>` is the attempt directory, not the run-slug directory** — see `SKILL.md`'s Run section for
+the layout. Two attempts at the same task each get their own `memo/`, because `node_id` is `"0"` at
+the root of both and a memo addressed by `node_id` alone cannot tell them apart.
 
 You are the only writer of your memo and the only reader is a restart of you. Write it *after*
 the value exists, never before.
@@ -45,6 +50,28 @@ and an output path `<run>/<node_id>/divide-<iter>.md`. It returns **one of three
   caller if you have one, and hand up the divider's output file — it records every split tried and
   every finding standing. Log the escalation to `<run>/decisions.md`. **Do not spawn leaves on the
   undivided task**: that is exactly the failure this third answer exists to prevent.
+
+## Checkpoint 0 — the instant `Divisible` returns, before anything else
+
+Write the memo: `{done: false, iter: 0, task, plan, division}`, with `plan` exactly as your caller
+passed it, unchanged. **Before you gate, before you spawn anything.**
+
+`Divisible` is the most expensive call a node makes and, until this write lands, the only
+unprotected one: the first two iterations of the Data-Distiller run spent **83 minutes and 9 cold
+agents**, then **48 minutes and 9 cold agents**, inside it. Both died here, and because the first
+memo write used to be checkpoint 1 — after a plan had been merged — both recorded nothing and a
+restart re-derived all of it. The most expensive part of a node's life was the unmemoised part.
+
+Write `division` as one of the three answers and never as an empty field: the two sub-tasks with
+their seam, or `"null"`, or `"FAILED_TO_DIVIDE"`. A memo only ever exists *after* `Divisible` has
+returned, so "the field was never filled" and "the answer was `null`" cannot be confused — that
+confusion is what killed iteration 1.
+
+**Memoise `FAILED_TO_DIVIDE` too.** It is an escalation, not a failure to compute: a restart should
+re-present the owner's question, not spend another nine agents rediscovering it.
+
+`Divisible`'s **second** call site, at step 4 of the loop, needs nothing — checkpoint 2 already
+follows it immediately.
 
 ## The loop — repeat while `task` is non-empty
 

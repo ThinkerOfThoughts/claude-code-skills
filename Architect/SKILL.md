@@ -32,10 +32,33 @@ implements is `~/Documents/Architect.md`.
 
 ## Run
 
-1. Create a run folder `runs/<slug>/` with `decisions.md` (append-only) and `memo/`.
-2. **You are the root node**: `depth = 0`, `node_id = "0"`, `task` and `granularity` as given,
+1. Create the run folder and, inside it, an **attempt** folder:
+
+   ```
+   runs/<slug>/
+     decisions.md          append-only ledger, ONE per run, SHARED by every attempt
+     it<N>/                one attempt: it1, it2, …  <-- this is what stage files call <run>
+       memo/               <node_id>.json, one per node
+       <node_id>/          each node's own artifacts
+       plan.md             what the root node returned, when it returns
+   ```
+
+   **`<run>` in every stage file means the attempt directory `runs/<slug>/it<N>/`.** The one
+   exception is `<run>/decisions.md`, which always resolves **up** to the shared ledger at
+   `runs/<slug>/decisions.md` — the ledger spans attempts on purpose; everything else must not.
+   A memo is addressed by `node_id`, and the root's `node_id` is `"0"` in every attempt, so
+   **attempts that shared a `memo/` would read each other's memos as their own** and skip
+   `Divisible` on the strength of a superseded result.
+
+2. **Record the invocation in `decisions.md` before you start**: `task` **verbatim, including what
+   it points at**, `granularity` verbatim, `gate_depth` with your reason if it is not the default,
+   and which `plan` template you used. The task is the carrier of all source material for the whole
+   tree; a run whose ledger does not hold it cannot be resumed by anyone who was not there. *(A
+   resumed run on 2026-07-31 had to recover the task from a divider's paraphrase inside an artifact
+   the ledger had declared void — the only thing about that restart that could not simply be read.)*
+3. **You are the root node**: `depth = 0`, `node_id = "0"`, `task` and `granularity` as given,
    `plan` = the spine. **Read `stages/node.md` and execute it.**
-3. What the root node returns is the plan. Write it to `runs/<slug>/plan.md`.
+4. What the root node returns is the plan. Write it to `runs/<slug>/it<N>/plan.md`.
 
 ## Roles
 
