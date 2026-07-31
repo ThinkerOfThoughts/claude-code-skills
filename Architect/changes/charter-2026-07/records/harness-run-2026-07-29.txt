@@ -1,0 +1,101 @@
+## Run 2026-07-29, after the gate-7 repairs. Commands and output pasted verbatim.
+## Exit codes are captured from the SCRIPT, never through a pipe — a piped $? is the last
+## command's status, and this project has already once read a usage error as a pass.
+
+```
+$ cd Architect/changes/charter-2026-07
+
+$ ./oracles/ruleplace.sh ../../stages
+PASS  N-22a  present in charter.md
+PASS  N-22b  present in charter.md
+PASS  N-23a  present in redteam.md
+PASS  N-23b  present in redteam.md
+PASS  N-24a  present in charter-common.md
+--- N-03 fork-fidelity (probe set generated from charter.md's allocation table) ---
+PASS  N-03/B01  4/4 description terms present in charter-common.md
+PASS  N-03/B02  3/3 description terms present in redteam.md
+PASS  N-03/B03  2/2 description terms present in redteam.md
+PASS  N-03/B04  2/2 description terms present in redteam.md
+PASS  N-03/B05  3/3 description terms present in redteam.md
+PASS  N-03/B06  4/4 description terms present in redteam.md
+PASS  N-03/B07  2/2 description terms present in redteam.md
+PASS  N-03/B08  3/3 description terms present in charter-common.md
+PASS  N-03/B09  3/3 description terms present in charter-common.md
+PASS  N-03/B10  2/2 description terms present in charter-common.md
+PASS  N-03/B11  3/3 description terms present in redteam.md
+PASS  N-03/B12  3/3 description terms present in redteam.md
+PASS  N-03/B13  3/3 description terms present in redteam.md
+PASS  N-03/B14  3/3 description terms present in combiner.md
+PASS  N-03/B15  2/3 description terms present in charter-common.md
+PASS  N-03/B16  3/3 description terms present in redteam.md
+PASS  N-03/B17  2/2 description terms present in redteam.md
+PASS  N-03/B18  2/2 description terms present in redteam-plan.md
+PASS  N-03/B18  2/2 description terms present in redteam-split.md
+PASS  N-03/B19  2/2 description terms present in charter-common.md
+PASS  N-03  allocation table covers all 19 fork-source rules
+==== 92 passed, 0 failed ====
+exit=0
+
+$ ./oracles/shared_spans.py ../../stages 7 --exempt-file oracles/declared-duplications.jsonl
+EXEMPT  redteam-split.md   ~ node.md        11w  given to you verbatim above everything here is an addition to
+EXEMPT  divider.md         ~ combiner.md    25w  appended to charter common md which was given to you verbatim above everything here is an addition to it nothing here replaces it you are
+EXEMPT  divider.md         ~ combiner.md     9w  your inputs the closed set of 5 exactly the
+EXEMPT  divider.md         ~ combiner.md    12w  plus the review context paths named in the run s configuration you
+EXEMPT  divider.md         ~ leaf.md        25w  appended to charter common md which was given to you verbatim above everything here is an addition to it nothing here replaces it you are
+EXEMPT  divider.md         ~ leaf.md        10w  your inputs the closed set of 5 exactly the task
+EXEMPT  divider.md         ~ leaf.md        10w  what the floor means for you the floor bounds how
+EXEMPT  divider.md         ~ node.md        25w  appended to charter common md which was given to you verbatim above everything here is an addition to it nothing here replaces it you are
+EXEMPT  divider.md         ~ node.md        10w  your inputs the closed set of 5 exactly the task
+EXEMPT  combiner.md        ~ leaf.md        26w  appended to charter common md which was given to you verbatim above everything here is an addition to it nothing here replaces it you are a
+EXEMPT  combiner.md        ~ leaf.md         9w  your inputs the closed set of 5 exactly the
+EXEMPT  combiner.md        ~ leaf.md         7w  2 of 3 on numbered steps including
+EXEMPT  combiner.md        ~ node.md        26w  appended to charter common md which was given to you verbatim above everything here is an addition to it nothing here replaces it you are a
+EXEMPT  combiner.md        ~ node.md         9w  your inputs the closed set of 5 exactly the
+EXEMPT  leaf.md            ~ node.md        26w  appended to charter common md which was given to you verbatim above everything here is an addition to it nothing here replaces it you are a
+EXEMPT  leaf.md            ~ node.md        12w  your inputs the closed set of 5 exactly the task the plan
+EXEMPT  leaf.md            ~ node.md         8w  what you do not do you do not
+==== 0 undeclared shared spans of >= 7 words ====
+exit=0
+
+$ ./oracles/mutation-test.sh ../../stages
+  ok   RELOCATION(charter-common.md->leaf.md) N-13e: KILLED (expected KILLED)
+  ok   RELOCATION(charter-common.md->leaf.md) N-19a: KILLED (expected KILLED)
+=== INSERTION mutants (the correct mutant for an absence sweep) ===
+  ok   INSERTION N-02: KILLED (expected KILLED)
+  ok   INSERTION N-11d: KILLED (expected KILLED)
+  ok   INSERTION N-17: KILLED (expected KILLED)
+  ok   INSERTION N-18: KILLED (expected KILLED)
+  ok   INSERTION N-10e: KILLED (expected KILLED)
+=== CONTROL mutant (expected SURVIVED — proves the harness can print a non-kill) ===
+  ok   CONTROL: SURVIVED (expected SURVIVED) — an unasserted line was deleted and the suite still passed
+=== DUPLICATION mutants (shared_spans.py — the NEGATIVE assertion ruleplace.sh cannot express) ===
+  ok   DUP control: CLEAN on the unmutated set (expected CLEAN)
+  ok   DUP redteam.md: KILLED (expected KILLED)
+  ok   DUP redteam-plan.md: KILLED (expected KILLED)
+  ok   DUP redteam-split.md: KILLED (expected KILLED)
+  ok   DUP divider.md: KILLED (expected KILLED)
+  ok   DUP combiner.md: KILLED (expected KILLED)
+  ok   DUP leaf.md: KILLED (expected KILLED)
+  ok   DUP node.md: KILLED (expected KILLED)
+  ok   DUP role-to-role: KILLED (expected KILLED)
+  ok   DUP exemption: KILLED (expected KILLED)
+==== mutants behaving as expected: 87 ; unexpected: 0 ====
+exit=0
+
+# --- hygiene: a no-argument call must NOT be readable as a pass ---
+$ ./oracles/ruleplace.sh
+usage: ./oracles/ruleplace.sh <set-dir> [rules.tsv]
+  <set-dir> is the directory holding charter.md, charter-common.md, redteam.md, redteam-plan.md,
+  redteam-split.md, divider.md, combiner.md, leaf.md, node.md
+exit=2
+
+$ ./oracles/shared_spans.py
+shared_spans.py — the N-06 NEGATIVE assertion the rule table structurally could not express.
+
+  [...usage text...]
+exit=2
+
+$ ./oracles/mutation-test.sh
+usage: ./oracles/mutation-test.sh <set-dir>
+exit=2
+```

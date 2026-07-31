@@ -1,0 +1,172 @@
+# HARNESS RUN - 2026-07-30, after the pass-6 (reviewer Y) repairs
+#
+# FIVE oracles. Exit codes from subprocess.returncode on an ARGV LIST - no shell, no pipe.
+#
+# !! READ THE LAST SECTION BEFORE THE FIRST. Two live forgeries pass every oracle in this file.
+# !! A green run above does NOT mean the closed-set apparatus works; it means the apparatus does not
+# !! detect what it does not detect. Reviewer Y broke it for the third pass running, using reviewer X's
+# !! own exploit moved four lines, and the decision was taken NOT to patch it a fourth time.
+#
+$ ./oracles/ruleplace.sh ../../stages
+==== 156 passed, 0 failed ====
+==== plus 21 N-03 SMOKE passes and 0 SMOKE failures, NEITHER counted above (retired as the fidelity oracle: it does not gate in EITHER direction) ====
+exit=0
+
+$ ./oracles/sigmatch.py ../../stages
+==== sigmatch: 42 closed-set/signature assertions, 0 failed ====
+exit=0
+
+$ ./oracles/citecheck.py ../../stages
+==== citecheck: 19 cited records, 0 not citable ====
+exit=0
+
+$ ./oracles/shared_spans.py ../../stages 7 --exempt-file …
+==== 0 undeclared shared spans of >= 7 words ====
+exit=0
+
+$ ./oracles/mutation-test.sh ../../stages
+==== mutants behaving as expected: 164 ; unexpected: 0 ====
+exit=0
+
+--- no-argument guards: must be exit 2, never 0 ---
+$ ./oracles/ruleplace.sh  (no args)
+usage: oracles/ruleplace.sh <set-dir> [rules.tsv]
+  <set-dir> is the directory holding charter.md, charter-common.md, redteam.md, redteam-plan.md,
+  redteam-split.md, divider.md, combiner.md, leaf.md, node.md
+exit=2
+
+$ ./oracles/sigmatch.py  (no args)
+sigmatch.py — N-04's MISSING HALF: does each role file's closed set agree with its SIGNATURE?
+Why this exists. N-04 is gating and reads: "Each dispatched role file states its own exact input list, and
+each list matches its function's signature in ~/Documents/Architect.md." Its four probes were literal
+substring `present` checks, ALL FOUR against charter-common.md. Not one read a role file's list; not one
+read a signature. So the criterion's operative conjunct had no coverage at all.
+Reviewer U (pass 4) and reviewer X (pass 5) both walked through the hole. X's version, verbatim from its
+record: append to leaf.md's closed set
+    "... and the **granularity floor** - plus your **depth** and your **node_id**, which is what makes
+     `Ask_human` available to you."
+Spawn_leaf(string task, string plan, string granularity) has neither. And charter-common.md 6 makes the
+closed set THE GATE on reaching the owner: "only a role whose closed set (5) contains both may call it."
+So one appended clause forges a leaf that can escalate to the human. Both oracles passed it clean.
+shared_spans.py structurally CANNOT catch this: a single-file addition duplicates nothing, so there is no
+shared span to find. It needs a POSITIVE check against an external source, which is what this is. The
+source is the design spec, which the author of the role files does not control unilaterally -- that is the
+same "bounded from outside the author" argument the closed-set rule itself rests on.
+Usage: sigmatch.py <set-dir> [spec-path]
+Exit:  0 all role files agree with their signatures | 1 a disagreement | 2 usage
+exit=2
+
+$ ./oracles/citecheck.py  (no args)
+citecheck.py — N-13's MISSING ARM: is the owner quotation actually AT the record it cites?
+Why this exists, and why nothing else could do it. Every other oracle in this run is DOCS-ONLY: they read
+the nine files and compare them to each other or to the design spec. Not one can open the session
+transcript. So a claim of the form "the owner said X at record N" was structurally outside what any of them
+could evaluate -- they can confirm the sentence is PRESENT and CONSISTENT, never that the ADDRESS is right.
+The set's own charter names this failure: a docs-only reviewer "can only catch internal inconsistency,
+never a plan that is confidently wrong about the world it plans in."
+It is not a new criterion. `1.5-criteria-v2.md` N-13 is GATING and already requires RAT1's "owner's
+response verbatim with a durable source the author did not author" -- and the same file's coverage table
+records, in its own words: "N-13 RAT1/RAT2 | Text presence only | Never had an arm." This is that arm.
+MEASURED, not hypothetical. On 2026-07-30 the runner adjudicating pass 4 read the transcript into a
+0-indexed list and reported every locus one low, then wrote the discrepancy up as an off-by-one IN THE
+CORPUS. Five review rounds, four oracles and 157 mutants had nothing to say about it. The orchestrator
+caught it by opening two records by hand. This probe is that hand-check, made mechanical.
+⚠ WHAT THIS DOES NOT DO, stated here because this header previously said otherwise. It checks the ADDRESS,
+NEVER THE WORDS. Three designs tried to verify the quotation itself and all three failed as instruments on
+a clean artifact (6 false alarms, then 15, then one that reported "0 mis-cited" while passing vacuously --
+its regression test did not fire). Under the owner's three-iteration rule the quotation half was CUT. So:
+  * a FABRICATED quotation attributed to a REAL owner record passes this check, and reviewer Y
+    demonstrated exactly that in pass 6;
+  * this does NOT discharge criterion N-13, whose operative word is "verbatim". It is a FRACTION of
+    N-13's arm and the fraction excludes the operative word;
+  * records numbered under 100 are not matched (the pattern floor is three digits);
+  * it globs <set-dir>/*.md only -- it does NOT read ~/Documents/Architect.md, the run folder, or any
+    file outside the dispatched set, and unsourced owner authority has already been found in the spec.
+Until 2026-07-30 this header claimed exit 0 meant "every adjacent quotation is present in it". That was
+false of the shipped code, and the false contract had been copied into the harness record -- the file whose
+purpose is proving what the oracles do. Self-certification in the documentation of the instruments.
+Usage: citecheck.py <set-dir> [transcript.jsonl]
+Exit:  0 every cited record exists and is of a kind that carries authored text
+       1 a citation names a record that does not exist, or one carrying no authored text
+       2 usage error
+exit=2
+
+$ ./oracles/shared_spans.py  (no args)
+shared_spans.py — the N-06 NEGATIVE assertion the rule table structurally could not express.
+ruleplace.sh asserts, per file, that a rule IS stated where it must be. Every one of those probes is
+POSITIVE. The composition rule the whole split rests on is a NEGATIVE property — "a role file never
+restates a rule the common core states" — and no set of positive per-file assertions can see its
+violation. That is why ruleplace.sh passed 76/0 on a set carrying eight duplications.
+This computes the maximal shared normalized word-spans of length >= N between charter-common.md and each
+role file, and between role files. The declared B18 duplication is the one allowed pair and is passed in
+as an explicit exemption, so the exemption is visible rather than silent.
+Usage: shared_spans.py <set-dir> [min-words] [--exempt-file <path>]
+Exit:  0 = no undeclared shared span found
+       1 = at least one undeclared shared span found
+       2 = usage error   (deliberately distinct from 0)
+exit=2
+
+$ ./oracles/mutation-test.sh  (no args)
+usage: oracles/mutation-test.sh <set-dir>
+exit=2
+
+--- STANDING REGRESSION TESTS: exploits that ARE closed. All must exit 1. ---
+$ EXPLOIT A (X): forged closed set INSIDE the 'Exactly' sentence
+==== sigmatch: 42 closed-set/signature assertions, 3 failed ====
+exit=1
+
+$ EXPLOIT B (X): 36-word rule smuggled through a declared heading
+SHARED  leaf.md            ~ node.md        36w  what you do not do you do not accept a floor you were handed if a later clause supersedes it and a hard backstop cap of two iterations now applies to every loop in this system
+exit=1
+
+$ EXPLOIT U (pass 4): closed set widened via a global amnesty
+==== 3 undeclared shared spans of >= 7 words ====
+exit=1
+
+$ LOCUS ERROR (runner's own): 1258 -> 1257, a system record
+FAIL  N-13/charter-common.md:199  record 1257 is a system/None -- carries no authored text, never a legitimate citation target
+exit=1
+
+$ LOCUS ERROR: 1254 -> 1253 (pr-link), and a nonexistent record
+FAIL  N-13/charter.md:80  record 1253 is a pr-link/None -- carries no authored text, never a legitimate citation target
+FAIL  N-13/charter.md:88  record 99999 does not exist
+exit=1
+
+=================================================================================================
+ !!! KNOWN OPEN — NOT PASSES. THE APPARATUS DOES NOT CATCH THESE. !!!
+ Reviewer Y, pass 6. DELIBERATELY NOT PATCHED — see decisions.md ADJ-20.
+ Both mutants below are live forgeries built from the CURRENT, fully-repaired artifact.
+ exit=0 here is a FAILURE OF THE HARNESS, not health of the artifact.
+=================================================================================================
+$ Y F-1  forged leaf closed set granting Ask_human, ONE PARAGRAPH below the anchor  ->  ruleplace.sh
+==== plus 21 N-03 SMOKE passes and 0 SMOKE failures, NEITHER counted above (retired as the fidelity oracle: it does not gate in EITHER direction) ====
+exit=0
+
+$ Y F-1  forged leaf closed set granting Ask_human, ONE PARAGRAPH below the anchor  ->  sigmatch.py
+==== sigmatch: 42 closed-set/signature assertions, 0 failed ====
+exit=0
+
+$ Y F-1  forged leaf closed set granting Ask_human, ONE PARAGRAPH below the anchor  ->  citecheck.py
+==== citecheck: 19 cited records, 0 not citable ====
+exit=0
+
+$ Y F-1  forged leaf closed set granting Ask_human, ONE PARAGRAPH below the anchor  ->  shared_spans.py
+==== 0 undeclared shared spans of >= 7 words ====
+exit=0
+
+$ Y F-2  FABRICATED owner ruling attributed to a REAL record (2524)  ->  ruleplace.sh
+==== plus 21 N-03 SMOKE passes and 0 SMOKE failures, NEITHER counted above (retired as the fidelity oracle: it does not gate in EITHER direction) ====
+exit=0
+
+$ Y F-2  FABRICATED owner ruling attributed to a REAL record (2524)  ->  sigmatch.py
+==== sigmatch: 42 closed-set/signature assertions, 0 failed ====
+exit=0
+
+$ Y F-2  FABRICATED owner ruling attributed to a REAL record (2524)  ->  citecheck.py
+==== citecheck: 20 cited records, 0 not citable ====
+exit=0
+
+$ Y F-2  FABRICATED owner ruling attributed to a REAL record (2524)  ->  shared_spans.py
+==== 0 undeclared shared spans of >= 7 words ====
+exit=0
+

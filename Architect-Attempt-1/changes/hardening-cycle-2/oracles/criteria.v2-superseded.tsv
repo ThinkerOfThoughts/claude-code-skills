@@ -1,0 +1,51 @@
+#ID	KIND	SITE_PATTERN (ERE over the OLD text — MEASURES the site set; never typed)	PINNED (exact normalized substring)	ABSENT (|-separated; must appear nowhere in corpus)
+S-BIND	NEW	reported .{0,20}sha256|sha256 of each context file	a review record is current iff the plan_sha256 its dispatcher recorded equals sha256 of that node's plan.md computed now	
+S-BIND-DISP	NEW	reported .{0,20}sha256|sha256 of each context file	the plan_sha256 is recorded by the dispatcher at spawn, not self-reported by the reviewer	
+S-BIND-ONE	NEW	reported .{0,20}sha256|sha256 of each context file	BIND compares one operand only: this node's own plan.md, so there is no root special case and no subtree-wide invalidation	
+S-BIND-EXIT	NEW	clean-or-resolved	a stale record is un-run and the node is un-gated; the exit is to re-run that pass, whose fresh record overwrites the file	
+S-BIND-REBIND	NEW	clean-or-resolved	a rebind chain of any length is valid, and each rebind entry is itself dispatcher-recorded	at most 2 rebinds
+S-IDN	NEW	agent type . model|agent type \+ model	spawn_id is the identifier the dispatcher observed at spawn, never self-reported	
+S-IDN-ASYM	NEW	3 independent cold agents	three identical dispatcher-recorded ids mean one agent asked three times, so the pass is un-run; three identical self-reports, including three unavailable, never make a pass un-run	three identical spawn_id values means the pass is un-run
+S-IDN-DEGR	NEW	agent type . model|agent type \+ model	if the harness exposes no dispatcher-observable id the record carries spawn_id: unavailable-by-harness and the pass is declared degraded, never un-run	
+S-RES	NEW	clean-or-resolved	resolved means exactly one of three things: a minor or nitpick fixed in place and rebound; a blocker or major routed to stage 2 and never fixed in place; an author edit no reviewer asked for, which is a re-draft	
+S-RES-STATES	NEW	clean-or-resolved	gate state is one of clean, clean-fixed-in-place, clean-demoted, blocked or un-gated, and all three clean states assemble	
+S-CTX	NEW	redteam_context	redteam_context is a first-class config key, priority-ordered, listing paths every cold agent must read	
+S-CTX-DECONF	NEW	off_limits_paths	redteam_context is citable source every cold agent must read; off_limits_paths is a fence the run must never write into; a path may be both	
+S-CTX-VAC	NEW	redteam_context	an absent or empty redteam_context is a config error that stops the run, because path-validation over an absent key checks zero paths and passes trivially	
+S-OFL	NEW	off_limits_paths	off_limits_paths is a prompt-level convention, not an enforced fence: nothing here intercepts a write, and nothing catches a stray write to a path the config never declared	Naming is the fence
+S-PRV	NEW	PROVEN|proven, not asserted|completeness is proven|proving that completeness|completeness proven|is proven in three tiers|reaches .presentable	the gate raises the cost of shipping a hole. It does not certify its absence	PROVEN|proven, not asserted
+S-PRV-LIMIT	NEW	PROVEN|proven, not asserted|completeness is proven|proving that completeness|completeness proven|is proven in three tiers|reaches .presentable	what the gate establishes is attested by the reviewers themselves and sampled, not independently proven; tier iii asks for a negative no finite review can prove; and N same-model instances are not N independent minds	
+S-SPV	NEW	Spot-verify|spot-verify	spot-verifying the citations is stage 5's duty: sample at least one citation per record and two per pass, record the sample and the result, and treat a fabricated citation as making that record un-run	whoever consumes the review checks
+S-CNC-DECL	NEW	no single global cursor	parallel: sibling sub-orchestrators, and the three cold agents within one pass. serial: a node's own stages, and the two passes relative to each other	no single global cursor to stale-edit
+S-CNC-INDEX	NEW	index\.md	index.md is derived and never authoritative: the top orchestrator regenerates it by walking the tree	
+S-CNC-TMPL	NEW	template: <name>|record the template used	the template used is recorded in that node's own plan.md header by stage 1, the only writer of that file	
+S-CNC-LOCK	NEW	git commit|catalog commit|committed to the user-space	the catalog lock is an atomic symlink whose target is the holder's pid, created beside the catalog and never inside it, so the lock and its owner appear in one indivisible step	
+S-CNC-LOCK-REL	NEW	git commit|catalog commit|committed to the user-space	the step that acquires the lock releases it on the success path, on every failure path and before any HALT; and because a killed holder cannot run its own release, a lock whose target pid is not alive is stale by definition and any run may remove it	
+S-CNC-READ	NEW	git commit|catalog commit|committed to the user-space	every reader of the catalog takes the same lock or reads a git commit rather than the working tree	
+S-DEP	NEW	Seam / interface|seams between them	each decomposing node declares a dependency edge for every child pair that has one, and a cycle among a node's children is a blocker at that node's gate	
+S-DEC	NEW	0\.8|estimated leaf	elc is the node's own self-declared estimated leaf count, not a computed or measured value	a child . 0.8. the parent trips the guard
+S-DEC-DEGEN	NEW	0\.8|estimated leaf	at depth 1 there is no grandparent, so DEC cannot trip	
+S-IGM	NEW	mode:|ingest	mode is fresh or ingest-and-complete, default fresh, with ingest_source	
+S-IGM-CLOSED	NEW	closed input set|closed set	plan.md.ingested is a deterministic filename and, in ingest mode only, a member of the closed input set; in fresh mode it does not exist and its absence is not a missing input	
+S-CLOSED-DEGEN	NEW	closed input set|closed set	an operand of the closed input set that cannot exist for this node is not a missing input: the root has no parent plan, a leaf has no child seams, and a node's first pass has no carried-forward findings	
+S-TPL3	NEW	git commit|catalog commit|committed to the user-space	back-propagation stages a proposal and never commits mid-run; the commit happens only at run end, only by the top orchestrator, only under the lock and only after a cold review of the proposed diff	
+S-RST	NEW	tree/	the root plan node lives at tree/root/ and is a node like any other	
+S-SPN	NEW	Outputs & artifacts|Outputs & their locations	Outputs & artifacts (with their locations)	Outputs & artifacts WITH their locations|Outputs & their locations
+S-SLOT	NEW	required_sections	## Layer-2 required sections (from the config's required_sections)	
+S-HG2	NEW	top.level ONLY|top level ONLY|human gate ONLY|Top-level only|top-level-only	a human reads the presentable plan and approves or bounces it before the run is done; under RAT3 this halts the runner and relays verbatim	
+S-HG2-DEGEN	NEW	assembled-plan\.md	HG2 applies to whichever artifact is presentable: assembled-plan.md for a decomposed run, or tree/root/plan.md for a single-leaf run, so a leaf-only run reaches the gate and can pass it	
+S-HG2-MARKER	NEW	assembled-plan\.md	the run-complete marker is the recorded assembly approval, never the existence of assembled-plan.md, so a restart with the artifact present and the approval absent re-asks the human	its existence is the .run complete. marker
+S-HG2-LIMIT	NEW	top.level ONLY|top level ONLY|human gate ONLY|Top-level only|top-level-only|assembled-plan\.md	honest limitation: the approval record is written by an agent, so never self-approved is a duty this loop states and not a property its mechanism enforces	
+S-HG2-ONLY	NEW	top.level ONLY|top level ONLY|human gate ONLY|Top-level only|top-level-only	the decomposition human gate fires at the top level only and never at deeper splits; HG2 is a separate later gate on the finished artifact	
+S-XPM	NEW	finalized / presented|not presentable, finalizable|presentable artifact|finalizes / presents|cannot finalize until|reaches .presentable	presenting or exiting plan mode is blocked by both gates: the structural GBP precondition and the HG2 human approval	
+S-COV-PROD	NEW	Total coverage|total coverage	every node gated clean is decided from each node's own recorded gate state, which stage 5 writes before stage 7 reads it	
+S-IDGREP	NEW	grep -r	grep -rnow -- <ID> SKILL.md METHODOLOGY.md README.md stages/ templates/ examples/	grep -rln -- <ID> SKILL.md METHODOLOGY.md stages/
+S-IDGREP-CAV	NEW	grep -r	word boundaries remove HARDSTOP but not the ordinary phrase ON TOP OF, so hits are hand-triaged and every exclusion is reported	
+P-GBP	PRESERVE	clean-or-resolved	clean-or-resolved	
+P-COV	PRESERVE	every node and every altitude	every node and every altitude	
+P-CMP2	PRESERVE	generative	generative	
+P-RST-HARDSTOP	PRESERVE	HARDSTOP	HARDSTOP	
+P-TOP-DEEPER	PRESERVE	deeper.{0,40}(splits|recursive)	deeper	
+P-SPN-SEVEN	PRESERVE	7-section universal spine	7-section universal spine	
+P-ECON	PRESERVE	context economy|Context economy	context economy	
+P-RAT3	PRESERVE	halts the (subagent|runner)	halts the	
