@@ -37,6 +37,10 @@ If the floor is wrong for your task, say that in your output. Do not quietly wor
 
 ## 4. Severity
 
+**This section binds the roles that produce or handle findings — the plan reviewer, the combiner
+and the node.** If your role file asks you for a different kind of output — a plan, or a verdict
+on a proposed division — it says so, and nothing here applies to you.
+
 Every finding carries one, because the loop filters on it:
 
 | Severity | Meaning |

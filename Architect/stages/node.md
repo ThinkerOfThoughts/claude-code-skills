@@ -21,6 +21,10 @@ children are `node_id + ".1"` and `node_id + ".2"`.
 - **exists but not done** → you died after `Divisible` returned. Take `iter`, `task`, `plan` and
   `division` from it and resume at the top of the loop. **Do not re-derive a division you already
   have** — do not call `Divisible` at all, whichever of the three answers the memo holds.
+  **One exception: if the memo's `division` is `FAILED_TO_DIVIDE`, do not enter the loop.** That
+  is an escalation, not a division: re-present the owner's question and stop, exactly as you would
+  have the first time. Entering the loop would take the division branch and spawn children on a
+  `division.first` that does not exist.
 - **absent** → you have never run. Call `Divisible(task, granularity)` (below).
 
 **`<run>` is the attempt directory, not the run-slug directory** — see `SKILL.md`'s Run section for
@@ -44,7 +48,7 @@ and an output path `<run>/<node_id>/divide-<iter>.md`. It returns **one of three
 - **two sub-tasks with a stated seam** → divide.
 - **`null`** — *this task is at the floor*. A real answer; it is how the tree stops growing. Spawn
   leaves.
-- **`FAILED_TO_DIVIDE`** — three rounds ran and no split reached 2-of-3 agreement. **This is not
+- **`FAILED_TO_DIVIDE`** — four rounds ran and no split reached 2-of-3 agreement. **This is not
   `null` and you must not treat it as atomic.** You hold a task that is still divisible as far as
   anyone knows and no acceptable split for it. **Stop and escalate to the owner**, through your
   caller if you have one, and hand up the divider's output file — it records every split tried and

@@ -66,7 +66,7 @@ implements is `~/Documents/Architect.md`.
 |---|---|---|
 | node | `stages/node.md` | the root invocation, or a parent node |
 | divider (`Divisible`) | `stages/divider.md` | a node, once per iteration |
-| split reviewer | `stages/redteam.md` + `stages/redteam-split.md` | the divider, 3 of them |
+| split reviewer | `stages/redteam-split.md` | the divider, 3 of them, concurrently |
 | leaf (`Spawn_leaf`) | `stages/leaf.md` | a node, 3 of them, when the task is at the floor |
 | plan reviewer (`Spawn_redteam`) | `stages/redteam.md` + `stages/redteam-plan.md` | a node, 3 of them |
 | combiner (`Consensus`, `Union`, `Severity`) | `stages/combiner.md` | a node, or the divider |
@@ -85,12 +85,15 @@ Your arguments:
   granularity: <the floor, verbatim>
   <role-specific arguments — see the role file>
 
-Write your output to <ABS>/runs/<slug>/<node_id>/<name>.md and return that path plus a
+Write your output to <ABS>/runs/<slug>/it<N>/<node_id>/<name>.md and return that path plus a
 three-line summary. Nothing else you say is read.
 ```
 
-**Use absolute paths.** Dispatch serially unless you have reason to think parallel is safe —
-three agents launched at once is the common cause of a rate-limited run.
+**Use absolute paths.** **Dispatch a set of siblings concurrently** — three split reviewers, three
+leaves, three plan reviewers. They are independent by construction and serialising them multiplies
+the round's wall clock by three for nothing: on the Data-Distiller run it cost ~50 of one
+division's 107 minutes. If the API starts returning rate-limit errors, back off and retry; that is
+a response to an observed error, not a default.
 
 ## Stop-for-human
 

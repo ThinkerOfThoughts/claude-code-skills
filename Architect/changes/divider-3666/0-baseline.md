@@ -74,9 +74,16 @@ regression; a DROP must be declared here or in `2-plan.md`.
 ## Declared DROPs
 
 From `redteam-split.md`: the six lenses, the four-tier severity vocabulary, the earned-clean
-clauses, the provenance record, the closed-set input enumeration, the "last reader" exhortation,
-the **coverage** question, the **"an unstated seam is at least `major`"** rule, and the
-self-containment sub-check with its three-destination taxonomy.
+clauses, the "last reader" exhortation, the **"an unstated seam is at least `major`"** rule, and
+the self-containment sub-check with its three-destination taxonomy.
+
+**CORRECTED at gate 7.** An earlier version of this list declared **coverage** a DROP while the
+built file retained it — both stage-6 reviewers caught the mismatch, from opposite directions.
+**Coverage is a CARRY**, folded into question 1, and the reason is definitional rather than a
+lens: two halves that leave a remainder are not a split *of that task*, so "is this split at a
+natural seam" is unanswerable without it. Also struck from the DROP list: the "provenance record"
+and "closed-set input enumeration", which reviewer A showed appear nowhere in Architect and were
+therefore decorative entries describing nothing.
 From `divider.md`: the three-destinations apparatus, the re-derive-on-standing-major rule, and
 the agreement/severity exegesis.
 From `redteam.md`, lost by no longer reading it: **"graded on precision, not volume"** (retained

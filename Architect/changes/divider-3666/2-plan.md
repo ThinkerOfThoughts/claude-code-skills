@@ -1,104 +1,88 @@
 # Stage 2 — Plan
 
-## Shape of the change
+**REVISED 2026-07-31** after stage-3 review: control commit `cf16967`; the divider-memo mechanism
+withdrawn; `common.md` added; the CARRY restatements made explicit.
 
-Two files are rewritten from scratch rather than edited. Both are short after the change, and an
-edit-in-place would leave the surviving apparatus load-bearing by inertia — the thing this run is
-removing. `SKILL.md` and `node.md` take one-line dispatch corrections.
+## The edits
 
-### `Architect/stages/divider.md` — target ~35 lines
+### `Architect/stages/divider.md` — rewritten, 118 → ~40 lines
 
-Sections, in order (order matters; this is a prompt):
+Order matters; this is a prompt.
 
-1. **The job**, record 3666 verbatim as the operative instruction: find a natural seam in the
-   given task and split it into two pieces at that seam.
-2. **Inputs**: `task` (carrying its source material) and `granularity`. **No plan** (C8, C10).
-3. **The floor, one direction only**: neither half may fall below it. If every available split
-   puts a half at the floor, the task is not divisible → `null` (C6).
-4. **What you return** — the two sub-tasks and where the seam is; each sub-task carries the
-   source material (C10). One sentence: the halves are planned concurrently and blind, so the
-   seam says where the joint is, not what one half hands the other (C11).
-5. **The review**: dispatch three cold agents on `common.md` + `redteam-split.md` (C5). All
-   three approve → return. Any rejection → cut again at a different seam, using the reason.
-   **Not** "while any major stands" — that rule is deleted; it is what produced four
-   re-derivations of a cut every reviewer approved.
-6. **The cap and the three answers** (C6, C7): four rounds; after four, the split with the most
+1. **The job** — record 3666 as the operative instruction: find a natural seam in the given task
+   and split it into two pieces at that seam.
+2. **Inputs** — `task` (carrying its source material) and `granularity`. **No plan** (C9).
+3. **The floor, one direction only** — neither half may fall below it; if every available split
+   puts a half at the floor the task is not divisible → `null` (C7).
+4. **What you return** — the two sub-tasks and where the seam is; each sub-task carries the source
+   material (C13). One sentence: the halves are planned concurrently and blind, so the seam says
+   where the joint is, not what one half hands the other (C14).
+5. **The review** — dispatch three cold agents on `common.md` + `redteam-split.md` (C5).
+   **Concurrently.** Three approvals → return. Any rejection → cut again at a different seam,
+   using the reason. **The "while any `major` stands, re-derive" rule is deleted** — it is what
+   produced four re-derivations of a cut every reviewer approved.
+6. **The cap and the three answers** (C7, C8) — four rounds; after four, the split with the most
    approvals if it reached 2-of-3; otherwise `FAILED_TO_DIVIDE`, which is **not** `null`.
-7. **Your output file, written as you go** (C17) — see below.
+7. **Your output file.**
 
-### `Architect/stages/redteam-split.md` — target ~30 lines, standalone
+### `Architect/stages/redteam-split.md` — rewritten, 62 → ~35 lines, standalone
 
-1. **What you are reviewing**: a proposed division — two sub-tasks and a seam. No plan (C8).
-2. **The two questions**, record 3666 verbatim (C1).
-3. **The verdict**: both hold → approve; otherwise reject **with an explanation of which
-   question failed and why** (C1).
-4. **A one-line approval is a correct output** (C2), with the reason from the owner's worked
-   example: a finding the node's next `while` pass handles anyway costs the run and buys nothing.
-5. **The floor bound** (C9): do not reject for a lack of detail — a sub-task is not required to
-   be detailed, only to be a coherent whole task above the floor. This is the sentence that
-   replaces the guard `redteam.md` used to supply.
-6. One sentence on the seam not being a handoff (C11).
+1. **What you hold** (C10) — the `task`, the `granularity` floor, and the proposed division: two
+   sub-tasks and a seam. **No plan** (C9). This is the declaration that used to come from
+   `redteam.md:11`; without it a reviewer can approve without knowing what it is judging.
+2. **The two questions**, record 3666 (C1).
+3. **The verdict** — both hold → approve; otherwise reject, naming which question failed and why
+   (C1).
+4. **A one-line approval is a correct output** (C2), with the owner's reason: a finding the node's
+   next `while` pass handles anyway costs the run and buys nothing.
+5. **The floor bound** (C11) — do not reject for missing detail; a sub-task need not be detailed,
+   only a coherent whole task above the floor. Replaces `redteam.md:13-18`.
+6. **Judged on whether your findings are real, not how many you raise** (C12). Replaces
+   `redteam.md:54`.
+7. One sentence on the seam not being a handoff (C14).
 
-No lenses, no severities, no earned-clean clauses, no provenance record, no closed-set
-enumeration (C4).
+No lenses, no severities, no earned-clean clauses (C4).
 
-### `Architect/SKILL.md` and `Architect/stages/node.md`
+### `Architect/stages/common.md` — one sentence in §4
 
-Roles table row: split reviewer → `stages/redteam-split.md`, spawned by the divider, 3 of them.
-`node.md`'s divider dispatch line is checked and corrected if it names reviewer files.
+§4 gains a scoping line naming the roles that produce severities (plan reviewer, combiner, node),
+so the split reviewer's approve/reject verdict is not in contradiction with its own common file
+(C6). No duplication into role files: `leaf.md:47` already states its own position, and the roles
+that act on §4 keep reading it unchanged.
 
-### The divider memo (item 2, C17)
+### `Architect/SKILL.md` — Roles table
 
-`divider.md` §7 instructs: **open `<run>/<node_id>/divide-<iter>.md` before round 1.**
-
-- If it exists, read it. It holds one `## Round N` section per completed round. Resume at the
-  first round not present. Do not re-run a round already recorded.
-- After **each** round completes — the split proposed and the three verdicts — **append** its
-  `## Round N` section. Do not hold the record until the end.
-- When the answer is decided, append the answer section.
-
-Single writer (this call), written after the value exists, read only by a restart of this call.
-Same discipline as the node memo, one level down. **No new shared state and no coordination
-protocol**: the file already existed; it is now written earlier and read at start.
+Split reviewer row → `stages/redteam-split.md`, spawned by the divider, 3 of them, reading
+`common.md` + that file. `redteam.md` removed from the row (C5).
 
 ## Measurement
 
-**Textual (C1–C12): `oracles/check.sh`.** One positive per-site assertion per criterion, plus
-paired absence sweeps on normalised text (strip `**`/`` ` ``/`_`, flatten line wraps) — never an
-absence sweep alone.
+**Textual (C1–C15): `oracles/check.sh`, self-tested by `oracles/selftest.sh`.**
+One positive per-site assertion per criterion. Absence sweeps (C4 only) are **paired** with the
+positive assertions and run on normalised text (strip `**`, backticks, `_`; flatten wraps).
+Control = `git show cf16967:<path>`. CHANGE assertions must fail there; CARRY assertions must pass
+on both and are self-tested by line deletion on a scratch copy. Any assertion that cannot be made
+to fail is reported and its criterion is `verified = no`.
 
-**Oracle self-test: `oracles/selftest.sh`.** Runs the same checker against the frozen pre-change
-files from `git show d81bc0a:<path>`. Every C1–C5 and C11 assertion **must fail** there and pass
-on the new files; C6–C10 and C12 are CARRY assertions and must pass on **both** — for those the
-self-test instead deletes the asserted line from a scratch copy and confirms the assertion fires.
-Any assertion that cannot be made to fail is reported and its criterion is `verified = no`.
+**Behavioural (C16–C24): iteration 4 of the real run.** Not a fixture. Dispatch mode is pinned
+concurrent in advance so the attributing metrics — rounds, agents, prose lines — are not confounded
+by it. Cost is read from `it4/0/` file sizes, file counts and the divider's own record.
 
-**Behavioural (C13–C17): iteration 4 of the real run.** Not a fixture. The task, granularity and
-`gate_depth` are taken verbatim from `runs/data-distiller/decisions.md`; `it4/` is a fresh attempt
-directory with its own `memo/`. Cost is read from file mtimes and the count of dispatched agents,
-against `0-baseline.md`'s 15 agents / 90 minutes.
+C20 and C21 are read off the run's review artefacts — their verdict text — not off the prompt text.
+C23 is read off `it4/memo/0.json` and mtime ordering.
 
-C17 is checked by **injecting the restart**: once `divide-0.md` holds a completed `## Round 1`,
-a second, fresh divider agent is dispatched on the same output path with the same arguments, and
-its output is read for which round it began at. A live crash is not waited for.
-
-C14 and C15 are read off the run's own artefacts — verdict text and file size — not off the
-prompt text.
-
-## Risks and how each is handled
+## Risks
 
 | Risk | Handling |
 |---|---|
-| **The floor guard is lost with `redteam.md`.** Position-lens: nothing moved, but the reviewer's *context* lost the paragraph that bounds vagueness. | C9 asserts it is restated; C14 verifies by execution that no reviewer rejects for sub-floor detail. |
-| **3666 read as repealing the round machinery**, collapsing `Divisible` to one round and losing `FAILED_TO_DIVIDE`. | C6/C7 assert both survive. 3666 speaks to *instructions*; 3402/3438 settled *rounds*. Reviewer disagreement here is a declared stop-for-human. |
-| **Cheaper reviews are worse reviews** — the real defects the it3 reviews found (seam gaps, a termination hole) go unraised. | Accepted **on the owner's instruction**, record 3666 and its worked example: those findings are handled by the node's next `while` pass. The loop, not the split review, is the mechanism. Recorded as an accepted consequence, not an oversight. |
-| **The rewrite drops a rule nobody noticed was load-bearing.** | `0-baseline.md`'s CARRY list is enumerated and each item has a criterion (C6–C12). A DROP not on the declared list is a regression. |
-| **The divider memo makes the divider's output file two things** — a record for the owner and a resume point. | Same file, one writer; the resume reader is a restart of the same call. Nothing else reads it. If a reviewer finds a second reader, the design is wrong. |
+| **The floor guard is lost with `redteam.md`** (position lens: nothing moved, the context shrank). | C11 asserts restatement; **C21 verifies by execution** that no reviewer rejects for sub-floor detail. |
+| **A vacuous one-line approval scores as success** on every cost metric. | C20 requires every approval to name what it judged and answer both questions; C10 restates the reviewer's inputs, which is the underlying cause. |
+| **`null` or `FAILED_TO_DIVIDE` passes as "the run got further."** | C22 excludes both explicitly and makes them a stop-for-human. |
+| **Cheaper reviews are worse reviews** — the real seam findings the it3 reviews raised go unraised. | Accepted **on the owner's instruction**, record 3666 and his worked example: those findings re-enter through the node's next `while` pass. Recorded as an accepted consequence with its owner locus, not as an oversight. **Reviewer B contests the reach of this acceptance** — `it3/0/divide-0.md` §5 G4/G5 report that nothing carries the seam down and a planner has no upward channel to object to it, so some seam defects may not re-enter. **That is a real gap and it is NOT fixed here**: it is a defect in `node.md`'s seam transport, not in the split review, and fixing it inside this change would be the apparatus growth this run exists to reverse. **Logged to `decisions.md` as an open finding against `node.md` for the next iteration.** |
+| **The rewrite drops a rule nobody noticed was load-bearing.** | `0-baseline.md` enumerates the CARRY list; C7–C15 assert each. A DROP not on the declared list is a regression. |
 
-## What is deliberately not done
+## Deliberately not done (record 3497)
 
-No guard is added for anything that has not happened (record 3497). Specifically not added: a cap
-on divider output size, a schema for `divide-<iter>.md`, a checksum on the resume file, any
-handling for two dividers racing on one path (the node dispatches one divider per call), and any
-change to `common.md`, `redteam.md` or `redteam-plan.md` — the plan reviewer keeps its apparatus,
-because 3666 is about the *split* review.
+No divider-level memo (withdrawn — see `1-spec.md`); no cap on divider output size; no schema for
+`divide-<iter>.md`; no handling for two dividers racing on one path; no change to `redteam.md`,
+`redteam-plan.md`, `leaf.md`, `combiner.md` or `node.md`; no fix to the seam-transport gap above.
