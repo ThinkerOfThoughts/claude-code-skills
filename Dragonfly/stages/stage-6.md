@@ -34,9 +34,11 @@ distinct from this stage's `N`-cycle convergence cap.
 hypothesis may only be used once the producing artifact's **triage is recorded passed** in
 `decisions.md` (see stage 5 for the full rule); a reading is never consumed ahead of its cold review.
 
-**Untrusted results do not count as eliminations (B-REP-4 / B-REG-1 / B-GT-1).** A cycle that produced
-an **untrusted-negative** (B-REP-4), a result whose registered-design deviation is unresolved (B-REG-1),
-**or a result resting on a proxy quantity not yet re-derived from the ground-truth records (B-GT-1)**
-has **not eliminated a hypothesis** — it still counts as a *cycle* (it ran and was recorded, A-6-4),
-but it may **not be recorded as an elimination or as narrowing** (A-6-1). Otherwise a non-representative,
-off-design, or proxy-derived run manufactures false convergence.
+**Untrusted results do not count as eliminations (B-REP-4 / B-REG-1 / B-GT-1 / B-LOUD-1).** A cycle
+that produced an **untrusted-negative** (B-REP-4), a result whose registered-design deviation is
+unresolved (B-REG-1), **or a result resting on a proxy quantity not yet re-derived from the
+ground-truth records (B-GT-1)**, **or a symptom attribution resting on the loudest log signal with no
+critical-path check or toggle (B-LOUD-1)**, has **not eliminated a hypothesis** — it still counts as a
+*cycle* (it ran and was recorded, A-6-4), but it may **not be recorded as an elimination or as
+narrowing** (A-6-1). Otherwise a non-representative, off-design, proxy-derived, **or loud-but-uncausal**
+run manufactures false convergence.

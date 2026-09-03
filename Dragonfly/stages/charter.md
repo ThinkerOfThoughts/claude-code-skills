@@ -81,6 +81,20 @@ The cold pass is aimed at the failure modes a hunt produces:
 - **Is every derived quantity computed from real records, or from a proxy model of the data?** (the
   ground-truth-derivation challenge — re-derive it from the raw source, don't just re-check the
   arithmetic; B-GT-1)
+- **Does the claimed root — or the recommended fix — conform to the component's stated design intent,
+  or merely silence a symptom? (the design-conformance challenge — B-DES-1)** Especially for an
+  **empty/absent-input** failure: is the content actually missing, or **present-but-mis-routed** (the
+  design says it should be there, and a sibling input carries it non-empty)? A root that only makes
+  the empty case stop firing, against a design that says the slot should be filled, is a **relay**; a
+  fix that stops the symptom but contradicts the module's documented purpose is a wrong root, not a
+  fix. (Author-side halves: stage 3 / stage 7 for the root, stage 8 for the fix.)
+- **Is the attributed cause on the critical path, or merely the loudest log signal? (the loud≠causal
+  / critical-path challenge — B-LOUD-1)** The most-repeated line in a log is a **correlation, not a
+  cause**; for a **performance** symptom especially, challenge whether the critical-path breakdown was
+  measured (or the component toggled) before the attribution was made. This binds a fast
+  **side-diagnosis** (one made in passing, off the frozen `S#` target) exactly as it binds a
+  frozen-`S#` hypothesis. (Author-side halves: stage 2 observation + stage 3 presentation; the
+  convergence-gate backstop is stage 6.)
 
 ## Provenance (part of the review record — unconditional)
 

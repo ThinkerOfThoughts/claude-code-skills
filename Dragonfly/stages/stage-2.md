@@ -53,6 +53,25 @@ time**, not a stochastic cause. (Motivating case: a self_model note-null root ca
 <145s idle before every failing tick, a 300s min-idle gate, not the 4000s-idle timeout the proxy
 implied.)
 
+**Loud is not causal — the loudest log line is a correlation, verified on the critical path before it
+is attributed (B-LOUD-1).** The most-frequent or most-alarming line in a log is a **correlation with**
+the symptom, not evidence it **causes** it. Before an observation attributes a symptom — **especially
+a performance symptom** — to the component the log is shouting about, VERIFY that component is on the
+**critical path**: measure the critical-path breakdown, or **toggle** it (disable and re-measure) as a
+*discriminating test before concluding*, not as a fix after. A loud-log attribution recorded without
+that check is ungated and may **not be recorded as narrowing or elimination** (the toggle is what
+proves causation, B-CAUS-1; presenting it before the toggle is a gate-before-present slip, B-GBP).
+**The discipline binds a side-diagnosis too** — a diagnosis made in passing, off the frozen `S#`
+target (e.g. a fast "why is it slow?") — since that is exactly where the gate gets skipped. This is
+**distinct from a parked *incidental finding*** (above): an incidental finding is an unrelated bug you
+log and do **not** chase, whereas B-LOUD-1 governs a diagnosis you **actually make and might present**
+— if you make one off the frozen `S#` target, it still gets the gate (stage 3 restates the
+presentation half; stage 6 keeps it from counting as convergence). (Motivating case: a ~2-min/turn
+bait run whose log spammed an "attunement detector … timed out" line every turn was attributed to
+that detector and the detector disabled — before any measurement; per-turn generation was 40–117s and
+UNCHANGED after disabling, because the detector was an async background pass, never on the reply's
+critical path.)
+
 **Every step attributes a share to a named frozen-target node — or it is drift (B-TARGET-1).** Before
 any investigative step, name which frozen-target node it attributes a share to — a specific `S#` or a
 live hypothesis (`hypotheses.md`) — **re-reading the frozen symptom + hypothesis ledgers to do it, not

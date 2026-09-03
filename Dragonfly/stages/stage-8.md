@@ -23,6 +23,20 @@ finds the bug; it does **not** author the fix.
   today's symptom but revives the bug the code was patching is a regression, not a fix — surface it as
   such rather than recommending it. (Applies equally to a **mitigation direction** riding a
   "characterized, not found" handoff.)
+- **The recommended fix must conform to the touched module's stated design intent (B-DES-1,
+  fix-direction half).** Before the recommended fix enters `diagnosis.md`, check it against the
+  **documented purpose** of the code it would touch (docstring / the plan or spec it implements): a fix
+  that silences today's symptom but **contradicts the module's design intent** is a wrong root, not a
+  fix — surface it as such rather than recommending it. Watch specifically for a fix that would make
+  the design produce **less** than its documented purpose (e.g. "carry the section forward unchanged"
+  against a docstring that says the section must keep shrinking). Like B-HIST-1, this is an
+  **author-side self-check** that **hands the design-intent bounds forward as a record**; dragonfly has
+  no stage that postdates the recommended fix, so the independent *red-team* of the fix direction
+  belongs to **guarded-change** (dragonfly diagnoses; guarded-change makes and challenges the fix),
+  which re-derives the bounds rather than trusting the forwarded values (B-VER-1's inherited-claim
+  principle). (Applies equally to a **mitigation direction** riding a "characterized, not found"
+  handoff. The diagnosis-side half — an empty-input symptom is a relay when the content is
+  present-but-mis-routed — is at stages 3 and 7.)
 - **Hand `diagnosis.md` to guarded-change to make the fix. Dragonfly does NOT author the fix itself**
   (A-8-2). This is the legitimate workflow handoff — a compose relationship, not a rules dependency:
   dragonfly diagnoses, guarded-change makes the fix, and dragonfly then verifies it at stage 9.

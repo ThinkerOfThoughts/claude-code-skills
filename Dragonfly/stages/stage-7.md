@@ -34,6 +34,13 @@ if it was introduced *after* the symptom first appeared; the stage-7 cold pass c
 root's introduction point against the symptom's first-appearance point (both cited). A post-dating
 node is at most an amplifier — "found" names it as such, never as root.
 
+**Design-intent sibling — an empty-input "root" against its design is a relay (A-7-4 / B-DES-1).** A
+node cannot be the root if the component's **stated design intent** says the input it failed on should
+have been **non-empty** and a sibling input carries that content: "the empty case fired" is then a
+**relay**, and the deepest actionable node is the upstream mis-route / missing branch. The stage-7
+cold pass challenges an empty/absent-input claimed root against the component's documented purpose +
+the shape of its other inputs (full rule at stage 3, B-DES-1).
+
 **Evidence-coverage sweep (A-7-5).** Before "found": every observation-ledger row tied to the `S#` is
 either **explained by the confirmed chain** (cite how) or recorded as a **residual** (named secondary
 contributor / open sub-hypothesis, ranked), carried in `diagnosis.md` + the stage-8 handoff, struck
