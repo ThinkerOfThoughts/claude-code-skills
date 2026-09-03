@@ -60,7 +60,11 @@ or an **escalated fidelity finding's owner answer does not disambiguate the flag
 (re-ask the axis rather than resolving it into the recommended option — RAT1, and under
 delegation relay the re-ask to the actual human per RAT3; see `stages/stage-4.md`).
 Refuse to guess project metrics or acceptance criteria — that's the exact failure this loop
-exists to prevent. (Full text in `stages/stage-1.5.md`, `stages/stage-4.md`,
+exists to prevent. Before escalating a **blocker**, or bouncing the red-team again on the same
+axis, first **triage** whether it is intrinsic to the problem or **self-manufactured** by the
+runner's own design — a self-manufactured constraint is dissolved by revising that design, not by
+an owner ruling — so only a blocker that survives the triage is a genuine stop (full rule:
+`stages/stage-4.md`, BT). (Full text in `stages/stage-1.5.md`, `stages/stage-4.md`,
 `stages/stage-8.md`.)
 
 **Under delegation, these stops belong to the human, not the runner (RAT3).** If a subagent is
@@ -70,7 +74,12 @@ is enforced here). The orchestrator is expected to **relay to the actual human a
 verbatim answer back, never answering as the owner** — a **caller-side** obligation the loop
 cannot itself enforce (full statement + the enforceability split in `METHODOLOGY.md`
 "Human-in-the-loop"; a fidelity ratification additionally needs the owner's verbatim words +
-durable source per `stages/stage-3.md` RAT1).
+durable source per `stages/stage-3.md` RAT1). Relatedly, and by the **same subagent topology**:
+when this loop is run by a delegated (non-top-level) subagent, any check whose result the loop
+gates on must be run in the **foreground / blocking within the runner's own turn** — never
+backgrounded before ending the turn to await a completion notification, because a non-top-level
+agent does not receive its own background task's completion (it routes to main), which would
+deadlock the runner on its own gate (full rule: `stages/stage-8.md`, FG).
 
 ## Self-check / dogfooding
 

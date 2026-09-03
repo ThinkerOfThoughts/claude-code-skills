@@ -94,6 +94,33 @@ depends on it** — counting "2 bounces at the same gate" and carrying prior fin
 requires the bounce history to persist. Human acceptance of a known regression is the entry
 that matters most ("why did we ship this?" gets a recorded answer).
 
+**Blocker triage: intrinsic vs self-manufactured — before escalating or re-bouncing (BT).**
+Before this gate escalates a **blocker** to the human (stop-for-human, below) **or** routes a
+finding *backward* to bounce the same axis again, first triage the blocker: is it **intrinsic to
+the problem**, or an **artifact of the runner's own design/implementation choice**? A
+**self-manufactured constraint** is a dilemma an incidental design decision created — **dissolvable
+by *changing that decision***, not by an owner ruling or another review lap. When a blocker looks
+owner-bound, or a finding keeps re-bouncing on the same axis, challenge *"is this inherent to the
+problem, or did our own design build it in?"* and try to **dissolve it by revisiting the runner's
+own architectural choices before escalating.** Only a blocker that survives this triage — one no
+design change of ours dissolves — is a genuine owner-decision (or a genuine iteration-cap
+tie-break). **Record the triage outcome in `decisions.md`** (intrinsic → escalated │
+self-manufactured → dissolved, naming the design change │ self-manufactured → escalated-anyway, with
+the reason it could not be dissolved) — like any override under ART3, so the triage is auditable and
+cannot be silently skipped or used to talk a genuine owner-decision out of its stop. This is the
+sibling of the *measurement-apparatus* discipline (stop elaborating your own artifact) applied to
+the escalation/bounce decision: an escalation or a repeat bounce spent on a constraint *we built* is
+the same wasted elaboration one level up. The triage **precedes** the iteration cap and the
+stop-for-human and does **not** replace them — a blocker that survives it still escalates, and the
+cap still bounds genuine disagreement. And the triage is itself **bounded by the iteration cap**: a
+*repeated* self-manufactured-triage-dissolve on the **same axis** counts toward SEV4's "same finding
+class" exactly as a re-bounce does — dissolving and retrying is not a free loop, so a runner cannot
+livelock by "discovering" a fresh self-manufactured constraint each lap. *(Example: a
+candidate-memory queue implemented as a state-column inside the main DB manufactured a "what happens
+to a gate-rejected candidate?" values-question that bounced three cold-review rounds and was
+escalated to the owner — the owner's separate-store architecture dissolved it entirely; a rejected
+candidate is just a discarded queue entry.)*
+
 ## Stop for a human at this gate (HIL / SK-STOP)
 
 The skill **stops for a human decision** at: **any blocker** (the loop is about to restart —

@@ -10,8 +10,11 @@ the addition below.** The charter core is given to the reviewer verbatim; the st
 
 ## Procedure
 
-Spawn a fresh **cold subagent** with the code diff/files + `{1.5, 2}` + `redteam_context`. Same
-charter as stage 3, aimed at code-vs-plan/criteria. **Spot-verify a sample of the reviewer's
+Spawn a fresh **cold subagent** with the code diff/files + `{1.5, 2}` + `redteam_context`. Spawn it
+**foreground / blocking** and capture its result in the **same turn** — a delegated runner does not
+receive its own backgrounded child's completion (it routes to main), so a background-then-end-turn
+spawn deadlocks the gate (`stages/stage-8.md`, FG). Same charter as stage 3, aimed at
+code-vs-plan/criteria. **Spot-verify a sample of the reviewer's
 cited file:lines actually exist** (guards fabricated citations — the charter's consumer duty,
 CH6). Generate the reviewed diff **mechanically** (`git diff <recorded-base>`; record the
 command) — hand-curated ⇒ un-run for the omitted scope. Write `6-redteam-code.md` as a verbatim

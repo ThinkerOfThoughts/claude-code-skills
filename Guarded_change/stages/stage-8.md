@@ -108,6 +108,25 @@ behavior can be excluded from the aggregate. A metric that can't isolate the cha
 contribution is reported as **advisory** (surfaced, not auto-bouncing). The plan (stage 2) names
 which metrics are gating vs. advisory and how the comparable workload is obtained.
 
+**A gated check runs in the FOREGROUND, in the runner's own turn — never backgrounded-then-await
+(FG).** When this loop is run by a **delegated (non-top-level) subagent**, any check whose **result
+a gate trusts** — the config's `measurement.check`, a route-(a) representative harness, an H6 oracle
+self-test, a CI run, or any subprocess — must be run **in the foreground (blocking) within the
+runner's own turn**, with its pass/fail captured **directly** from the run. It must **not** be
+launched in the **background** followed by ending the turn to await a completion notification: a
+**non-top-level agent does not receive its own background task's completion — that notification
+routes to the orchestrator / main session** — so "background the check, end the turn, wait to be
+notified" **deadlocks** the runner indefinitely on its own gate. If a check is genuinely
+long-running, the runner **blocks on it in-turn** (a foreground run that simply takes a while) or
+**hands it to the orchestrator**: emit a marked request naming the check and await the orchestrator's
+relayed result, the same relay path RAT3 uses for a human-gate question — never a fire-and-forget
+background launch. This applies equally to the **cold-reviewer spawns** at stages 3 and 6, whose
+results the loop gates on. (A top-level session that *does* receive its own background completions is
+not bound by this — the rule targets the delegated case where the completion routes elsewhere.)
+*(Example: a delegated run reached CI, launched `pytest` in the background, ended its turn expecting
+an automatic notification, never self-woke, and stalled on its final gate until the orchestrator
+intervened.)*
+
 **Spot-verify the citations themselves (CH6, consumer duty at stage 8).** Whoever consumes the
 review checks a sample of the cited file:lines / log rows actually exist and say what's claimed;
 at stage 8 this spot-verify extends to a sample of the verification table's evidence cells.

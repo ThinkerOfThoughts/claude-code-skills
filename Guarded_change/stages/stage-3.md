@@ -10,8 +10,12 @@ below.** The charter core is given to the reviewer verbatim; the stage-3 additio
 
 ## Procedure
 
-Spawn a **cold subagent** (no shared context; `general-purpose` or `Explore`). Give it read
-access to `{1-spec, 1.5-criteria, 2-plan}` AND the priority-ordered `redteam_context` paths.
+Spawn a **cold subagent** (no shared context; `general-purpose` or `Explore`). Spawn it
+**foreground / blocking** and capture its result in the **same turn** — do **not** background the
+spawn and end your turn awaiting a completion notification; a delegated runner does not receive its
+own backgrounded child's completion (it routes to main), which deadlocks the gate
+(`stages/stage-8.md`, FG). Give it read access to `{1-spec, 1.5-criteria, 2-plan}` AND the
+priority-ordered `redteam_context` paths.
 Charter it with the five lenses + evidence discipline from `stages/charter.md`. Write
 `3-redteam-plan.md` as a **verbatim record** per the charter's provenance rule: embed the
 charter given (core verbatim + task additions quoted), the exact context list (closed set:

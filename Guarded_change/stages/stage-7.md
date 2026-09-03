@@ -55,3 +55,10 @@ name. A clean pass-through is a single line. This is not just audit: the **itera
 depends on it** — counting "2 bounces at the same gate" and carrying prior findings forward
 requires the bounce history to persist. Human acceptance of a known regression is the entry
 that matters most ("why did we ship this?" gets a recorded answer).
+
+**Blocker triage before a backward route (BT — see `stages/stage-4.md`).** Before routing a
+blocker/major backward to build on the same axis, triage whether it is intrinsic to the problem or
+**self-manufactured** by the runner's own design/implementation choice; dissolve a self-manufactured
+constraint by revisiting that choice rather than re-bouncing, and log the triage in `decisions.md`.
+A repeated same-axis self-manufactured-dissolve counts toward the SEV4 iteration cap. Full rule:
+`stages/stage-4.md` (BT).
