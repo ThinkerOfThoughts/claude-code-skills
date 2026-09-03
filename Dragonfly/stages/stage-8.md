@@ -7,6 +7,22 @@ finds the bug; it does **not** author the fix.
 
 - **Write `diagnosis.md`** (A-8-1): the root cause, the causal chain **with each level's depth-check
   status**, the **named residuals**, the representative repro, and the recommended fix.
+- **The recommended fix carries a regression-safety history check (B-HIST-1).** Before the recommended
+  fix enters `diagnosis.md`, check the history of the code it would touch, on whichever fronts exist:
+  **(a) git archaeology** — `git log -S`/`blame` the lines the fix would change and **read the
+  introducing commit's message**, because a bandaid is often itself a *prior fix* whose message names
+  the earlier bug and the constraints it defends; and **(b) issue/PR history** — search **closed and
+  open** issues/PRs touching that file/component/subsystem. Record the prior fix's stated constraints as
+  **hard bounds the fix must not trip**, and state — against the **three regression modes**: does the
+  direction (1) **re-introduce a previously-patched bug**, (2) **worsen an existing one**, or (3)
+  **create a new one**? — why it trips none. Dragonfly has no stage that postdates the recommended fix,
+  so this is an **author-side archaeology + self-stated** check that **hands the bounds forward as a
+  record**; the independent *red-team* of the fix direction against them is **guarded-change's**, whose
+  charter carries the same HIST duty at stages 3/6 and **re-derives the bounds independently rather than
+  trusting the forwarded values** (B-VER-1's inherited-claim principle). A direction that silences
+  today's symptom but revives the bug the code was patching is a regression, not a fix — surface it as
+  such rather than recommending it. (Applies equally to a **mitigation direction** riding a
+  "characterized, not found" handoff.)
 - **Hand `diagnosis.md` to guarded-change to make the fix. Dragonfly does NOT author the fix itself**
   (A-8-2). This is the legitimate workflow handoff — a compose relationship, not a rules dependency:
   dragonfly diagnoses, guarded-change makes the fix, and dragonfly then verifies it at stage 9.

@@ -51,6 +51,20 @@ Discipline that makes aggressive review trustworthy:
   are the one guard defending the loop's founding failure; a fabricated citation would defeat it. And
   for a clean *fidelity* lens, spot-check that the named term→mechanism pins are real: the term appears
   in the request and the pinned mechanism is the one the owner meant, not a proxy.
+- **A quantity DERIVED from the data is re-derived from the ground-truth records, independently, by the
+  reviewer (B-GT-1).** Any figure a hypothesis, a causal-chain link, or a test threshold leans on that
+  is *derived* from data — a timing, interval, count, rate, ordering, threshold, magnitude, correlation
+  — must be computed from the **actual recorded ground-truth records**, never from an approximated,
+  nominal, or assumed **model** of what the data *should* look like. A value taken from a **schedule, a
+  config default, a spec value, a round-number estimate, or a summary aggregate is a PROXY** for the
+  data, and any claim resting on a proxy is **UNGATED until re-derived** from the real records. The cold
+  pass **independently re-derives** the quantity from the **raw source** — the error is usually the
+  **data source** (proxy vs. real records), not the arithmetic, so re-checking the author's math misses
+  it. Cross-check against the observed **shape**: a deterministic signature (the behavior on **100%** of
+  occurrences) implies a **gate/threshold crossed every time**, not a stochastic cause; a hypothesis
+  whose predicted shape contradicts the observed shape is suspect. (Data-source sibling of the fidelity
+  lens's **proxy mechanism** — here the proxy is for the **records the number came from**. Author-side
+  companion: B-VER-1 at stage 2.)
 - **The reviewer is graded on precision** (are its findings real?), not on how many it raises.
 
 ## Diagnosis-specific aiming
@@ -64,6 +78,9 @@ The cold pass is aimed at the failure modes a hunt produces:
 - **What assumption does the live hypothesis set share, and is it true?** (aimed at the whole set)
 - **Does the instrument implement the mechanism the owner specified, or a convenient proxy?** (the
   fidelity challenge — the wrong-KIND-of-instrument failure; see B-FID-1)
+- **Is every derived quantity computed from real records, or from a proxy model of the data?** (the
+  ground-truth-derivation challenge — re-derive it from the raw source, don't just re-check the
+  arithmetic; B-GT-1)
 
 ## Provenance (part of the review record — unconditional)
 

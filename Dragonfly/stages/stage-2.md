@@ -38,6 +38,21 @@ definition ossifies; a memory-encoded claim that drives a decision is re-verifie
 not trusted because it is written down. This strengthens B-EVID-1 (cite) to cite-**and-verify**: an
 unverified assertion — however confident, however often repeated — is not a finding.
 
+**A derived quantity is verified against the ground-truth records, not a proxy model of the data
+(B-GT-1).** B-VER-1 says verify against source; for any quantity *derived* from the data — a timing,
+interval, count, rate, ordering, threshold, magnitude, correlation — the source that counts is the
+**actual recorded ground-truth records**. A number taken from a **schedule, a config default, a spec
+value, a round-number estimate, or a summary aggregate is a PROXY** for the data; a hypothesis or
+observation resting on a proxy is **ungated until the quantity is re-derived from the real records**
+(the cold red-team re-derives it independently — charter B-GT-1), and a proxy-based result may **not be
+recorded as an elimination or as narrowing** until re-derived (the same non-elimination bar
+B-REP-4/B-REG-1 carry — see stage 6). Cross-check the failure **shape** while you are there: a
+deterministic signature (present on **100%** of occurrences) points at a **threshold/gate crossed every
+time**, not a stochastic cause. (Motivating case: a self_model note-null root cause was inverted by an
+*assumed* ~6-hourly tick schedule when the persona's own state file held the real per-tick timestamps —
+<145s idle before every failing tick, a 300s min-idle gate, not the 4000s-idle timeout the proxy
+implied.)
+
 **Every step attributes a share to a named frozen-target node — or it is drift (B-TARGET-1).** Before
 any investigative step, name which frozen-target node it attributes a share to — a specific `S#` or a
 live hypothesis (`hypotheses.md`) — **re-reading the frozen symptom + hypothesis ledgers to do it, not

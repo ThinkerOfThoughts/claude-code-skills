@@ -59,4 +59,6 @@ cite the observations behind them; "seems like X" is not a finding.
 
 **Verify, don't just cite (B-VER-1).** A hypothesis's confirm/refute predictions, its ranking, and any
 timeline point (B-TIME-1) are **verified against source**, not asserted from memory — including claims
-the agent just made or ones carried in a memory note. (Full rule at stage 2.)
+the agent just made or ones carried in a memory note. (Full rule at stage 2 — including **B-GT-1**: a
+hypothesis resting on a quantity *derived* from the data must have that quantity re-derived from the
+actual ground-truth records, not a proxy schedule/config/aggregate, before it is ranked as leading.)
