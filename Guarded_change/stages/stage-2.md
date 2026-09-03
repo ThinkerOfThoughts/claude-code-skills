@@ -59,3 +59,16 @@ obtained.
 **A needed-but-absent signal → the plan adds the instrumentation (CFG6).** If a change needs a
 signal the project doesn't yet expose, the **plan (stage 2) adds the instrumentation** — and
 the config's `metrics`/`check` are updated as part of that change.
+
+**A change to existing code carries a regression-safety history check (HIST, plan side).** When the
+plan proposes changing code (or any artifact) that **already exists**, it includes a
+**regression-safety history check** of the affected paths *before* recommending the direction, on
+whichever fronts exist: **(a) git archaeology** — `git log -S`/`blame` the lines being changed and
+**read the introducing commit's message** (a patch is often a prior fix that names the bug it defends
+against); and **(b) issue/PR history** — closed *and* open issues/PRs touching those paths. The plan
+records the prior fix's stated constraints as **hard bounds the change must not trip**, and states —
+against the **three regression modes** (re-introduce a previously-patched bug / worsen an existing
+one / create a new one) — why the proposed direction trips none. This is a *design-time* check
+**distinct from** the stage-8 empirical regression measurement (H8) and runs even with **no
+baseline**. The stage-3 red-team re-checks it against the plan and the stage-6 red-team against the
+built diff (the charter's HIST duty).

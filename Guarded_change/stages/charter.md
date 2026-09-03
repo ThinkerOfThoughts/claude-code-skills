@@ -62,6 +62,21 @@ Discipline that makes aggressive review trustworthy:
   guard itself must be spot-checked (cheap: verify a few, not all) — and, for a clean *fidelity*
   lens, spot-check that the named term→mechanism pins are real: the term appears in the
   spec/request and the pinned mechanism is the one the owner meant, not a proxy.
+- **A claim resting on a quantity DERIVED from data is re-derived from the ground-truth records, by
+  the reviewer, independently (ground-truth derivation, GT).** Any figure a claim leans on that is
+  *derived* from data — a timing, interval, count, rate, ordering, threshold, magnitude, correlation,
+  a baseline number, a measured pass-rate — must be computed from the **actual recorded ground-truth
+  records**, never from an approximated, nominal, or assumed **model** of what the data *should* look
+  like. A value taken from a **schedule, a config default, a spec value, a round-number estimate, or a
+  summary aggregate is a PROXY for the data**, and any claim resting on a proxy is **UNGATED until
+  re-derived** from the real records. The reviewer **independently re-derives** the quantity from the
+  **raw source** — the error is usually in the **data source** (proxy vs. real records), not the
+  arithmetic, so re-checking the author's math misses it. Cross-check the claim against the observed
+  **shape**: a deterministic signature (the behavior on **100%** of occurrences) implies a
+  **gate/threshold crossed every time**, not a stochastic cause; a claim whose predicted shape
+  contradicts the observed shape is suspect. (This is the *data-source* sibling of the fidelity lens's
+  **proxy mechanism** and stage-8's **proxy path**: here the proxy is for the **records the number
+  came from**.)
 - **Provenance is part of the review record.** Every cold-review record, wherever in the run it
   occurs (stage 3/6, a targeted post-6 check, a harness-embedded reviewer arm), embeds: (i) the
   verbatim charter/prompt given, (ii) the exact context path list given, (iii) the reviewer's
@@ -99,5 +114,18 @@ Discipline that makes aggressive review trustworthy:
   differently-guarded) accessor of the same state, or a read and write that straddle a slow
   operation during which another accessor can mutate the state, is the finding — ranked by the
   impact of the lost/torn write, not by whether the guarded path itself looks correct.
+- **If the change modifies existing code or an existing artifact, check its history and red-team the
+  change against the three regression modes (regression-safety history check, HIST).** A change that
+  alters code someone already wrote is checked against what that code was *for*. On whichever fronts
+  exist: **(a) git archaeology** — `git log -S`/`blame` the lines being changed and **read the
+  introducing commit's message**, because a bandaid is often itself a *prior fix* whose message names
+  the earlier bug and the constraints it defends; and **(b) issue/PR history** — search **closed and
+  open** issues and PRs touching that file/component/subsystem. Then red-team the change against
+  **three regression modes**: does it (1) **re-introduce a previously-patched bug**, (2) **worsen an
+  existing one**, or (3) **create a new one**? **Lift any prior fix's stated constraints into hard
+  bounds the change must not trip.** This is a *design-time* archaeology check, **distinct from** the
+  stage-8 *empirical* regression measurement (H2/H8): it needs no baseline and fires at **stage 3** on
+  the plan's proposed direction and again at **stage 6** on the built change. A change that silences
+  today's symptom but revives the bug the code was patching is a regression, not a fix.
 
 The reviewer is graded on **precision** (are its findings real?), not on how many it raises.

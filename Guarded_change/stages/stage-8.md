@@ -131,7 +131,14 @@ intervened.)*
 review checks a sample of the cited file:lines / log rows actually exist and say what's claimed;
 at stage 8 this spot-verify extends to a sample of the verification table's evidence cells.
 Citations are the one guard defending the loop's founding failure; a fabricated citation would
-defeat it, so the guard itself must be spot-checked (cheap: verify a few, not all).
+defeat it, so the guard itself must be spot-checked (cheap: verify a few, not all). And for any
+**derived quantity** in that evidence — a baseline number, a measured rate, a threshold, a count, an
+interval — the spot-verify is a **re-derivation from the raw ground-truth records**, not a re-check of
+the author's arithmetic (the stage-8 operative form of **GT**): the error is usually the **data
+source** (a proxy — a schedule, a config default, an aggregate — standing in for the real records),
+which re-checking the math cannot catch. Re-derive a sample from the raw source, and cross-check the
+claim against the observed **shape** (a 100%-deterministic signature implies a gate crossed every
+time, not a stochastic cause).
 
 ## Core principles + freeze + severity + gate log this stage enforces
 
