@@ -5,8 +5,9 @@
 
 **Read `stages/charter.md` for the full red-team charter (the five lenses + the discipline
 bullets + provenance + spot-verify + the conditional position/concurrency lenses), then apply
-the addition below.** The charter core is given to the reviewer verbatim; the stage-6 addition
-(the mechanical-diff duty) governs how the reviewed diff is produced.
+the additions below.** The charter core is given to the reviewer verbatim; the stage-6 additions
+below (the mechanical-diff duty and the five-lens output-shape requirement) govern how the
+reviewed diff is produced and how the reviewer's output must be shaped.
 
 ## Procedure
 
@@ -17,7 +18,9 @@ spawn deadlocks the gate (`stages/stage-8.md`, FG). Same charter as stage 3, aim
 code-vs-plan/criteria. **Spot-verify a sample of the reviewer's
 cited file:lines actually exist** (guards fabricated citations — the charter's consumer duty,
 CH6). Generate the reviewed diff **mechanically** (`git diff <recorded-base>`; record the
-command) — hand-curated ⇒ un-run for the omitted scope. Write `6-redteam-code.md` as a verbatim
+command) — hand-curated ⇒ un-run for the omitted scope. Charter the reviewer for the **five-lens
+output shape up front**, and reject a returned record missing any lens — re-run fresh, never
+re-polled (ST6e). Write `6-redteam-code.md` as a verbatim
 record (same provenance duties as stage 3).
 
 ## Stage-6 addition to the charter
@@ -26,6 +29,23 @@ record (same provenance duties as stage 3).
 generated **mechanically** (`git diff` against the recorded base, or an equivalent captured
 command), the command recorded in `6-redteam-code.md` — a hand-curated file set = the review is
 un-run for the omitted scope.
+
+**Stage-6 reviewer emits all five lenses explicitly (ST6e).** The charter the stage-6 reviewer
+is given must require it to render **each of the five lenses** — Factual, Logical, Missed
+opportunity, Unstated assumptions & risks, Fidelity — as **its own labeled verdict**, even when a
+lens is clean (a clean lens states "no issue found" against that named lens; the factual and
+fidelity clean verdicts additionally carry their charter-mandated earned evidence — citations,
+pinned terms). A `6-redteam-code.md` record whose reviewer output is missing any of the five
+lenses is **incomplete and treated as un-run** for the missing lens(es), and the review is
+re-run — analogous to stage 3's CH8 (no coverage-challenge section ⇒ un-run for that lens). This
+makes a clean stage-6 verdict **auditable per-lens on the record itself**, rather than depending
+on the runner to reconstruct which lenses were exercised from a terse summary. Require this
+five-lens shape **up front in the charter given at spawn**, so the reviewer's first result
+already carries all five — do **not** re-poll or revive a completed terse reviewer to backfill the
+missing lenses (reviving a finished subagent to await its reply is the foreground/deadlock hazard
+the stage-8 FG rule warns against: a delegated runner does not receive its own child's
+completion). If a record is still short a lens despite the up-front requirement, re-run a **fresh
+full five-lens** cold review, not a re-poll of the old one.
 
 ## Cross-cutting rules governing this stage
 
