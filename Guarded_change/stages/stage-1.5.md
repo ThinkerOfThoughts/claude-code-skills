@@ -126,6 +126,21 @@ config holds standing measurement/regression setup that's stable across changes.
 **Criteria are mandatory; baseline is optional (CFG5).** No criteria → the loop won't pass
 stage 3. No baseline → stage 8 runs conformance-only and says so.
 
+**Default to isolation; ask whether the thing is isolation-testable (ISO).** When a gating
+criterion requires empirical execution (ST1.5d/e, or any gating criterion under H5), **prefer to
+verify it on an isolated unit** wherever the governed behavior *can* be exercised in isolation —
+an isolated check is cheaper, more discriminating, and easier to show able to fail (ST1.5f) than
+one buried in the assembled system. But ask the prior question first: **is this behavior
+isolation-testable at all?** Where the honest answer is that only the assembled system exercises
+it — no isolated unit reproduces the behavior faithfully — the criterion **declares itself
+assembled-system-verified up front** (the RTS *declare-untestable-in-isolation-and-defer* path,
+`stages/stage-1.md`) rather than committing to an isolation harness that cannot faithfully exist.
+The default is isolation; the escape is explicit, never a silent drift into an ever-growing
+harness. The runtime bound on *how hard you may try* to build a criterion's isolation harness
+before conceding it is not isolation-testable is **H9** (`stages/stage-8.md`): three rebuilds of
+that criterion's test mechanism, then change venue. This preference-plus-bound is one element of a
+fix for the standing measurement-apparatus problem, not the whole of it.
+
 ## Stop for a human at this stage (HIL / SK-STOP)
 
 The skill **stops for a human decision** when **criteria or config needed to proceed are

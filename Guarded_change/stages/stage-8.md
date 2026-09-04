@@ -140,6 +140,36 @@ which re-checking the math cannot catch. Re-derive a sample from the raw source,
 claim against the observed **shape** (a 100%-deterministic signature implies a gate crossed every
 time, not a stochastic cause).
 
+**Bound the isolation harness — three rebuilds per criterion's test mechanism, then change venue —
+H9.** Default-to-isolation (ISO, `stages/stage-1.5.md`) says verify in isolation where you can; H9
+bounds the *cost of trying*, so a failed isolation harness is not answered by building a bigger
+one. For a gating criterion whose isolation oracle keeps failing its H6 self-test, count the
+**rebuilds of that criterion's test mechanism** — each H6 discard-and-rebuild-in-place — **not the
+runs of the test** (a mechanism that executes a hundred times is one mechanism; a mechanism torn
+down and rebuilt differently is a new iteration; count a from-scratch replacement the same as a
+rebuild-in-place — the counter is blind to how the teardown is framed, exactly as SEV4's cap counts
+a rephrased objection). The budget is **three rebuilds per criterion's
+test mechanism** — not one run-wide budget, which would let one hard criterion force every other
+easily-isolatable one to "assembled-verified"; when three rebuilds have not yielded a working,
+fail-able oracle, **stop building — do not attempt a fourth.** Three failed rebuilds is the runtime
+evidence the behavior is **not isolation-testable**, so change venue rather than elaborate the
+apparatus. The trip is itself a **stop-for-human** — the same venue decision SEV5/RTS name (widen,
+declare-untestable-and-defer, or accept/kill): the human resolves it by **declaring the criterion
+untestable-in-isolation and deferring its verification to a run of the assembled system** (RTS's
+escape hatch, still exercised inside this run's stage 8), or by a named risk-acceptance where even
+the assembled run cannot verify it pre-ship. This is **not** a licence to skip verification — the
+default remains that the criterion is verified, at a different venue. The venue change is **not** a
+silent in-place re-declaration: because criteria are
+frozen at gate 4 (FRZ), re-declaring a frozen criterion's venue is a post-freeze criteria edit and
+goes **through FRZ** — a `decisions.md` entry with the reason + a targeted re-red-team of the edited
+criterion. H9 **bounds H6** (the rebuild-in-place it caps) and is a **distinct counter from SEV5**
+(`stages/stage-4.md`): SEV5 counts backward *loop rounds* while the whole artifact has never run;
+H9 counts *rebuilds of one criterion's harness* within stage 8 — the two do not overlap. **Scope
+caveat:** this is one element of a fix for the broader measurement-apparatus problem, not the whole
+fix — it supplies a default (prefer isolation) and a stop (cap rebuilds, change venue); it does
+**not** make the assembled-run test discriminating, attribute an assembled-run failure back to a
+component, or resolve the harness-reviewing-the-harness recursion. That parent problem stays open.
+
 ## Core principles + freeze + severity + gate log this stage enforces
 
 **A bar, set first (CP4).** "Done" is defined as measurable acceptance criteria *before*
