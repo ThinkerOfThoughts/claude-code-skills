@@ -6,7 +6,7 @@ assumption-catcher, and the loop's most important gate.
 **Read `stages/charter.md` for the full red-team charter (the five lenses + the discipline
 bullets + provenance + the conditional position/concurrency lenses), then apply the additions
 below.** The charter core is given to the reviewer verbatim; the stage-3 additions
-(coverage challenge + label audit) are given on top.
+(coverage challenge + label audit + the five-lens output-shape requirement) are given on top.
 
 ## Procedure
 
@@ -22,7 +22,9 @@ charter given (core verbatim + task additions quoted), the exact context list (c
 stage artifacts + config `redteam_context` + spec touched-files + carried findings), the
 reviewer's verbatim output, its agent type/model, and its reported context-file hashes —
 missing any ⇒ the review is un-run. Require the **coverage challenge** (below); no such section
-⇒ lens 4 un-run. For any carried-forward **escalated fidelity finding** (a prior "OWNER MUST
+⇒ lens 4 un-run. Charter the reviewer for the **five-lens output shape up front**, and reject a
+returned `3-redteam-plan.md` missing any lens — re-run fresh, never re-polled (CH13, the stage-3
+mirror of ST6e). For any carried-forward **escalated fidelity finding** (a prior "OWNER MUST
 RATIFY"), the reviewer's context also includes the **owner's verbatim exchange** on that finding
 — the options presented + the owner's response — since the ratification cannot be audited
 without it; its absence degrades the fidelity lens to un-run and is surfaced to the human.
@@ -83,6 +85,25 @@ operative terms** trace to the owner's words / the ratified option's stated mean
 phrase is an **unratified inflation** — untrusted until the owner confirms the expansion, exactly
 like a substituted mechanism. A clean verdict here must name the ratified phrase's operative
 terms and show the elaboration adds none beyond them.
+
+**Stage-3 reviewer emits all five lenses explicitly (CH13 — the stage-3 mirror of ST6e).** The
+charter the stage-3 reviewer is given must require it to render **each of the five lenses** —
+Factual, Logical, Missed opportunity, Unstated assumptions & risks, Fidelity — as **its own
+labeled verdict**, even when a lens is clean (a clean lens states "no issue found" against that
+named lens; the factual and fidelity clean verdicts additionally carry their charter-mandated
+earned evidence — citations, pinned terms). This sits **beside** the stage-3 output-shape checks
+it does not duplicate: **CH8** rejects a missing coverage-challenge *section* (lens 4 only) and
+**CH10** an *unsubstantiated* clean label-audit; **CH13** governs the distinct thing they leave
+open — the **presence of all five labeled lenses** on the record. A `3-redteam-plan.md` record
+whose reviewer output is missing any of the five lenses is **incomplete and treated as un-run**
+for the missing lens(es), and the review is re-run — the same missing-section⇒un-run mechanism
+as CH8. Require this five-lens shape **up front in the charter given at spawn**, so the reviewer's
+first result already carries all five — do **not** re-poll or revive a completed terse reviewer to
+backfill the missing lenses (reviving a finished subagent to await its reply is the
+foreground/deadlock hazard the stage-8 FG rule warns against: a delegated runner does not receive
+its own child's completion). If a record is still short a lens despite the up-front requirement,
+re-run a **fresh full five-lens** cold review, not a re-poll of the old one. This is the stage-3
+half of **ST6e** (`stages/stage-6.md`) — the two are one principle applied at both red-team gates.
 
 ## Cross-cutting rules governing this stage
 
