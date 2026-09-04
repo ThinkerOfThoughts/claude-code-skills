@@ -74,7 +74,10 @@ is enforced here). The orchestrator is expected to **relay to the actual human a
 verbatim answer back, never answering as the owner** — a **caller-side** obligation the loop
 cannot itself enforce (full statement + the enforceability split in `METHODOLOGY.md`
 "Human-in-the-loop"; a fidelity ratification additionally needs the owner's verbatim words +
-durable source per `stages/stage-3.md` RAT1). Relatedly, and by the **same subagent topology**:
+durable source per `stages/stage-3.md` RAT1). The same caller-side orchestrator-half also bounds what
+the orchestrator may **do to the artifact** under a delegated run — not only what it says to the owner
+— via the four caller-side rules OC1-OC4 (`METHODOLOGY.md` "Human-in-the-loop"). Relatedly, and by
+the **same subagent topology**:
 when this loop is run by a delegated (non-top-level) subagent, any check whose result the loop
 gates on must be run in the **foreground / blocking within the runner's own turn** — never
 backgrounded before ending the turn to await a completion notification, because a non-top-level

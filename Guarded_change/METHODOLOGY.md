@@ -229,3 +229,40 @@ and the human must not absorb the question. RAT3 has two halves of **different e
 
 This is what makes RAT1's **re-ask** reach the human under delegation instead of looping back into
 the agent that mis-answered.
+
+**The orchestrator's ceiling — what a delegating orchestrator may DO to the artifact (OC1-OC4,
+caller-side, not skill-enforced).** The orchestrator-half above bounds what the orchestrator may *say
+to the owner*; the same caller-side seam also bounds what it may *do to the artifact under change*
+while a delegated runner executes the loop. An orchestrator that oversteps here becomes a fourth,
+unsafeguarded reviewer and a **contamination channel** — laundering its own untested judgments into
+the artifact as premises the runner cannot challenge — the same untrusted-substitution failure RAT1
+targets, one level out (conduct toward the artifact rather than words to the owner). Like the
+orchestrator-half, these are **caller-side expectations the loop cannot itself enforce**; they are
+stated here as the caller's operating bound.
+
+- **OC1 — research goes DOWN, not up.** When the runner halts on something answerable from a file,
+  the orchestrator replies with **the file to read, not the answer**. The runner has the same
+  filesystem access; reading it and paraphrasing the content downward satisfies "don't over-escalate"
+  by breaking "don't run the loop inline."
+- **OC2 — verification is SAMPLING, not reproduction (a closed list).** The orchestrator's whole
+  verification job, exhaustively: **re-run the runner's oracle once; spot-check a handful of its
+  citations; confirm the files it claims exist do; confirm hashes.** To learn whether the artifact is
+  any *good*, spawn a cold reviewer and ask — do not read it and decide. Absent a stated bound each
+  extra read looks like more rigour; the test after any check is *did I learn whether the runner is
+  truthful (sampling — correct), or about the subject matter (reproducing — now doing the loop's job
+  in the wrong place)?*
+- **OC3 — never read the artifact-under-change in order to judge it.** That is a cold reviewer's
+  task. Checking a few lines against a specific claim is fine (OC2); reading it to *decide* is not.
+  Reading it to judge makes the orchestrator a **fourth reviewer with none of the safeguards** — no
+  cold context (it wrote the brief), no charter, no lens discipline, no earned-clean requirement,
+  nobody reviewing it — so its verdict is at once the **least trustworthy** in the system and the
+  **most authoritative**, since everything it concludes travels downstream as instruction rather than
+  as a claim to be challenged.
+- **OC4 — delegate structure decisions with the QUESTION, not the answer.** What came from the
+  **owner** goes down as a **constraint** — verbatim, with its transcript locus; what came from the
+  **orchestrator** goes down as a **question**, or, where it genuinely has a view, as a proposal
+  **explicitly labelled as the orchestrator's and marked challengeable** so reviewers attack it rather
+  than assume it. Handing down a finished design **launders orchestrator error into the artifact**
+  (downstream reviewers see it as the runner's proposal, nothing flagging its provenance) and hands
+  the **less-informed** party's guess down as a spec — the runner has read the artifact and run the
+  reviewers; the orchestrator, under OC2/OC3, deliberately has not.
