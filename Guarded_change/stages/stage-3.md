@@ -11,7 +11,8 @@ below.** The charter core is given to the reviewer verbatim; the stage-3 additio
 ## Procedure
 
 Spawn a **cold subagent** (no shared context; `general-purpose` or `Explore`). Spawn it
-**foreground / blocking** and capture its result in the **same turn** — do **not** background the
+**foreground / blocking** (concretely: **`run_in_background: false`** on the spawn, never the
+default background call) and capture its result in the **same turn** — do **not** background the
 spawn and end your turn awaiting a completion notification; a delegated runner does not receive its
 own backgrounded child's completion (it routes to main), which deadlocks the gate
 (`stages/stage-8.md`, FG). Give it read access to `{1-spec, 1.5-criteria, 2-plan}` AND the

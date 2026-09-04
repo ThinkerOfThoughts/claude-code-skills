@@ -12,7 +12,8 @@ reviewed diff is produced and how the reviewer's output must be shaped.
 ## Procedure
 
 Spawn a fresh **cold subagent** with the code diff/files + `{1.5, 2}` + `redteam_context`. Spawn it
-**foreground / blocking** and capture its result in the **same turn** — a delegated runner does not
+**foreground / blocking** (concretely: **`run_in_background: false`** on the spawn, never the
+default background call) and capture its result in the **same turn** — a delegated runner does not
 receive its own backgrounded child's completion (it routes to main), so a background-then-end-turn
 spawn deadlocks the gate (`stages/stage-8.md`, FG). Same charter as stage 3, aimed at
 code-vs-plan/criteria. **Spot-verify a sample of the reviewer's
