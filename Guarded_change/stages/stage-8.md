@@ -210,6 +210,13 @@ carries the prior review's findings forward (via `decisions.md`) so the next rev
 they were addressed rather than re-deriving. Without this, a hard disagreement can cycle
 1→3→1→3 (or 5→7→5→7) indefinitely, paying full review cost each lap.
 
+**Run-level rounds-without-a-run cap + in-flight tripwires (SEV5 — see `stages/stage-4.md`).**
+Alongside SEV4, a run-level count of **backward routes taken while the artifact has never been
+executed** applies; after 2 rounds-without-a-run the loop stops for a human. At stage 8 the artifact
+IS executed (conformance), so a run that reaches a genuine stage-8 execution has escaped the trap and
+SEV5 stops accruing; a stage-8 that cannot execute the artifact (a fragment) and routes backward
+without a run counts toward SEV5. Full rule: `stages/stage-4.md` (SEV5).
+
 **`decisions.md` — the gate log, append-only (ART3).** Each gate (4, 7, 8) appends one entry:
 which gate, the worst finding's severity, the route taken, and — for any **human override** — a
 one-line rationale with a name. This is not just audit: the **iteration cap depends on it**. At

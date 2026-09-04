@@ -49,7 +49,11 @@ measurement plan or an un-instrumented change *before a line of code is written*
 share the red-team charter in `stages/charter.md` (stage 3 adds the coverage-challenge + label
 audit; stage 6 adds the mechanical-diff duty). Gates 4/7/8 each carry the full severity table.
 The **iteration cap** (all gates): after 2 bounces at the same gate on the same finding class,
-stop and a human breaks the tie (see the gate files).
+stop and a human breaks the tie (see the gate files). A **second, run-level cap** guards the case
+the per-class cap is blind to — *proliferation*, where a **new** finding class each round never
+trips the same-class counter: after **2 rounds-without-a-run** (2 backward routes taken while the
+artifact has never been executed against an external oracle), the loop likewise **stops for a
+human** (SEV5, with in-flight tripwires; see the gate files).
 
 ## Stop-for-human
 

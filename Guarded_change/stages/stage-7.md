@@ -62,3 +62,9 @@ blocker/major backward to build on the same axis, triage whether it is intrinsic
 constraint by revisiting that choice rather than re-bouncing, and log the triage in `decisions.md`.
 A repeated same-axis self-manufactured-dissolve counts toward the SEV4 iteration cap. Full rule:
 `stages/stage-4.md` (BT).
+
+**Run-level rounds-without-a-run cap + in-flight tripwires (SEV5 — see `stages/stage-4.md`).**
+Alongside SEV4's same-finding-class cap, a run-level counter of **backward routes taken while the
+artifact has never been executed** applies at this gate too: after 2 such rounds-without-a-run the
+loop stops for a human. The four in-flight tripwires apply here as well. Full rule:
+`stages/stage-4.md` (SEV5).

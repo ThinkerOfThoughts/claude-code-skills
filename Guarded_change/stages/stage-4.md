@@ -47,6 +47,37 @@ carries the prior review's findings forward (via `decisions.md`) so the next rev
 they were addressed rather than re-deriving. Without this, a hard disagreement can cycle
 1→3→1→3 (or 5→7→5→7) indefinitely, paying full review cost each lap.
 
+**Run-level cap: rounds-without-a-run (anti-proliferation) + in-flight tripwires (SEV5).** SEV4
+counts *repetition* (the same finding class recycled) and is structurally blind to *proliferation*
+— a run in which every round raises a genuinely **new** class, so the per-class counter resets to 1
+each lap and never reaches 2, while the artifact is never once executed. To catch it, maintain a
+**second, run-level counter**, blind to finding class and **not reset per gate** (it persists across
+gates 4/7/8 for the whole run): increment it on each **backward route (a
+bounce)** taken **while the artifact has not yet been executed against an external oracle** (stage-8
+conformance not yet reached or not reachable). It does **not** increment on a forward lap — a clean
+run that walks 1→8 without bouncing accrues zero — which is why it fires on proliferation without
+false-stopping healthy runs. After **2 such rounds-without-a-run**, the loop **stops and a human
+breaks the tie** — the same stop-for-human consequence as SEV4 — and the human chooses: **widen the
+unit** until it is runnable, **declare it untestable-in-isolation** and defer verification to a run
+of the assembled system, or accept/kill. (On the case that motivated this — a fragment taken through
+six backward bounces and never run — it fires entering round 3.) The count is read from
+`decisions.md` (ART3), like SEV4's. Once the artifact has been executed once, SEV5 stops accruing
+(the never-run trap is escaped; later cycling is guarded by SEV4 and the stage-8 major→human-call,
+not SEV5). A **BT-dissolve that routes forward** (to build) is not a backward route and does **not**
+increment SEV5; a BT-dissolve that still routes backward counts (toward SEV4, and SEV5 while no run
+has happened). This is the runtime backstop to stage 1's **RTS** refuse-to-start check
+(`stages/stage-1.md`), which asks the same question at design time.
+
+**In-flight tripwires (watch each lap; act before the hard cap).** Earlier-warning signs that a run
+is sliding into the proliferation trap: **(a) rounds-without-a-run climbing** (the counter above);
+**(b) growth against a fixed design** — the artifact keeps growing across rounds while the design it
+implements has not changed; **(c) target-drift in findings** — successive findings migrate from
+*"does it work?"* (conformance) toward *"could it be defeated?"* (adversarial fine-grain), the
+signature of a fragment graded against itself; **(d) a fragment with no consumer yet** — the unit
+under change is a piece of a larger runnable thing with nothing assembled to execute it. When any
+tripwire shows, **re-ask the RTS question now** — *what will I execute, and what tells me it
+worked?* — and widen or escalate rather than taking another lap; do not wait for the hard cap.
+
 ## Other rules governing this gate
 
 **An escalated fidelity finding resolves only on a passing ratification audit (RAT1/RAT2).** A
@@ -127,5 +158,6 @@ The skill **stops for a human decision** at: **any blocker** (the loop is about 
 confirm direction first); **missing criteria or config** needed to proceed (it refuses rather
 than guesses); a **non-disambiguating owner answer** to an escalated fidelity finding (re-ask the
 flagged axis, never resolve the answer into a recommended option — RAT1); and the iteration-cap /
-blocker-major-demotion tie-breaks above. Everything else it routes automatically per the severity
-model, reporting what it did.
+blocker-major-demotion tie-breaks above. The **rounds-without-a-run cap (SEV5)** — 2 backward routes
+taken while the artifact has never been executed — likewise stops here. Everything else it routes
+automatically per the severity model, reporting what it did.

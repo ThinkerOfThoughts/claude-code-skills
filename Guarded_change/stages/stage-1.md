@@ -16,6 +16,17 @@ criteria can be derived from it without guessing intent. The spec also **declare
 touched files** — that list joins every cold reviewer's context (see the charter's closed
 set).
 
+**Refuse to start an un-runnable unit (RTS).** Before proceeding, the spec must answer: *"when
+this run finishes, what will I execute, and what tells me it worked?"* If the honest answer is "I
+will read the artifact and check it against itself" — no execution, no external oracle — the
+**unit of work is wrong**. Either **widen it until it is runnable** (choose a larger unit that can
+be executed end-to-end), or **declare it untestable-in-isolation and defer its verification to a
+run of the assembled system**. This is the design-time form of the run-level rounds-without-a-run
+cap (SEV5, `stages/stage-4.md`): answered honestly up front, the run never enters the trap the cap
+catches late. (A unit is "runnable" when its acceptance has an external oracle that can fail — an
+executed check against ground truth — not merely a re-reading of the artifact at ever-finer grain,
+which a determined reader can always find a fault in.)
+
 **An escalated fidelity finding is closed by a ratification record, not a bare ruling line
 (RAT1).** When an "OWNER MUST RATIFY" fidelity finding is resolved, the spec records a
 **ratification record** — the flagged axis + the options presented (verbatim), the owner's
