@@ -69,15 +69,15 @@ where, at each gate) lives written-in-full in each gate file — `stages/stage-4
 | Stage | File | What it covers |
 |---|---|---|
 | 0 — Baseline | `stages/stage-0.md` | baseline only if a prior version + config baseline exist |
-| 1 — Spec | `stages/stage-1.md` | rich problem def; declares expected touched files |
-| 1.5 — Criteria | `stages/stage-1.5.md` | checkable, labeled accept bar; position/concurrency criteria; self-check criteria |
-| 2 — Plan | `stages/stage-2.md` | how + measurement + instrumentation + thresholds; accessor enumeration |
-| 3 — Red-team plan | `stages/stage-3.md` + `stages/charter.md` | cold review of {1,1.5,2}; coverage challenge + label audit |
-| 4 — Gate | `stages/stage-4.md` | route by severity; criteria freeze; path-validation blocks gate 4 |
+| 1 — Spec | `stages/stage-1.md` | rich problem def; declares expected touched files; refuse-to-start check |
+| 1.5 — Criteria | `stages/stage-1.5.md` | checkable, labeled accept bar; position/concurrency criteria; self-check criteria; default-to-isolation testability |
+| 2 — Plan | `stages/stage-2.md` | how + measurement + instrumentation + thresholds; accessor enumeration; regression-history check |
+| 3 — Red-team plan | `stages/stage-3.md` + `stages/charter.md` | cold review of {1,1.5,2}; coverage challenge + label audit; five-lens output shape |
+| 4 — Gate | `stages/stage-4.md` | route by severity; criteria freeze; path-validation blocks gate 4; rounds-without-a-run termination cap |
 | 5 — Build | `stages/stage-5.md` | implement per the plan |
-| 6 — Red-team code | `stages/stage-6.md` + `stages/charter.md` | cold review of code vs {1.5,2}; mechanical `git diff` |
+| 6 — Red-team code | `stages/stage-6.md` + `stages/charter.md` | cold review of code vs {1.5,2}; mechanical `git diff`; five-lens output shape |
 | 7 — Gate | `stages/stage-7.md` | route by severity |
-| 8 — Harness | `stages/stage-8.md` | conformance + regression; per-criterion verification table; freeze verify |
+| 8 — Harness | `stages/stage-8.md` | conformance + regression; per-criterion verification table; freeze verify; foreground-verification; isolation-harness cap |
 
 The **red-team charter** (five lenses + discipline + provenance + the conditional
 position/concurrency lenses) is shared by stages 3 and 6 in `stages/charter.md`. The **severity
