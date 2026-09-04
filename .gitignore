@@ -1,0 +1,8 @@
+# Per-run working folders for the gated skills (guarded-change / dragonfly / data-distiller):
+# spec, criteria, plan, red-team records, diffs. Kept out of git so a stray `git add -A`
+# cannot sweep a run's scratch artifacts into a commit.
+#
+# NOTE: a few early change folders were committed (before this rule) as skill-authoring
+# provenance and remain intentionally tracked — a .gitignore does not untrack already-tracked
+# files. To commit a change folder deliberately, `git add -f <path>`.
+*/changes/
