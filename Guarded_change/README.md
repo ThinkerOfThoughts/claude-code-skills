@@ -1,4 +1,4 @@
-# Guarded Change — a process for AI-assisted changes (for the companion-emergence dev)
+# Guarded Change — a process for AI-assisted changes to any code (or code plan)
 
 This is a short handoff describing a small, reusable process — and a Claude Code skill that
 runs it — for making non-trivial changes (code, plans, designs) without two specific failure
