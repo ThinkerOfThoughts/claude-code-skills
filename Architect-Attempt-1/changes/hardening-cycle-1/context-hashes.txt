@@ -1,0 +1,7 @@
+0a16c8453e7fffad2dca410fd57acef837f27f1eda47a4b4e45873bc536995ca  0-baseline.md
+a67a4095eeb3b90f1a4d1295c319acb22143822f2de5ae2e5c7e0bf8c4afb0ff  1-spec.md
+4c58898f6c71b9e194b7455ed3279601d2ad8363ee323be82fb2cb761c363eb3  1.5-criteria.md
+dafc0dd434fa26b7b99451f897fcc603ed23a1a3fa123b66565c1ad3af5ab081  2-plan.md
+c163ff87588dc97dbffae05cfe675985533ae8248b5d583d3322a090c4aceb8c  ../../guarded-change.architect.md
+94cb55e86b3fbb1dd9cdf76f3956dcc62ac7aae6f84831f29642f8123ddb13c8  /home/zero/architect-dogfood-2026-07-24/FINDINGS.md
+6d8dc31b40a5b388d7f8bc91a01341a3b6a6ee4b20e5afc009475e4edee856ae  /home/zero/architect-hardening-loop/LOOP-STATE.md
