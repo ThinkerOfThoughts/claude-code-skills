@@ -58,13 +58,45 @@ metrics:                  # standing regression metrics (source: the JSONL logs)
     gating: true
   - name: cache_read_ratio
     source: >
-      chat_usage.jsonl (call_type==chat): sum(cache_read_input_tokens) /
-      sum(cache_creation_input_tokens). RATIO-OF-SUMS, not mean-of-ratios; rows with
-      cache_creation==0 contribute to the sums only (no per-row division). Verified: ~2/145
-      rows have cache_creation==0, so per-row ratios are undefined — ratio-of-sums avoids it.
-    direction: higher_is_better
+      Per-run cache-break check over chat_usage.jsonl rows (call_type==chat; one run = one slice
+      of rows in log order). The FIRST chat row writes the fixed part of the prompt fresh, so its
+      cache_creation_input_tokens is F. Every LATER row should read that part from cache; a later
+      row whose cache_creation_input_tokens * 100 >= F * (100 - T) is a cache break, T = the
+      regression_threshold below. Value = max later-row creation / F. Each run is measured against
+      its own first row, so no OLD/NEW baseline, replay workload or call count is needed and a
+      change that shrinks the cached prompt cannot trip it. Run `python
+      scripts/cache_replay_workload.py --cache-break-check <chat_usage.jsonl> [--from-row N]`
+      (exit 0 PASS / 1 FAIL / 2 UNMEASURED), or read the `cache_break_check` key / stderr line
+      of a replay run (a replay starts with a fixed warm-up turn unless --no-warmup).
+    direction: lower_is_better
     regression_threshold: "-10%"
     gating: true
+    # Reworked in #339. The old sum(read)/sum(creation) ratio read a smaller cached prefix as a
+    # break (#332: ratio -26%/-18%/-2% while cost fell 23-47%), was made advisory in #333/#334,
+    # and is replaced by the per-run check above; gating again.
+    # - "-10%" is NOT a baseline delta here: read it as "a later row re-writes within 10% of F".
+    # - The first row is valid only if it has int token fields and creation > 0, num_turns == 1,
+    #   and it read less than T% of what it wrote (a cold write). Otherwise the verdict is
+    #   UNMEASURED (exit 2) = an unverified gating criterion: stop for the human, never a pass.
+    #   The replay's warm-up turn is expected to make the first row a single-call cold write on
+    #   both the text path and the --with-tools path (not verified against the real CLI; if the
+    #   warm-up row still ran tools the verdict is UNMEASURED). At least 2 chat rows are needed.
+    #   A back-to-back re-run inside the cache lifetime (the CLI writes 1h entries) starts warm and
+    #   is UNMEASURED. The cache prefix is tools, then system, then messages: an arm whose TOOLS
+    #   block changed (the #332 case) starts cold because the prefix differs from the start; a
+    #   system-only change keeps the tools block cached, so its first row may read it and be
+    #   UNMEASURED. Run the check on a cold arm, or on the first run of the hour.
+    #   The warm-up is one extra chat row in a replay's means/series: use the same --no-warmup
+    #   setting on both arms of a --compare.
+    # - Limits: it detects a re-write of >= (100-T)% of F. A partial break (e.g. only the system
+    #   block behind an intact tools block) re-writes less and is left to
+    #   cache_creation_per_chat_call and cost_per_chat_call_usd, which still gate. F is whatever
+    #   the CLI wrote to cache on the first call. A later row that legitimately writes that much
+    #   (compaction, a huge file read, an idle gap beyond the cache lifetime) is reported as a
+    #   break, naming the row, its share of F, its ts and the gap to the previous row. A later row
+    #   on a different model than the first is not comparable (UNMEASURED unless another row breaks).
+    # - Needs scripts/cache_replay_workload.py from the companion-emergence #339 change; the "no replay
+    #   workload exists yet" header above does not apply to this metric (no replay or baseline needed).
 
   # --- BLOCKED: not measurable from current logs; needs stage-2 instrumentation ---
   # tool_calls_per_request and file_reread_per_request — BLOCKED (iteration-cap tiebreak,
