@@ -6,6 +6,11 @@ companion-emergence. See `~/.claude/skills/guarded-change/METHODOLOGY.md` for th
 ```yaml
 project: companion-emergence
 
+# RECORDS LOCATION (2026-10-06): every `changes/<slug>/...` path below is relative to the run's
+# records root, which is ~/.claude/plans/<slug>-records/ , NEVER a dir inside a git worktree.
+# Agent-made worktrees go in <repo>/.dev-worktrees/<name> (never .claude/worktrees/, which the
+# desktop app garbage-collects together with everything inside it).
+
 redteam_context:          # PRIORITY ORDER — read top-down; a cold subagent can't read the
                           # whole brain tree, so each entry says what to check there first.
                           # UPDATED 2026-07-01: the packaged install was removed; the git clone
