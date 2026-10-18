@@ -19,3 +19,5 @@ Run it in the foreground of your own turn (a delegated runner must never backgro
 
 **Iteration cap:** two bounces at this stage on the same finding class → stop and bring the owner the
 finding and the two attempts. Record every route in the ledger Decisions log.
+
+> **Cascade mode** (only when `cascade.enabled` is true): also give the agent the principles sheet, and tell it to treat a `[RULE:…]` line as the confirming line its mechanism checks ask for, as `stages/cascade-method.md` "Derived lines" explains.

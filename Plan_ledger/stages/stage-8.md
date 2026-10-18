@@ -8,3 +8,5 @@ When the build merges (or is abandoned):
 3. Set `status: CLOSED`, final Secret token rotation, and a one-line pointer from the project's handoff
    doc to the ledger.
 4. If the project keeps a lessons doc, append only lessons that carry a quote or a line reference.
+
+> **Cascade mode** (only when `cascade.enabled` is true): also post any build batch still unreviewed, record the final mechanism tally under "As built", and confirm every owner answer from the run is on the principles sheet (`stages/cascade-method.md` "Owner answers become rules").

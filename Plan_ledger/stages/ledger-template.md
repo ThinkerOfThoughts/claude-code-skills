@@ -37,6 +37,18 @@ created: <YYYY-MM-DD>
 ## Decisions log (stage routes)
 <!-- <ts> stage <n>: worst severity, route taken, rationale + name for any override -->
 
+## Cascade (only when cascade mode is on; omit this section otherwise)
+principles sheet: <path>  approved: <ts "quote"> (recorded in the sheet's status line)
+levels, top-down: <L1 name — status> | <L2 …>     <!-- order confirmed as a sentence -->
+### Mechanism tally
+<!-- <mechanism named plainly>: defining lines <S ids> | support lines <S ids> | latest pile-up verdict NOT / PILING UP -->
+### Trio results
+<!-- <ts> <level> <question>: votes, adopted answer, confidence, flags -> <record path in cascade.records_dir> -->
+### Citation checks
+<!-- <ts> <level>: counts per verdict; failures and the route taken; re-check <ts> -> <record path> -->
+### Owner batches
+<!-- <ts> <level>: posted; gap items; answered <ts> "quote"; sheet additions made -->
+
 ## Changelog (superseded lines, append-only)
 <!-- <date> S<n> was "<old sentence>" → replaced by S<m> because <owner quote or finding> -->
 

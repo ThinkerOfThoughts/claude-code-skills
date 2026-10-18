@@ -48,6 +48,14 @@ redteam_context:                  # read paths for the cold agents (priority ord
 build_handoff:                    # who builds and with what
   lane: <session or person>
   guarded_change_config: <path>
+cascade:                          # OPTIONAL block; absent or enabled: false = the mode does not exist
+  enabled: true
+  principles_path: <path>         # the owner-approved principles sheet (template: stages/principles-sheet-template.md); may be absent on first use
+  records_dir: <dir>              # raw outputs of trio judges, citation checks, red-teams, sift agents, facts files; created on first use
+  owner_transcripts: <path>       # where the owner's own past messages can be read (sift; quote verification)
+  redteam:                        # guarded-change files the level red-team reuses by path
+    charter: <path to guarded-change stages/charter.md>
+    stage3: <path to guarded-change stages/stage-3.md>
 models:
   cold_agents: sonnet             # reason stated per spawn; opus only with a named sonnet shortfall
 ```
@@ -58,6 +66,27 @@ models:
 - The builder spec (`*-spec.md` or `*-brief.md`), derived from the approved sheet.
 - Cold-pass reports appended to the ledger's Decisions log (or a `reports/` folder next to it).
 - Issues for any OPEN fork that shipped as a working assumption (stage 8).
+
+## Cascade mode (optional, `cascade.enabled`)
+
+**Why.** In one project a fix approved as 55 owner decisions grew to 247 during the build. Almost all the additions were derived by the planner while answering the builder's questions; each was locally reasonable, and together they were never seen by the owner. The cascade lets a few owner rules, stated once, settle most fine-grained decisions without asking, and checks that they do. Hand-run once, it failed in three ways that the files below are built against: the cold citation check was skipped, questions the owner's rulings already decided were asked anyway, and an answered question was asked again.
+
+**What it adds.** A principles sheet (principles, a tie-break order, defaults per kind of decision, rulings, an always-to-owner list), built once per project from the owner's statements or from a sift of the owner's past messages. Planning then runs top-down in levels: draft with a cited rule on every line, a trio of cold judges for the non-obvious, a cold citation check, a cold spec-gap red-team before the next level, and one owner batch per level. Builder questions at stage 7 go through the same procedure. The mode lives in its own stage files and in one gated paragraph in each of stages 0, 1, 2, 3, 5, 6, 7 and 8; with the mode off none of it applies.
+
+| File | What it holds |
+|---|---|
+| `stages/cascade-method.md` | layers, derived-line format, gap rule, pile-up, order of work, trio, citation check, owner answers become rules, standing rules |
+| `stages/cascade-first-use.md` | building the principles sheet, including the one-off transcript sift |
+| `stages/cascade-levels.md` | the level loop and the owner batch |
+| `stages/cascade-build.md` | stage 7 in this mode |
+| `stages/cascade-common.md` | rules every cascade role needs and the two review roles do not |
+| `stages/principles-sheet-template.md` | the sheet's layout |
+| `stages/role-sift-analyst.md`, `role-sift-kinds.md`, `role-sift-synthesis.md`, `role-sift-quotecheck.md` | the sift roles |
+| `stages/role-trio-judge.md`, `role-citation-check.md`, `role-gap-redteam.md` | the level roles |
+
+**Layout.** `stages/common.md` holds only what every dispatched agent needs (the cold-reviewer core, provenance tags, literal reading, citation, the never-list). The paragraphs only the contradiction pass and the drift check act on (their inputs, the two review-specific sentences of "Read literally", the severity scale, the output shape) sit, byte for byte, at the top of both `role-contradiction.md` and `role-drift.md`, so those roles receive the same sentences as when they were in `common.md`. Cascade roles read `common.md`, `cascade-common.md` and their own role file. The guarded-change `charter.md` and `stage-3.md` are reused by path through `cascade.redteam`, never copied. The copy of the review block in two role files is a known cost; splitting it into a shared review file is a possible later change.
+
+**What a cascade run adds to the ledger.** A Cascade block (template in `stages/ledger-template.md`): the sheet pointer, the level order, the mechanism tally, trio results, citation-check results and owner batches; the raw agent outputs are in `cascade.records_dir`.
 
 ## Conventions the skill relies on
 

@@ -36,3 +36,5 @@ posing anything new.
 
 **Superseded lines** are not edited in place: strike them in the changelog with the date and the line
 that replaced them. The Decisions section always shows only the current design.
+
+> **Cascade mode** (only when `cascade.enabled` is true): a decision derived from the principles sheet or from an earlier owner line is written as `stages/cascade-method.md` "Derived lines" says, with a `[RULE:…]` tag that is not an ownership tag, and goes through `stages/cascade-levels.md` before it counts.

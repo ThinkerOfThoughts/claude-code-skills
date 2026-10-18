@@ -39,6 +39,15 @@ build_handoff:
   lane: "the Fixing session (a peer, not a subordinate: spec deltas with line references, milestones only)"
   guarded_change_config: "~/Desktop/claude-code-skills/Guarded_change/guarded-change.companion.md"
 
+cascade:
+  enabled: true
+  principles_path: "~/.claude/plans/roy-principles-sift/principles-sheet-v3.md"
+  records_dir: "~/.claude/plans/cascade-records/"
+  owner_transcripts: "~/.claude/projects/-home-zero-Desktop-companion-emergence/"
+  redteam:
+    charter: "~/.claude/skills/guarded-change/stages/charter.md"
+    stage3: "~/.claude/skills/guarded-change/stages/stage-3.md"
+
 models:
   cold_agents: sonnet
 ```
@@ -49,3 +58,4 @@ models:
   they are finalized at the end of a build, not mid-design.
 - Never drive the live persona as a test fixture; synthetic users are named in the harness notes.
 - The working tree used by spawned readers has been stale before; point code reads at `origin/main`.
+- Cascade mode is on for this project. The principles sheet at `principles_path` was approved by the owner on 2026-10-13 and records its approval in a sentence, not in a status line: load it as approved. `records_dir` and the transcript path are builder-chosen defaults.

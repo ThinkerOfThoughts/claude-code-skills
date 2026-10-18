@@ -36,3 +36,5 @@ become `[<OWNER> …]` by relay.
 **Time and usage pressure do not close forks.** If the owner wants to defer, the fork stays OPEN in the
 ledger with the owner's deferral quote; the spec carries an explicit "OPEN fork" marker at the point of
 use; the build may not ship the point of use as final.
+
+> **Cascade mode** (only when `cascade.enabled` is true): before posing a fork, run it through `stages/cascade-method.md` "Order of work"; a fork the principles sheet decides is derived, not posed, and a fork reaches the owner only when the gap rule or the always-to-owner list sends it there, inside a batch (`stages/cascade-levels.md` step e).

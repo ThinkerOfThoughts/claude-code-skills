@@ -22,6 +22,7 @@ checkable input. This file is the **router**; the procedures and prompts live in
 - **The invariants doc** at `invariants_path` (template: `stages/invariants-template.md`). If missing,
   seed it from the owner's recorded rulings, mark every line "for owner review", and get it reviewed
   before the exit gate.
+- **Cascade mode** (optional): if the config sets `cascade.enabled: true`, also read "Cascade mode" below; otherwise ignore it.
 
 ## Cold-start / resume
 
@@ -85,9 +86,31 @@ contradiction pass or the drift check returns a finding that touches an owner li
 missing; or a teammate's build question changes a mechanism class (stage 7). Refuse to resolve any of
 these by inference, including "the owner would obviously want X".
 
+## Cascade mode
+
+Skip this section unless the config sets `cascade.enabled: true`; without it plan-ledger behaves exactly as described above.
+
+Purpose: a few owner rules, stated once in a principles sheet, settle most fine-grained decisions. The planner derives each design line from a rule and cites it, a cold agent checks that the rule decides it, three cold judges settle the non-obvious ones by majority, and only what the rules cannot settle goes to the owner, in one batch per level. The same procedure answers the builder's questions at stage 7. Definitions and procedures: `stages/cascade-method.md`.
+
+Cold-start in this mode: also read the principles sheet in full and the ledger's Cascade block; resume from Open forks, the Cascade block and the open Owner questions.
+
+| plan-ledger stage | reads |
+|---|---|
+| 0 setup; first use builds the principles sheet | `stages/cascade-first-use.md` (sheet template: `stages/principles-sheet-template.md`) |
+| 1 capture, 2 forks | `stages/cascade-method.md`, `stages/cascade-levels.md` |
+| 3 sheet approval | `stages/cascade-levels.md` (the owner batch) |
+| 5, 6 cold passes | the principles sheet, with the hook text in those stages |
+| 7 build questions | `stages/cascade-build.md` |
+| the level loop (draft, trio, citation check, red-team, batch) | `stages/cascade-levels.md` |
+
+How the rules above read in this mode: a `[RULE:…]` line is derived, never an OWNER line; in rule 3 "posed" means put through `stages/cascade-method.md` "Order of work", and a fork reaches the owner only when the gap rule or the always-to-owner list sends it there; in rule 4 the owner approves the principles sheet once and each level's batch, and derived lines the owner is not asked about are authorised by the approved rules and shown in the batch for objection; the stop-for-human on a mechanism-class fork or build question applies only to what the gap rule or the always-to-owner list sends to the owner; the batch is pasted text in a turn with no question call, which is the exception to the one-question-per-call sentence and to stage 2's "never bundle forks".
+
+Dispatch: cascade agents read `stages/common.md`, `stages/cascade-common.md` and their role file (`stages/role-*.md` for the sift, trio, citation check and level red-team); the trio judge, citation checker and level red-team also read `stages/cascade-method.md`.
+
 ## Self-check
 
 The skill's own files are prompts (position-sensitive); non-trivial edits take the guarded-change loop.
 Standing criteria: installed copy == repo copy (`diff`); SKILL ↔ METHODOLOGY ↔ stage files consistent
 on every shared rule; `stages/common.md` is included verbatim by every dispatched agent and role files
 never restate a common rule.
+In cascade mode `stages/cascade-common.md` is added for the cascade roles; `stages/common.md` still goes to every dispatched agent.

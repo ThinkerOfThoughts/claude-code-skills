@@ -1,0 +1,43 @@
+# Cascade method — the planner's procedure, and the vocabulary the level roles read
+
+Purpose: a few owner rules, stated once, settle most fine-grained decisions. A design line is derived from a rule and says which; a cold check confirms the rule decides it; only what the rules cannot settle goes to the owner, in one batch. This file holds the definitions and the planner's procedures. The level procedure is `stages/cascade-levels.md`, the build-time procedure is `stages/cascade-build.md`, first use is `stages/cascade-first-use.md`.
+
+## Layers
+The project's invariants doc (existing); then, in the principles sheet (`cascade.principles_path`, template `stages/principles-sheet-template.md`): principles `P<n>` (the owner's rules for what is being planned), a tie-break order `T<n>` (higher wins when principles conflict), defaults `D<n>` for recurring kinds of decision, rulings `R<n>` (the owner's answer to a rule that pointed both ways or to a case), and the always-to-owner list. Ids are cited as written; a split keeps the parts' ids visible (`P8a`, `P8b`).
+
+## Derived lines
+A design line derived from the layers is written `S<n>. <sentence> because <one sentence: what in the cited rule decides it> [RULE:<id>[,<id>] | <H or M>]`. The tag comes last. A cited id is a principles-sheet id or an earlier ledger line that already counts (an OWNER or CONFIRMED line, or a derived line that passed its check). A line decided by a trio adds `| TRIO:<record>` inside the bracket. `[DERIVED from S<n>]` stays for a purely mechanical consequence of a counted line.
+A cold reviewer in stage 5 or 6 treats a RULE line as decided when the rule it cites is on the principles sheet and nothing in the ledger contradicts it; a RULE line failing either test is treated like an unconfirmed line.
+Confidence: **H** = the cited words apply to the case as written, with no interpretation (or a unanimous trio in which every judge said H and none flagged); **M** = applying them took interpretation or a judgment call, or it rests on a split trio, or the direction/chain rules below apply. A line that carries a direction (an ordering, default, fallback or which-wins) is M unless the cited rule states that direction in its own words, and is read back as a full sentence on the review list (router rule 2), never among the H lines. A line citing a derived line the owner has not yet reviewed takes at most M.
+
+## The gap rule
+A question goes to the owner only when (1) nothing decides it: no principle, default, ruling or earlier owner line applies; or (2) two rules conflict and the tie-break order does not settle it; or (3) the answer would change something the owner said directly (an OWNER line or a rule's text); or (4) one mechanism keeps piling up derived rules (below). The always-to-owner list is checked first and sends its items to the owner without these tests. In the issue and ledgers the gap rule is "step 4" and the citation check "step 5" of the method.
+
+## Pile-up
+Support machinery = lines whose job is to test, calibrate, measure, queue, recover or reconcile another mechanism rather than deliver what the owner asked for. The planner names each mechanism plainly and keeps a tally in the ledger of its defining lines and its support lines by id, updated after every citation check. The citation check returns a cold verdict per mechanism touched: `PILING UP` or `NOT`, judged on whether the support lines have grown to outweigh the lines that define what the owner asked for (support that costs more than the thing it serves), against the owner's words and the principles sheet's proportionality rule if it has one. `PILING UP` stops work on that mechanism and goes to the owner at once, as its own message, not held for a batch: the tally, and three options: keep going, simplify, freeze. It is gap condition 4.
+
+## Order of work
+For any question or fork: (1) look it up (standing rule SR1); (2) if its kind is on the always-to-owner list, it goes to the owner in the batch and you stop; (3) derive it from the principles sheet and the owner's lines; (4) if the answer is non-obvious, run the trio; (5) run the citation check; (6) go to the owner only through the gap rule. A question is non-obvious when the rules cover it but a careful reader could derive more than one answer, or when you would have asked the owner if the rules did not exist.
+
+## Facts
+When a question depends on a fact about the existing system, brief an ordinary read-only agent (it gets `stages/common.md` and your question, no role file) to return cited facts (`path:line` quotes) from the `redteam_context` paths, and save what it returns in `cascade.records_dir`. Give the file to roles as "facts". A role that needs a fact not in it replies `FACT NEEDED: <what>` and stops.
+
+## Trio
+Write the options yourself (check each mechanism word in them as SR2 says) and add a last option "no rule decides this". Spawn three `stages/role-trio-judge.md` agents, foreground, with identical inputs (the question, options, principles sheet, invariants doc, ledger, facts) and no knowledge of each other; a judge may add an answer you did not list. Outcome: the majority answer is adopted (a 3-0 vote is H only if every judge said H and none flagged; a 2-1 vote is M with the dissent on the review list); three different answers, or a majority saying no rule decides, or a majority flagging `owner`, is a gap; any judge flagging `review` (or a minority flagging `owner`) puts the line on the review list.
+
+## Citation check
+After drafting a level, after any step that creates or changes lines, and for lines derived at build time, spawn one `stages/role-citation-check.md` agent (foreground) with the lines, the principles sheet, the ledger, `cascade.owner_transcripts`, the tally, trio records and facts. Its routes are `re-cite` (another existing rule or quote decides it: fix the citation and re-run on those lines), `trio`, and `owner` (a candidate gap). No line counts, and no answer is relayed to the builder, before its latest verdict is DECIDES (for a TRIO line: the cited rules plus the trio record decide it) or the owner has answered it. Record each pass in the ledger's Cascade block (counts per verdict, failures and their routes) and update the tally from its pile-up verdicts.
+
+## Owner answers become rules
+Every owner answer becomes a rule, not a one-off: (1) state it as a principle, default or ruling in one sentence, in the owner's own words where possible, and check each mechanism word in it (SR2); (2) if it carries a direction, read it back as a full sentence and get that confirmed (router rule 2); (3) read the principles sheet in full and have the citation check scan the new rule against the existing rules and derived lines (a conflict is gap condition 2 or 3), and append it with the owner's quote; (4) re-run the citation check on lines that cite what changed. A case-specific answer is recorded as a ruling `R<n>`.
+
+## Standing rules
+- **SR1 Look it up before asking.** Before asking the owner anything, search the ledger's OWNER lines and Owner questions, then `cascade.owner_transcripts`, then the owner's own formulas and definitions, then the principles sheet. If the owner says a question was answered, that is a miss: quote the answer. When a dilemma appears while building a rule, first re-read everything the owner has said on the topic before posing options.
+- **SR2 Read-back words.** Before a read-back sentence goes to the owner, list each mechanism word in it (a rate, a clock, a source, a trigger, a store) and find that word in the owner's own words. A word only the planner supplied is a fork to pose, not phrasing; delete it or pose it.
+- **SR3 Formulas.** When the owner has defined a quantity by a formula, a later "how should it behave" is answered by asking what input the formula needs to produce that behaviour. A layer added beside the formula is a fork, and usually the wrong one.
+- **SR4 Simulate.** Simulate any formula or dynamic rule on realistic multi-entry histories before calling it working; a single-entry run proves nothing.
+- **SR5 Settled.** Never call a point, a level or a plan settled while anything under it is open, unreviewed or unchecked.
+- **SR6 No pieces.** Relay nothing to the owner in pieces that belongs in the batch; status stays in the ledger and records.
+
+## Spawning and records
+Every cascade agent is spawned as plan-ledger stage 5 spawns its agent: foreground, model from `models.cold_agents` with the reason stated. Give paths, not summaries, and require the agent to read them in full. Save each agent's prompt, path list and raw output in `cascade.records_dir`.

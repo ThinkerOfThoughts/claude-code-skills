@@ -21,3 +21,5 @@ not a summary). Findings only on DERIVED lines → fix and re-run. Clean → han
 and one line stating that build-time questions which change a mechanism class come back as stage-7 forks.
 Record the hand-off in the ledger with the spec's hash or commit. Do not narrate the hand-off to the
 owner beyond one line.
+
+> **Cascade mode** (only when `cascade.enabled` is true): also give the agent the principles sheet and tell it to treat a `[RULE:…]` line as a confirming line, as `stages/cascade-method.md` "Derived lines" explains; the precondition "sheet approved" means the principles sheet is approved and every level's batch has its Approvals entry, and a finding on a RULE line alone routes like one on a DERIVED line.
