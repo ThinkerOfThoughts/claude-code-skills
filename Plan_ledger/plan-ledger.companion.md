@@ -41,9 +41,9 @@ build_handoff:
 
 cascade:
   enabled: true
-  principles_path: "~/.claude/plans/roy-principles-sift/principles-sheet-v3.md"
+  principles_path: "~/.claude/plans/companion-principles-sheet.md"
   records_dir: "~/.claude/plans/cascade-records/"
-  owner_transcripts: "~/.claude/projects/-home-zero-Desktop-companion-emergence/"
+  owner_transcripts: "this project's Claude Code session directory under ~/.claude/projects/"
   redteam:
     charter: "~/.claude/skills/guarded-change/stages/charter.md"
     stage3: "~/.claude/skills/guarded-change/stages/stage-3.md"
