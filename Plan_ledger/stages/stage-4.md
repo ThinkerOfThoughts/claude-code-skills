@@ -14,6 +14,7 @@ The builder spec is written FROM the approved sheet. Rules:
   <condition>" and by the behaviour when X returns nothing.
 - **Underspecification is a defect.** "Runs on both paths" must say how each path behaves. Every
   branch that a builder could implement two ways is either specified or listed as an OPEN fork.
+- **New parts name their alternatives.** Any new dependency, format, library or moving part (a store, process, lock, queue or protocol, not every function or field) is accompanied by the existing tool(s) considered and why they fall short, or by "none exists". This stays in the spec body, not the appendix.
 - **The invariants table** is copied from the sheet into the spec with the spec section that satisfies
   each row.
 - **Acceptance criteria** name a measurable check per sheet line that can be checked; a criterion a
