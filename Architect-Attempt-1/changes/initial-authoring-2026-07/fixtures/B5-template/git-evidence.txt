@@ -1,0 +1,36 @@
+# B5 (template reuse + back-propagation) — git evidence from the stage-8 harness dry-run
+
+Live catalog repo used during the dry-run: 8-harness-runs/B5-catalog/ (a real git repo; the
+nested .git is intentionally NOT committed to the parent repo — this file is the durable record).
+
+## git log --stat
+78e8c96 back-propagate hole-fix (TPL3): §4 must pin build-manifest/checksum location
+ generic-node.md | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+e6a6340 seed catalog (first-run bootstrap, TPL)
+ README.md             | 41 +++++++++++++++++++++++++++++++++++++++++
+ decomposition-node.md | 28 ++++++++++++++++++++++++++++
+ generic-node.md       | 33 +++++++++++++++++++++++++++++++++
+ leaf-task-spec.md     | 23 +++++++++++++++++++++++
+ 4 files changed, 125 insertions(+)
+
+## The back-propagation commit in full (skeleton patched from a plan-node hole-fix)
+commit 78e8c9607eeadf7860ddc069c9db1b6ce125d0fa
+Author: harness <harness@local>
+Date:   Fri Jul 24 20:35:36 2026 -0400
+
+    back-propagate hole-fix (TPL3): §4 must pin build-manifest/checksum location
+
+diff --git a/generic-node.md b/generic-node.md
+index 56e52cb..f8508a1 100644
+--- a/generic-node.md
++++ b/generic-node.md
+@@ -16,7 +16,7 @@ emits; the shared contracts a sibling depends on.
+ ## 4. Outputs & artifacts (WITH their locations)
+ The deliverables **and where each lands** — on-disk / output-folder layout, filenames, the run tree.
+ *This is the founding-failure section; its silent absence is the exact failure this skill guards. State
+-every output location explicitly.*
++every output location explicitly. **Also pin where the build manifest / checksums land**, not only the primary artifacts.*
+ 
+ ## 5. Failure modes & contingencies
+ What can go wrong and the fallback for each. The known risks and how the plan degrades.
