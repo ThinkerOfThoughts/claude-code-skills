@@ -37,4 +37,4 @@ become `[<OWNER> …]` by relay.
 ledger with the owner's deferral quote; the spec carries an explicit "OPEN fork" marker at the point of
 use; the build may not ship the point of use as final.
 
-> **Cascade mode** (only when `cascade.enabled` is true): before posing a fork, run it through `stages/cascade-method.md` "Order of work"; a fork the principles sheet decides is derived, not posed, and a fork reaches the owner only when the gap rule or the always-to-owner list sends it there, inside a batch (`stages/cascade-levels.md` step e).
+> **Cascade mode** (only in cascade mode): before posing a fork, run it through `stages/cascade-method.md` "Order of work"; a fork the principles sheet decides is derived, not posed, and a fork reaches the owner only when the gap rule or the always-to-owner list sends it there, inside a batch (`stages/cascade-levels.md` step e).

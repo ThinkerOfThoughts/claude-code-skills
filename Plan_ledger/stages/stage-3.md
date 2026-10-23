@@ -21,4 +21,4 @@ or 2); do not ask the owner to approve a sheet with known holes.
 
 **After approval**, rotate the Secret token, record the version, proceed to stage 4.
 
-> **Cascade mode** (only when `cascade.enabled` is true): the paste for approval is the batch of `stages/cascade-levels.md` step e; of the checks above, a derived direction line is confirmed by its read-back inside the batch, not before it, and the batch's gap items are tracked in the Cascade block, so the "no OPEN items" check concerns the owner's own questions.
+> **Cascade mode** (only in cascade mode): the paste for approval is the batch of `stages/cascade-levels.md` step e; of the checks above, a derived direction line is confirmed by its read-back inside the batch, not before it, and the batch's gap items are tracked in the Cascade block, so the "no OPEN items" check concerns the owner's own questions.

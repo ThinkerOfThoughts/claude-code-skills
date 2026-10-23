@@ -45,7 +45,7 @@ back → close`. Details in `SKILL.md` (router) and `stages/`.
 
 ## Optional: principles cascade
 
-For plans with many fine-grained decisions, `cascade.enabled: true` in the project config turns on a mode in which a few owner-approved rules (a principles sheet, built once per project, optionally by sifting the owner's past messages) settle most decisions. Each design line cites the rule it derives from, a cold agent checks the citation, three cold judges settle the non-obvious ones, a cold red-team checks each level, and the owner is asked one batch per level: only what the rules cannot settle, plus the lower-confidence lines, with the rest listed for objection. The same procedure answers the builder's questions. With the mode off nothing changes. See `METHODOLOGY.md`, `stages/cascade-*.md`, `stages/role-*.md` and `stages/principles-sheet-template.md`.
+For plans with many fine-grained decisions, `/plan-ledger cascade` turns on, for that run, a mode (the project config's `cascade.enabled` sets the default) in which a few owner-approved rules (a principles sheet, built once per project, optionally by sifting the owner's past messages) settle most decisions. Each design line cites the rule it derives from, a cold agent checks the citation, three cold judges settle the non-obvious ones, a cold red-team checks each level, and the owner is asked one batch per level: only what the rules cannot settle, plus the lower-confidence lines, with the rest listed for objection. The same procedure answers the builder's questions. In normal mode nothing changes. See `METHODOLOGY.md`, `stages/cascade-*.md`, `stages/role-*.md` and `stages/principles-sheet-template.md`.
 
 ## Using it
 

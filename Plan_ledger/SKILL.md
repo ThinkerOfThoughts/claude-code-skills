@@ -22,12 +22,12 @@ checkable input. This file is the **router**; the procedures and prompts live in
 - **The invariants doc** at `invariants_path` (template: `stages/invariants-template.md`). If missing,
   seed it from the owner's recorded rulings, mark every line "for owner review", and get it reviewed
   before the exit gate.
-- **Cascade mode** (optional): if the config sets `cascade.enabled: true`, also read "Cascade mode" below; otherwise ignore it.
+- **Cascade mode** (optional): if this run is in cascade mode (see "Cascade mode" below for how it is chosen), also read that section; otherwise ignore it.
 
 ## Cold-start / resume
 
 The ledger is the state; the session is not. On invocation, or after any compaction: read the ledger IN
-FULL, quote its `## Secret:` token in your first message, and continue from `Open forks`. If the ledger is
+FULL, quote its `## Secret:` token in your first message, and continue from `Open forks`. The ledger's `mode:` line says which mode the run uses. If the ledger is
 stale relative to the conversation, reconcile from the transcript by quotation, never from memory.
 
 ## Loop
@@ -88,7 +88,9 @@ these by inference, including "the owner would obviously want X".
 
 ## Cascade mode
 
-Skip this section unless the config sets `cascade.enabled: true`; without it plan-ledger behaves exactly as described above.
+This mode is called **cascade**; the ordinary mode is **normal**. The mode is chosen per request: invoking the skill as `/plan-ledger cascade` turns cascade mode on for that run, and `/plan-ledger normal` turns it off for that run. When the invocation names neither, a resumed ledger keeps the mode on its `mode:` line, and a new ledger takes the config's `cascade.enabled` (absent means normal). Write the mode used into the ledger's `mode:` line. Cascade mode needs the config's `cascade` block; if it is missing, stop and ask.
+
+Skip the rest of this section in normal mode; plan-ledger then behaves exactly as described above.
 
 Purpose: a few owner rules, stated once in a principles sheet, settle most fine-grained decisions. The planner derives each design line from a rule and cites it, a cold agent checks that the rule decides it, three cold judges settle the non-obvious ones by majority, and only what the rules cannot settle goes to the owner, in one batch per level. The same procedure answers the builder's questions at stage 7. Definitions and procedures: `stages/cascade-method.md`.
 

@@ -1,6 +1,7 @@
 # <slug> — Plan Ledger
 
 status: ACTIVE            <!-- ACTIVE | CLOSED -->
+mode: normal              <!-- normal | cascade; set from the invocation or the config default (SKILL.md "Cascade mode"); a resume reads it -->
 sheet_version: 0
 owner: <name used in provenance tags>
 spec: <path to the builder spec, once it exists>

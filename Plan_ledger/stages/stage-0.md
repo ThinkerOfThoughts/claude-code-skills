@@ -8,7 +8,7 @@
    `status: FOR OWNER REVIEW`, and tell the owner. An unreviewed invariants doc blocks stage 6, not
    stages 1-5.
 3. **Ledger.** Create `<ledger_dir>/<slug>-LEDGER.md` from `stages/ledger-template.md`. Set
-   `status: ACTIVE`, sheet version 0, a fresh random hex Secret token. Record the owner's name as
+   `status: ACTIVE`, `mode:` as SKILL.md "Cascade mode" decides, sheet version 0, a fresh random hex Secret token. Record the owner's name as
    configured (used in the `[OWNER …]` tag; `owner_tag` in config).
 4. **Inherited stores.** For every entry in `inherited_stores` that the work will touch, add a ledger
    line tagged `[INHERITED:<where> | UNEXAMINED]` now, before any design talk. This is what turns "the
@@ -19,6 +19,6 @@
    optimizes against a neighbour's goal (e.g. "keep this PR disjoint" defeating "one database") is a
    finding.
 
-> **Cascade mode** (only when `cascade.enabled` is true): also validate every path under `cascade` (a dead `redteam` or `owner_transcripts` path stops and asks; `principles_path` and `records_dir` may be absent, which means first use), add the Cascade block of `stages/ledger-template.md` to the ledger, and run `stages/cascade-first-use.md` before stage 1.
+> **Cascade mode** (only in cascade mode): also validate every path under `cascade` (a dead `redteam` or `owner_transcripts` path stops and asks; `principles_path` and `records_dir` may be absent, which means first use), add the Cascade block of `stages/ledger-template.md` to the ledger, and run `stages/cascade-first-use.md` before stage 1.
 
 6. Tell the owner the ledger path and the Secret token in one line. Proceed to stage 1.
