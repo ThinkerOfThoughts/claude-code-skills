@@ -48,8 +48,8 @@ redteam_context:                  # read paths for the cold agents (priority ord
 build_handoff:                    # who builds and with what
   lane: <session or person>
   guarded_change_config: <path>
-cascade:                          # OPTIONAL block; absent = cascade mode cannot be turned on
-  enabled: true                   # the default mode for a run whose invocation names neither (`/plan-ledger cascade` or `/plan-ledger normal`); false or absent = normal
+cascade:                          # OPTIONAL block; cascade mode needs it
+  enabled: true                   # the default mode for a new ledger whose invocation names neither (`/plan-ledger cascade` or `/plan-ledger normal`); false or absent = normal
   principles_path: <path>         # the owner-approved principles sheet (template: stages/principles-sheet-template.md); may be absent on first use
   records_dir: <dir>              # raw outputs of trio judges, citation checks, red-teams, sift agents, facts files; created on first use
   owner_transcripts: <path>       # where the owner's own past messages can be read (sift; quote verification)
@@ -71,7 +71,7 @@ models:
 
 **Why.** In one project a fix approved as 55 owner decisions grew to 247 during the build. Almost all the additions were derived by the planner while answering the builder's questions; each was locally reasonable, and together they were never seen by the owner. The cascade lets a few owner rules, stated once, settle most fine-grained decisions without asking, and checks that they do. Hand-run once, it failed in three ways that the files below are built against: the cold citation check was skipped, questions the owner's rulings already decided were asked anyway, and an answered question was asked again.
 
-**Selecting it.** The mode is called cascade and is chosen per request: `/plan-ledger cascade` turns it on for that run, `/plan-ledger normal` turns it off for that run, and the config's `cascade.enabled` only sets the default when neither is given. The ledger's `mode:` line records the mode so a resume knows it.
+**Selecting it.** The mode is called cascade and is chosen per request: `/plan-ledger cascade` turns it on for that run, `/plan-ledger normal` turns it off for that run, and the config's `cascade.enabled` only sets the default for a new ledger when neither is given (a resumed ledger keeps its `mode:` line). The ledger's `mode:` line records the mode so a resume knows it.
 
 **What it adds.** A principles sheet (principles, a tie-break order, defaults per kind of decision, rulings, an always-to-owner list), built once per project from the owner's statements or from a sift of the owner's past messages. Planning then runs top-down in levels: draft with a cited rule on every line, a trio of cold judges for the non-obvious, a cold citation check, a cold red-team for spec gaps and design checks before the next level, and one owner batch per level. Builder questions at stage 7 go through the same procedure. The mode lives in its own stage files and in one gated paragraph in each of stages 0, 1, 2, 3, 5, 6, 7 and 8; in normal mode none of it applies.
 

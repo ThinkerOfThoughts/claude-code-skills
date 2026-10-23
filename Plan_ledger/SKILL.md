@@ -27,7 +27,7 @@ checkable input. This file is the **router**; the procedures and prompts live in
 ## Cold-start / resume
 
 The ledger is the state; the session is not. On invocation, or after any compaction: read the ledger IN
-FULL, quote its `## Secret:` token in your first message, and continue from `Open forks`. The ledger's `mode:` line says which mode the run uses. If the ledger is
+FULL, quote its `## Secret:` token in your first message, and continue from `Open forks`. The ledger's `mode:` line says which mode the run uses, unless the invocation names one (see "Cascade mode"). If the ledger is
 stale relative to the conversation, reconcile from the transcript by quotation, never from memory.
 
 ## Loop
@@ -88,7 +88,7 @@ these by inference, including "the owner would obviously want X".
 
 ## Cascade mode
 
-This mode is called **cascade**; the ordinary mode is **normal**. The mode is chosen per request: invoking the skill as `/plan-ledger cascade` turns cascade mode on for that run, and `/plan-ledger normal` turns it off for that run. When the invocation names neither, a resumed ledger keeps the mode on its `mode:` line, and a new ledger takes the config's `cascade.enabled` (absent means normal). Write the mode used into the ledger's `mode:` line. Cascade mode needs the config's `cascade` block; if it is missing, stop and ask.
+This mode is called **cascade**; the ordinary mode is **normal**. The mode is chosen per request: invoking the skill as `/plan-ledger cascade` turns cascade mode on for that run, and `/plan-ledger normal` turns it off for that run. When the invocation names neither, a resumed ledger keeps the mode on its `mode:` line, and a new ledger takes the config's `cascade.enabled` (absent means normal). A ledger with no `mode:` line takes the config default. Write the mode used into the ledger's `mode:` line. Cascade mode needs the config's `cascade` block; if it is missing, stop and tell the owner the config needs one.
 
 Skip the rest of this section in normal mode; plan-ledger then behaves exactly as described above.
 
