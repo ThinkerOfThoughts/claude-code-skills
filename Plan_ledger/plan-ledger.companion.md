@@ -58,4 +58,4 @@ models:
   they are finalized at the end of a build, not mid-design.
 - Never drive the live persona as a test fixture; synthetic users are named in the harness notes.
 - The working tree used by spawned readers has been stale before; point code reads at `origin/main`.
-- Cascade mode is on for this project. The principles sheet at `principles_path` was approved by the owner on 2026-10-13 and records its approval in a sentence, not in a status line: load it as approved. `records_dir` and the transcript path are builder-chosen defaults.
+- Cascade is this project's default mode and can be turned off per run with `/plan-ledger normal`. The principles sheet at `principles_path` was approved by the owner on 2026-10-13 and records its approval in a sentence, not in a status line: load it as approved. `records_dir` and the transcript path are builder-chosen defaults.

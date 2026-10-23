@@ -1,6 +1,6 @@
 # Cascade first use — build the principles sheet (once per project)
 
-Run from the stage-0 hook, before stage 1. If the file at `cascade.principles_path` exists and records the owner's approval, load it and stop here. If it exists without approval, continue at "Wording rounds". If it is absent, ask the owner one ordinary question with these options: the owner states the principles; sift the owner's past messages (needs `cascade.owner_transcripts`); neither (then the mode cannot run).
+Run from the stage-0 hook, before stage 1. If the file at `cascade.principles_path` exists and records the owner's approval, load it and stop here. If it exists without approval, continue at "Wording rounds". If it is absent, ask the owner one ordinary question with these options: the owner states the principles; sift the owner's past messages (needs `cascade.owner_transcripts`); neither (then the mode cannot run: stop and tell the owner, and do not fall back to normal mode silently).
 
 ## From the owner's statements
 Write each principle as one sentence with the owner's quote beside it. Also ask for the tie-break order, the defaults and the always-to-owner list; where the owner gives none, leave that part empty (a conflict between principles then falls under gap condition 2). Then go to "Wording rounds".
