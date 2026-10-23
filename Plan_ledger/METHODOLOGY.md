@@ -82,7 +82,7 @@ models:
 | `stages/cascade-levels.md` | the level loop and the owner batch |
 | `stages/cascade-build.md` | stage 7 in this mode |
 | `stages/cascade-common.md` | rules every cascade role needs and the two review roles do not |
-| `stages/principles-sheet-template.md` | the sheet's layout |
+| `stages/principles-sheet-template.md` | the sheet's layout (a filled-in, scrubbed example: `examples/principles-sheet-example.md`; for the invariants doc: `examples/invariants-example.md`) |
 | `stages/role-sift-analyst.md`, `role-sift-kinds.md`, `role-sift-synthesis.md`, `role-sift-quotecheck.md` | the sift roles |
 | `stages/role-trio-judge.md`, `role-citation-check.md`, `role-gap-redteam.md` | the level roles |
 

@@ -55,3 +55,5 @@ For plans with many fine-grained decisions, `/plan-ledger cascade` turns on a mo
   it? If not, is it a fork you should ask about, or a thing the code already did that nobody chose?
 - It needs a per-project config (`plan-ledger.<project>.md`) naming the invariants doc, the ledger
   directory, the inherited stores and the adjacent goals. See `METHODOLOGY.md`.
+- Starters: `examples/` holds a filled-in, privacy-scrubbed principles sheet and invariants doc from a real
+  project, to adapt rather than adopt as-is (blank templates are in `stages/`).

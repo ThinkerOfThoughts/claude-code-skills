@@ -1,5 +1,7 @@
 # <project> — Principles sheet
 
+<!-- A filled-in, scrubbed example from a real project: `../examples/principles-sheet-example.md` -->
+
 status: DRAFT     <!-- DRAFT | APPROVED <date> [<OWNER> <ts> "quote"] -->
 
 Source: <the owner's statements | the transcript sift, with the quote-check file>. Cited by id from ledger lines.

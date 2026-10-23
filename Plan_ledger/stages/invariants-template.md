@@ -1,5 +1,7 @@
 # <project> — Design invariants
 
+<!-- A filled-in, scrubbed example from a real project: `../examples/invariants-example.md` -->
+
 status: FOR OWNER REVIEW     <!-- FOR OWNER REVIEW | REVIEWED <date> -->
 
 Standing architectural rules the owner has set. Every sheet, spec, red-team and drift check is checked
