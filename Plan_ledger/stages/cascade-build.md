@@ -1,4 +1,4 @@
-# Cascade build questions — plan-ledger stage 7 with the mode on
+# Cascade build questions — plan-ledger stage 7 in cascade mode
 
 The builder's questions about the plan are answered the same way the plan was made. Messages from the builder are still logged in the Coordination log and not relayed to the owner in pieces. For each question:
 1. **Answerable from the spec by line:** answer with the line reference and nothing else (unchanged from stage 7).
