@@ -12,7 +12,5 @@ Output, after your declared inputs, exactly:
 - `ANSWER:` the option (or your added answer, or NO RULE DECIDES)
 - `RULES:` the ids you used and the deciding words quoted
 - `CONFIDENCE:` H (the quoted words alone decide it) or M
-- `FLAG:` none, review (the owner should see this line), or owner (it is an always-to-owner item that changes the owner's decision of that kind, or a gap condition applies, naming which; an equivalent rewrite or an item an owner ruling already decides is not an owner flag)
+- `FLAG:` none, review (the owner should see this line), or owner (it is an always-to-owner item that changes the owner's decision of that kind, or a gap condition applies, naming which; an equivalent rewrite of a formula or code, or an item a rule or an earlier owner line already decides, is not an owner flag)
 - `WHY NOT ANOTHER:` one line on what would make a different option right
-
-In your own words, never write "ask the owner" or "open for the owner"; where the owner may be needed, write `batch candidate: <condition>`, naming the gap condition or always-to-owner entry. The `FLAG:` line above is still how you mark an item as an owner item.

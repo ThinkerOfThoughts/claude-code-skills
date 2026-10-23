@@ -51,8 +51,8 @@ material update. Stage numbers are canonical (ledger, METHODOLOGY, decisions log
 
 1. **Provenance or it is not a decision.** Every ledger line carries one tag: `[OWNER <ts> "quote"]`
    (owner's own words; use the owner's name from config), `[PROPOSED:<who> | CONFIRMED <ts> "quote"]`,
-   `[PROPOSED:<who> | UNCONFIRMED]`, `[INHERITED:<where> | UNEXAMINED]`, or `[DERIVED]` (a pure
-   mechanical consequence of a confirmed line, named). Nothing hands off while any mechanism-class line
+   `[PROPOSED:<who> | UNCONFIRMED]`, `[INHERITED:<where> | UNEXAMINED]`, `[DERIVED]` (a pure
+   mechanical consequence of a confirmed line, named), or, in cascade mode, `[DERIVED: equivalent rewrite of <what>]`. Nothing hands off while any mechanism-class line
    is UNCONFIRMED or INHERITED. An agent's recommendation, a research report's framing, a teammate's
    self-resolution, and an existing table in the code are all PROPOSED or INHERITED, never OWNER.
 2. **Direction-carrying decisions are confirmed as a sentence.** If the decision contains an ordering,
@@ -88,7 +88,7 @@ these by inference, including "the owner would obviously want X".
 
 ## Cascade mode
 
-This mode is called **cascade**; the ordinary mode is **normal**. The mode is chosen per request: invoking the skill as `/plan-ledger cascade` turns cascade mode on for that run, and `/plan-ledger normal` turns it off for that run. A new ledger takes the mode the invocation names, else the config's `cascade.enabled` (absent means normal), and records it in its `mode:` line. An existing ledger keeps the mode on its `mode:` line (a ledger with no `mode:` line takes the config default and gets the line); an invocation naming the other mode for an existing ledger stops, and you tell the owner rather than switch silently. Cascade mode needs the config's `cascade` block; if it is missing, stop and tell the owner the config needs one.
+This mode is called **cascade**; the ordinary mode is **normal**. The mode is chosen per request: invoking the skill as `/plan-ledger cascade` turns cascade mode on for that ledger, and `/plan-ledger normal` turns it off for that ledger. A new ledger takes the mode the invocation names, else the config's `cascade.enabled` (absent means normal), and records it in its `mode:` line. An existing ledger keeps the mode on its `mode:` line (a ledger with no `mode:` line takes the config default and gets the line); an invocation naming the other mode for an existing ledger stops, and you tell the owner rather than switch silently. Cascade mode needs the config's `cascade` block; if it is missing, stop and tell the owner the config needs one.
 
 Skip the rest of this section in normal mode; plan-ledger then behaves exactly as described above.
 

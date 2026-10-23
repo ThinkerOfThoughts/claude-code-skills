@@ -19,6 +19,6 @@
    optimizes against a neighbour's goal (e.g. "keep this PR disjoint" defeating "one database") is a
    finding.
 
-> **Cascade mode** (only in cascade mode): also validate every path under `cascade` (a dead `redteam` or `owner_transcripts` path stops and asks; `principles_path` and `records_dir` may be absent, which means first use), add the Cascade block of `stages/ledger-template.md` to the ledger, and run `stages/cascade-first-use.md` before stage 1.
+> **Cascade mode** (only in cascade mode): also validate every path under `cascade` (a dead `redteam` or `owner_transcripts` path stops and asks; `principles_path` and `records_dir` may be absent, which means first use), add the Cascade block of `stages/ledger-template.md` to the ledger, and run `stages/cascade-first-use.md` before stage 1. A ledger stopped at stage 0 holds no decisions: discard it and recreate it.
 
 6. Tell the owner the ledger path and the Secret token in one line. Proceed to stage 1.

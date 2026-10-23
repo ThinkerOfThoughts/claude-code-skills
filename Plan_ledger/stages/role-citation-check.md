@@ -5,7 +5,7 @@ Task: confirm that each derived line's citation actually decides it.
 Inputs: the lines to check (ledger path and line ids); the principles sheet; the invariants doc; the ledger; `cascade.owner_transcripts`; the mechanism tally; trio records for TRIO lines; facts files; `stages/cascade-method.md` (definitions, gap rule, pile-up).
 
 For each line give: the citation, a verdict, a reason, a route, and a tag audit.
-- **DECIDES**: the cited words decide this line, by plain application or by a reasonable reading; nothing more is needed. A `[DERIVED from S<n>]` line is judged the same way against the line it names. For a TRIO line the cited rules plus the trio record together decide it.
+- **DECIDES**: the cited words decide this line, by plain application or by a reasonable reading; nothing more is needed. A `[DERIVED from S<n>]` line is judged the same way against the line it names. A `[DERIVED: equivalent rewrite of <what>]` line DECIDES only if it computes the same results as <what>; check the algebra or the logic. For a TRIO line the cited rules plus the trio record together decide it.
 - **PARTIAL**: the cite points the right way but leaves a choice open.
 - **DOES NOT DECIDE**: the cited rule says nothing that settles the line.
 - **MISQUOTE**: a quoted owner or rule text is not what the source says (altered, paraphrased, or only an assistant wrote it).

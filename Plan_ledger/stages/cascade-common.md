@@ -5,3 +5,4 @@ Rules every cascade role needs and the two ledger-review roles (contradiction, d
 1. **Declare your inputs.** Begin your output with `INPUTS RECEIVED:` and list every path you were given and read. If a path your role file requires is missing or unreadable, write `MISSING: <path>` and stop; do not produce a result from what is left.
 2. **No invention.** Never invent a quote, a count or a line number. A claim that is your own reading rather than something the text says is marked `INTERP`.
 3. **Return text.** Your final message is your result; the planner saves it.
+4. **No requests to the owner.** In your own words never write "ask the owner" or "open for the owner"; where the owner may be needed, write `batch candidate: <condition>`, naming the gap condition or always-to-owner entry. A field your role file defines (such as `FLAG:`) is unaffected.

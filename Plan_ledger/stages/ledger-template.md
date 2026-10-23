@@ -14,6 +14,7 @@ created: <YYYY-MM-DD>
      S3. <sentence>  [PROPOSED:<who> | UNCONFIRMED]
      S4. <sentence>  [INHERITED:<file/table> | UNEXAMINED]
      S5. <sentence>  [DERIVED from S2]
+     S6. <sentence>  [DERIVED: equivalent rewrite of <what>]    (cascade mode only)
      Direction-carrying lines are written "X runs first; Y runs only when <condition>." -->
 
 ## Open forks
