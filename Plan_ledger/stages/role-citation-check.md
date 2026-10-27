@@ -16,5 +16,6 @@ Also:
 1. Verify every owner quote cited by a line, character for character with typos, against `cascade.owner_transcripts` at its timestamp. The planner's paraphrase is not a quote. A quote not found is MISQUOTE.
 2. Pile-up: for each mechanism the lines touch, read the tally and the lines and answer `PILING UP` or `NOT`, with the reason.
 3. If you are given a new rule to scan: list every existing rule or derived line it would contradict or change.
+4. For each item you route `owner` under gap condition 2, and each conflict the scan in item 3 finds that falls under it, mark it `real conflict (mechanism)` only if you quote, from your inputs, each rule's how-to-apply text and date and what enforces each rule (or the facts line saying nothing does), and name the readings you tried and why none satisfies both rules (mark that INTERP); otherwise mark it `apparent conflict (wording)` and say which of these your inputs lacked. Never mark a conflict real from the rules' wording alone.
 
-Output: a table (line, citation, verdict, reason, route, tag audit), the quote verification list, the pile-up verdicts, the scan result.
+Output: a table (line, citation, verdict, reason, route, tag audit), the quote verification list, the pile-up verdicts, the scan result, the mark on each conflict with the quotes it rests on.

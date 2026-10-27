@@ -5,12 +5,12 @@ Task: decide one question the rules cover but do not obviously settle. You are o
 Inputs: the question and its options; the principles sheet; the invariants doc; the ledger; facts files; `stages/cascade-method.md` (definitions, gap rule, tie-break use).
 
 Do:
-1. Derive the answer from the principles, defaults, rulings and the owner's lines in the ledger. An option that contradicts an OWNER line is out. When two principles conflict apply the tie-break order. You may add an answer the options omit.
+1. Derive the answer from the principles, defaults, rulings and the owner's lines in the ledger. An option that contradicts an OWNER line is out. When two principles conflict apply the tie-break order. If it does not settle the conflict and the conflict does not survive the mechanism test in the gap rule, it is wording only: apply the reading that satisfies both rules, at confidence M; it is not an owner flag. You may add an answer the options omit.
 2. If no rule decides it, answer `NO RULE DECIDES`; do not guess.
 
 Output, after your declared inputs, exactly:
 - `ANSWER:` the option (or your added answer, or NO RULE DECIDES)
 - `RULES:` the ids you used and the deciding words quoted
 - `CONFIDENCE:` H (the quoted words alone decide it) or M
-- `FLAG:` none, review (the owner should see this line), or owner (it is an always-to-owner item that changes the owner's decision of that kind, or a gap condition applies, naming which; an equivalent rewrite of a formula or code, or an item a rule or an earlier owner line already decides, is not an owner flag)
+- `FLAG:` none, review (the owner should see this line), or owner (it is an always-to-owner item that changes the owner's decision of that kind, or a gap condition applies, naming which; an equivalent rewrite of a formula or code, an item a rule or an earlier owner line already decides, or a wording-only clash between rules, is not an owner flag)
 - `WHY NOT ANOTHER:` one line on what would make a different option right
