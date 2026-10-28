@@ -289,11 +289,14 @@ stated here as the caller's operating bound.
 **One runner per change (OR1; the runner half is skill-enforced, the orchestrator half is
 caller-side).** When the loop is delegated, one runner agent handles exactly one change, and a change
 is one pass of the loop: one spec, one criteria set, one `decisions.md`. A list of increments is
-several changes, however the orchestrator names the folders, and each gets its own runner. When a
-runner finishes its change (gates passed, work committed, final report returned), the orchestrator
-starts a fresh runner for the next change. It does not send the next change to the runner that just
-finished. A runner that returns a human-gate question (RAT3) has not finished: the human's answer
-goes back to that same runner, and no other change starts on that branch meanwhile. *Why:* every tool
+several changes, however the orchestrator names the folders, and each gets its own runner. A runner
+handed more than one change takes the first and reports the rest back unstarted. When a runner
+finishes its change (gates passed, work committed or otherwise saved, final report returned), the
+orchestrator starts a fresh runner for the next change. It does not send the next change to the
+runner that just finished. A runner that returns a human-gate question (RAT3) or hands a check to the
+orchestrator (stage 8, FG) has not finished: the answer or result goes back to that same runner, and
+no other change starts on that branch meanwhile. If that runner cannot be resumed, a fresh runner
+continues the same change from its records. *Why:* every tool
 call a runner makes re-reads its whole context, and once a change is done that context (its plans,
 review reports, diffs and test output) is spent material the next change never needs. In one project
 run, runners given 3 to 8 increments in a row together used over half of that day's agent tokens,
@@ -307,6 +310,7 @@ records. Before it reports, the runner makes sure that anything the next change 
 in its change folder (the stage documents and `decisions.md`), not left in its own head. Its report is
 the index to those records and names: the branch and commit, the change folder path, each gate's
 outcome, open items, the checks it ran and where, and what it did not verify. The orchestrator starts
-the next runner with the change request, the config path, that report and the paths of the records,
-and the runner opens only the earlier records its change depends on. The orchestrator carries nothing
-else in agent context; owner constraints and relayed answers go down verbatim, as OC4 and RAT3 require.
+the next runner with the change request, the config path, that report and the paths of the records
+(and of any shared log it keeps), and the runner opens only the earlier records its change depends
+on, treating the report as a claim to check against them. The orchestrator carries nothing else in
+agent context; owner constraints and relayed answers go down verbatim, as OC4 and RAT3 require.
