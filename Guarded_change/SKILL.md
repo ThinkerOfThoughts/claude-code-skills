@@ -88,6 +88,11 @@ backgrounded before ending the turn to await a completion notification, because 
 agent does not receive its own background task's completion (it routes to main), which would
 deadlock the runner on its own gate (full rule: `stages/stage-8.md`, FG).
 
+**One runner per change (OR1).** A delegated runner takes exactly one change, and the orchestrator
+starts a fresh runner for the next one; the runner's report and its change folder are the whole
+hand-off. The reason, the same-branch ordering and the report's contents are in `METHODOLOGY.md`
+"Human-in-the-loop", for the runner and the orchestrator alike.
+
 ## Self-check / dogfooding
 
 This skill can be run on its own artifacts: treat `METHODOLOGY.md` + `SKILL.md` + the `stages/`

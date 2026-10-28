@@ -209,6 +209,9 @@ rule: `stages/stage-3.md` (RAT1/RAT2).
 
 Together these double as the audit trail and as context for reconstructing the work if lost.
 
+Under delegation these records are also the hand-off from one runner to the next (OR1, in
+"Human-in-the-loop" below).
+
 ---
 
 ## Human-in-the-loop
@@ -282,3 +285,28 @@ stated here as the caller's operating bound.
   (downstream reviewers see it as the runner's proposal, nothing flagging its provenance) and hands
   the **less-informed** party's guess down as a spec — the runner has read the artifact and run the
   reviewers; the orchestrator, under OC2/OC3, deliberately has not.
+
+**One runner per change (OR1; the runner half is skill-enforced, the orchestrator half is
+caller-side).** When the loop is delegated, one runner agent handles exactly one change, and a change
+is one pass of the loop: one spec, one criteria set, one `decisions.md`. A list of increments is
+several changes, however the orchestrator names the folders, and each gets its own runner. When a
+runner finishes its change (gates passed, work committed, final report returned), the orchestrator
+starts a fresh runner for the next change. It does not send the next change to the runner that just
+finished. A runner that returns a human-gate question (RAT3) has not finished: the human's answer
+goes back to that same runner, and no other change starts on that branch meanwhile. *Why:* every tool
+call a runner makes re-reads its whole context, and once a change is done that context (its plans,
+review reports, diffs and test output) is spent material the next change never needs. In one project
+run, runners given 3 to 8 increments in a row together used over half of that day's agent tokens,
+almost all of it re-reading their own growing context; a fresh runner pays only for the change in
+front of it. *Same branch:* a branch is one linear history in one working tree, so changes on one
+branch still run one at a time. Fresh runners started one after another meet that rule just as well
+as one long-lived runner does, so the rule costs no ordering and no parallelism.
+
+*Nothing rides in a context.* A fresh runner knows only what is on disk, so the hand-off is the
+records. Before it reports, the runner makes sure that anything the next change could need is written
+in its change folder (the stage documents and `decisions.md`), not left in its own head. Its report is
+the index to those records and names: the branch and commit, the change folder path, each gate's
+outcome, open items, the checks it ran and where, and what it did not verify. The orchestrator starts
+the next runner with the change request, the config path, that report and the paths of the records,
+and the runner opens only the earlier records its change depends on. The orchestrator carries nothing
+else in agent context; owner constraints and relayed answers go down verbatim, as OC4 and RAT3 require.
