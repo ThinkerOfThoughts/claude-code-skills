@@ -156,12 +156,12 @@ Rules:
   No baseline → stage 8 runs conformance-only and says so.
 - **`removed_names_registry` is optional.** Name the one test that holds the project's list of
   names that must not reappear; a removal criterion then adds a line to it instead of writing a
-  test of its own (`stages/stage-1.5.md` PH, `stages/stage-8.md` PT). Stage 8 checks that the path
-  exists in the checkout and treats a missing file as unset.
+  test of its own (`stages/stage-1.5.md` PH, `stages/stage-8.md` PT). The run checks at its start
+  that the path exists in the checkout and treats a missing file as unset.
 - **`new_tests_fail_on_base_check` is optional.** Name the CI check, and where it is defined, that
   fails a pull request's new tests against the base code (free text). Stage 8 may rely on it only
-  by citing a completed passing run of it on the change; a check that has not run, or that exempts
-  the test, is not evidence (`stages/stage-8.md` PT).
+  by citing a completed passing run of it on the commit it verified; a check that has not run, is not
+  on the base branch yet, or exempts the test, is not evidence (`stages/stage-8.md` PT).
 - If a change needs a signal the project doesn't yet expose, the **plan (stage 2) adds the
   instrumentation** — and the config's `metrics`/`check` are updated as part of that change.
 

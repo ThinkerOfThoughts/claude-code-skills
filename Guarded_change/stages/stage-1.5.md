@@ -72,7 +72,9 @@ the proof home says where the proof lives once the run ends. Classify the criter
   project, where the project keeps a test suite, with such wording promises pinned as one snapshot
   per set rather than a test per phrase. Only behavior criteria get a permanent test. A behavior
   criterion that can only be verified in the assembled system (ISO) keeps that venue and is never
-  given a mocked isolated stand-in, which would be the H5 proxy path.
+  given a mocked isolated stand-in, which would be the H5 proxy path. Where the project keeps no
+  test suite, or the behavior can only be exercised in the assembled system, the proof home is the
+  executed run recorded in `8-harness.md`.
 - **Documentation.** It states what prose says or names where the prose is not such a promise: a
   comment, docstring, help text, tool description, README, a log line nothing parses. Proof home:
   a **one-off check**, executed once at stage 8 (a positive per-site assertion shown able to fail,
@@ -82,8 +84,9 @@ the proof home says where the proof lives once the run ends. Classify the criter
   pinning its words.)
 - **Removal.** It states that a name, file, flag or code path is gone or no longer referenced.
   Proof home: when the project config names a `removed_names_registry`, **one line added to that
-  registry**, not a new test; otherwise a **one-off check** recorded in `8-harness.md`. A removal
-  with observable behavior (a route that now answers "not found") is a behavior criterion.
+  registry**, not a new test; otherwise, or for a removed file, flag or code path that has no name
+  to list, a **one-off check** recorded in `8-harness.md`. The registry file is checked to exist
+  before the criteria are written (PT). A removal with observable behavior (a route that now answers "not found") is a behavior criterion.
 
 The classification test: a criterion that can fail only because someone edits prose or re-adds a
 name, never because the system does something different, is documentation or removal. The proof

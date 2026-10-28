@@ -178,7 +178,7 @@ component, or resolve the harness-reviewing-the-harness recursion. That parent p
   output and the result are recorded in `8-harness.md`, and no test is committed for them.
 - **Removal where the config names a `removed_names_registry`:** add the name as one line to that
   registry, the project's single standing guard against names returning, instead of writing a
-  test. Validate at run start that the registry path exists in the checkout (as CFG3 does for
+  test. The line is written at stage 5 with the build, so it is in the reviewed diff. Validate at run start that the registry path exists in the checkout (as CFG3 does for
   reviewer paths); if it does not, treat the key as unset, use the one-off check, and tell the
   human. Show the new line able to fail (ST1.5f): in a scratch copy re-add the name, confirm the
   registry test fails, and record that.
@@ -189,7 +189,7 @@ component, or resolve the harness-reviewing-the-harness recursion. That parent p
 - **The fail-on-base evidence for a permanent test that guards a fix** is either a recorded local
   self-test or, when the project config names a CI check that fails a pull request's new tests
   against the base code (`new_tests_fail_on_base_check`), a cited **completed passing run of that
-  check on this change** (a run id or link). A check that has not run yet, is not on the base
+  check on this change** (a run id or link, for the commit stage 8 verified). A check that has not run yet, is not on the base
   branch yet, or exempts the test by design is no evidence. With neither, the row is
   `verified = no`. The check covers tests only; one-off checks keep their local self-test.
 - **One-off checks are specified in the plan** (stage 2) and reviewed at stage 6 with the diff,

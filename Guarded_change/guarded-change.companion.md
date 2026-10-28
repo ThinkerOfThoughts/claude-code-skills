@@ -40,7 +40,7 @@ measurement:
 
 # PROOF HOMES (stage 1.5 PH, stage 8 PT). Both keys are optional in the contract; this project sets both.
 removed_names_registry: "tests/unit/test_removed_names_stay_removed.py"   # a removal criterion adds ONE LINE here instead of writing a test
-new_tests_fail_on_base_check: "CI check: a pull request's new or changed tests must fail against the base code (lands with companion-emergence PR #543)"
+new_tests_fail_on_base_check: "CI job new-tests-fail-on-base (scripts/new_tests_fail_on_base.py, run from .github/workflows/test.yml): every NEW test of a pull request must fail against the base code; a changed test that keeps its id is not checked (lands with companion-emergence PR #543)"
 
 metrics:                  # standing regression metrics (source: the JSONL logs)
   # CURRENT CAPABILITY (read first): NO replay/held workload exists yet, so regression for this
