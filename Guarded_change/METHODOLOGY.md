@@ -70,14 +70,14 @@ where, at each gate) lives written-in-full in each gate file — `stages/stage-4
 |---|---|---|
 | 0 — Baseline | `stages/stage-0.md` | baseline only if a prior version + config baseline exist |
 | 1 — Spec | `stages/stage-1.md` | rich problem def; declares expected touched files; refuse-to-start check |
-| 1.5 — Criteria | `stages/stage-1.5.md` | checkable, labeled accept bar; position/concurrency criteria; self-check criteria; default-to-isolation testability |
+| 1.5 — Criteria | `stages/stage-1.5.md` | checkable, labeled accept bar; proof home per criterion (only behavior criteria leave a permanent test); position/concurrency criteria; self-check criteria; default-to-isolation testability |
 | 2 — Plan | `stages/stage-2.md` | how + measurement + instrumentation + thresholds; accessor enumeration; regression-history check |
-| 3 — Red-team plan | `stages/stage-3.md` + `stages/charter.md` | cold review of {1,1.5,2}; coverage challenge + label audit; five-lens output shape |
+| 3 — Red-team plan | `stages/stage-3.md` + `stages/charter.md` | cold review of {1,1.5,2}; coverage challenge + label audit; proof-home audit; five-lens output shape |
 | 4 — Gate | `stages/stage-4.md` | route by severity; criteria freeze; path-validation blocks gate 4; rounds-without-a-run termination cap |
-| 5 — Build | `stages/stage-5.md` | implement per the plan |
-| 6 — Red-team code | `stages/stage-6.md` + `stages/charter.md` | cold review of code vs {1.5,2}; mechanical `git diff`; five-lens output shape |
+| 5 — Build | `stages/stage-5.md` | implement per the plan (tests written to drive the build are scaffolding) |
+| 6 — Red-team code | `stages/stage-6.md` + `stages/charter.md` | cold review of code vs {1.5,2}; mechanical `git diff`; test checks (proof home, timing); five-lens output shape |
 | 7 — Gate | `stages/stage-7.md` | route by severity |
-| 8 — Harness | `stages/stage-8.md` | conformance + regression; per-criterion verification table; freeze verify; foreground-verification; isolation-harness cap |
+| 8 — Harness | `stages/stage-8.md` | conformance + regression; per-criterion verification table; freeze verify; one-off proofs recorded, not committed; foreground-verification; isolation-harness cap |
 
 The **red-team charter** (five lenses + discipline + provenance + the conditional
 position/concurrency lenses) is shared by stages 3 and 6 in `stages/charter.md`. The **severity
@@ -124,6 +124,14 @@ measurement:
     how: <command to run | manual procedure description>
     output: <where measured metrics land>
 
+removed_names_registry: <path>   # OPTIONAL. The project's one test holding a list of names that must
+                                 # not reappear. A removal criterion adds a line here instead of
+                                 # writing a new test (stage 8, PT). Omit if the project has none.
+new_tests_fail_on_base_check: <the CI check, by name and where it is defined>   # OPTIONAL. A check
+                                 # that fails a pull request's new tests against the base code. When
+                                 # present, a cited completed passing run of it on the change is the
+                                 # fail-on-base evidence for a permanent test (stage 8, PT).
+
 metrics:                  # standing project metrics used for REGRESSION
   - name: <metric>
     source: <file/field or how to extract>
@@ -146,6 +154,14 @@ Rules:
   config. The config holds standing measurement/regression setup that's stable across changes.
 - **Criteria are mandatory; baseline is optional.** No criteria → the loop won't pass stage 3.
   No baseline → stage 8 runs conformance-only and says so.
+- **`removed_names_registry` is optional.** Name the one test that holds the project's list of
+  names that must not reappear; a removal criterion then adds a line to it instead of writing a
+  test of its own (`stages/stage-1.5.md` PH, `stages/stage-8.md` PT). Stage 8 checks that the path
+  exists in the checkout and treats a missing file as unset.
+- **`new_tests_fail_on_base_check` is optional.** Name the CI check, and where it is defined, that
+  fails a pull request's new tests against the base code (free text). Stage 8 may rely on it only
+  by citing a completed passing run of it on the change; a check that has not run, or that exempts
+  the test, is not evidence (`stages/stage-8.md` PT).
 - If a change needs a signal the project doesn't yet expose, the **plan (stage 2) adds the
   instrumentation** — and the config's `metrics`/`check` are updated as part of that change.
 
@@ -163,7 +179,7 @@ One folder per change, e.g. `changes/<slug>/`:
 3-redteam-plan.md   cold review of {1,1.5,2} with ranked findings
    ...build...
 6-redteam-code.md   cold review of code vs {1.5,2}
-8-harness.md        conformance + regression results, verdict
+8-harness.md        conformance + regression results, per-criterion table with proof homes, one-off check results, verdict
 decisions.md        append-only gate log (see below)
 ```
 

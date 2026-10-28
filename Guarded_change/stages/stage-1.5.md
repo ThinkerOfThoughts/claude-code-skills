@@ -10,7 +10,8 @@ Write `1.5-criteria.md`: a *checkable* accept bar. Each criterion is either **au
 written scale + pass definition). **Mandatory.** If you cannot state checkable criteria in
 *either* form, stop and resolve with the user — the loop may not pass stage 3 without them.
 **Label each criterion gating or advisory (default gating; advisory only with a stated
-reason).** If the change touches a position-sensitive assembly, add a behavior-preservation
+reason).** Also name each criterion's proof home, meaning where its proof is kept and what, if
+anything, stays in the project (PH, below). If the change touches a position-sensitive assembly, add a behavior-preservation
 criterion verified by execution; if it introduces a new shared-state accessor, add a
 no-lost-update criterion verified by an executed interleaving.
 
@@ -58,6 +59,41 @@ choice with a stated reason — an unlabeled criterion is gating, so a forgotten
 safe. (This is the criterion-level sibling of the gating-vs-advisory distinction drawn for
 regression *metrics* under "Regression must be measured on a comparable workload"; the weight
 there protects against false regressions, the weight here against unverified completion.)
+
+**Each criterion names its proof home; only behavior criteria leave a permanent test (PH).**
+Besides its label, every criterion states where its proof is kept and what, if anything, stays in
+the project afterwards: its **proof home**. This is a different axis from the
+isolation-versus-assembled-system venue of ISO and H9: that says where a behavior is exercised,
+the proof home says where the proof lives once the run ends. Classify the criterion first:
+- **Behavior.** It states something the changed system does, observable through its inputs,
+  outputs or effects, and it stays true under any correct reimplementation. Wording counts as
+  behavior only where the wording is a promise: a format a program parses, text the owner has
+  approved byte for byte, a log line something consumes. Proof home: a **permanent test** in the
+  project, where the project keeps a test suite, with such wording promises pinned as one snapshot
+  per set rather than a test per phrase. Only behavior criteria get a permanent test. A behavior
+  criterion that can only be verified in the assembled system (ISO) keeps that venue and is never
+  given a mocked isolated stand-in, which would be the H5 proxy path.
+- **Documentation.** It states what prose says or names where the prose is not such a promise: a
+  comment, docstring, help text, tool description, README, a log line nothing parses. Proof home:
+  a **one-off check**, executed once at stage 8 (a positive per-site assertion shown able to fail,
+  ST1.5f) and recorded in `8-harness.md`; no test is committed. A reviewer's quoted reading may
+  corroborate the check but, for a gating criterion, does not replace it. (Where the artifact
+  under change is itself a prompt, its behavior is verified by running it, ST1.5d and H3, not by
+  pinning its words.)
+- **Removal.** It states that a name, file, flag or code path is gone or no longer referenced.
+  Proof home: when the project config names a `removed_names_registry`, **one line added to that
+  registry**, not a new test; otherwise a **one-off check** recorded in `8-harness.md`. A removal
+  with observable behavior (a route that now answers "not found") is a behavior criterion.
+
+The classification test: a criterion that can fail only because someone edits prose or re-adds a
+name, never because the system does something different, is documentation or removal. The proof
+home decides **what stays behind, never whether the criterion is verified**: every gating
+criterion is still verified before done (CP5, H5). It is part of the criterion and freezes with it
+(FRZ); the stage-3 label audit challenges a behavior criterion filed under another kind to avoid
+writing a test (CH9). A criterion with no proof home is incomplete and fails stage 3; criteria
+frozen before this rule existed gain their proof homes through FRZ (a `decisions.md` entry and a
+targeted re-red-team of the added field). A test written to drive the build is scaffolding, not a
+proof home (SCAF, `stages/stage-5.md`).
 
 **Position-sensitive change → a behavior-preservation criterion, verified by execution
 (ST1.5d, fires only when the change touches a position-sensitive assembly).** If the change

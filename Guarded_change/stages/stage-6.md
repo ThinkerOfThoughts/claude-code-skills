@@ -7,7 +7,8 @@
 bullets + provenance + spot-verify + the conditional position/concurrency lenses), then apply
 the additions below.** The charter core is given to the reviewer verbatim; the stage-6 additions
 below (the mechanical-diff duty and the five-lens output-shape requirement) govern how the
-reviewed diff is produced and how the reviewer's output must be shaped.
+reviewed diff is produced and how the reviewer's output must be shaped. ST6f adds the checks the
+reviewer applies to the tests the diff adds.
 
 ## Procedure
 
@@ -21,7 +22,8 @@ cited file:lines actually exist** (guards fabricated citations — the charter's
 CH6). Generate the reviewed diff **mechanically** (`git diff <recorded-base>`; record the
 command) — hand-curated ⇒ un-run for the omitted scope. Charter the reviewer for the **five-lens
 output shape up front**, and reject a returned record missing any lens — re-run fresh, never
-re-polled (ST6e). Write `6-redteam-code.md` as a verbatim
+re-polled (ST6e). Charter it for the ST6f test checks as well and require their labelled section.
+Write `6-redteam-code.md` as a verbatim
 record (same provenance duties as stage 3).
 
 ## Stage-6 addition to the charter
@@ -30,6 +32,22 @@ record (same provenance duties as stage 3).
 generated **mechanically** (`git diff` against the recorded base, or an equivalent captured
 command), the command recorded in `6-redteam-code.md` — a hand-curated file set = the review is
 un-run for the omitted scope.
+
+**Stage-6 reviewer checks the tests the diff adds (ST6f).** The charter given to the stage-6
+reviewer must also require it to examine every test the diff adds or changes, and the one-off
+checks the plan specified (stage 2), for the two things below, and to report them in a labelled
+section of its own ("none found" counts; a record without the section is incomplete and treated
+as un-run for ST6f, as stage 3 treats a missing coverage challenge under CH8). **Proof home:**
+each permanent test must be the proof of a behavior criterion (PH, `stages/stage-1.5.md`); a test
+that reads source text or docstrings, that searches the source tree for a removed name (other
+than the project's `removed_names_registry`), or that breaks production code to show another test
+can fail, and any one-off check committed as a test, is a finding. **Timing:** a permanent test
+must not wait out a fixed sleep, run out a real timeout, or poll against a wall-clock deadline
+where an event, a condition or an injected clock would test the same behavior; the finding names
+the replacement. A test whose subject is time itself, where a real timeout is the thing under
+test and cannot be injected, is exempt when the test states why. Each finding cites file:line and
+is ranked by the reviewer as usual; a violation is normally minor (delete, fold or rewrite in
+place).
 
 **Stage-6 reviewer emits all five lenses explicitly (ST6e).** The charter the stage-6 reviewer
 is given must require it to render **each of the five lenses** — Factual, Logical, Missed

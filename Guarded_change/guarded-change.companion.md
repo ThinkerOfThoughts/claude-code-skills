@@ -38,6 +38,10 @@ measurement:
       new version string.
     output: "changes/<slug>/8-harness.md"
 
+# PROOF HOMES (stage 1.5 PH, stage 8 PT). Both keys are optional in the contract; this project sets both.
+removed_names_registry: "tests/unit/test_removed_names_stay_removed.py"   # a removal criterion adds ONE LINE here instead of writing a test
+new_tests_fail_on_base_check: "CI check: a pull request's new or changed tests must fail against the base code (lands with companion-emergence PR #543)"
+
 metrics:                  # standing regression metrics (source: the JSONL logs)
   # CURRENT CAPABILITY (read first): NO replay/held workload exists yet, so regression for this
   # project is ADVISORY-ONLY across the board today — all metrics are measured over "whatever
@@ -227,6 +231,15 @@ metrics:                  # standing regression metrics (source: the JSONL logs)
   turns** (ideally a fixed replay script), else a change that legitimately does more will
   show a false regression. Until a replay harness exists, treat deltas as advisory signals
   and confirm with the conformance check.
+- **Proof homes.** Only behavior criteria leave a permanent test. A removal criterion adds one line
+  to `removed_names_registry`. The file must exist in the checkout: today it exists on the
+  test-suite audit branch only, so on a checkout without it stage 8 treats the key as unset and
+  uses a one-off check. The CI check named by `new_tests_fail_on_base_check` lands with
+  companion-emergence PR #543, so stage 8 can rely on it for permanent tests that guard a fix, by
+  citing a completed passing run on the change's pull request. Until it is on the base branch and
+  has run, stage 8 runs the local self-test in a scratch copy instead, and tests the check exempts
+  by design keep the local self-test. One-off checks and H6 oracle self-tests are recorded in
+  `8-harness.md`, not committed.
 - **Baseline** exists for every change against a shipped version → stage 8 runs conformance
   *and* (workload-permitting) regression. Capture it from the logs *before* installing the
   new build, and record both version strings.

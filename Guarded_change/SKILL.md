@@ -35,19 +35,19 @@ the full procedure + the rules it must apply:**
 |---|---|---|
 | **0** | Baseline: snapshot current behavior (only if a prior version + config baseline exist; else skip → conformance-only) | → `stages/stage-0.md` |
 | **1** | Spec: rich problem definition; declare the expected touched files | → `stages/stage-1.md` |
-| **1.5** | Criteria: the checkable, labeled (gating/advisory) accept bar — mandatory | → `stages/stage-1.5.md` |
+| **1.5** | Criteria: the checkable, labeled (gating/advisory) accept bar with a proof home per criterion — mandatory | → `stages/stage-1.5.md` |
 | **2** | Plan: how + measurement + instrumentation + thresholds | → `stages/stage-2.md` |
-| **3** | Red-team the plan: cold review of {1, 1.5, 2} — the assumption-catcher | → `stages/stage-3.md` (+ `stages/charter.md`) |
+| **3** | Red-team the plan: cold review of {1, 1.5, 2} (incl. the proof-home audit) — the assumption-catcher | → `stages/stage-3.md` (+ `stages/charter.md`) |
 | **4** | Gate: route by worst finding; freeze criteria on route-to-build | → `stages/stage-4.md` |
-| **5** | Build: implement per the plan | → `stages/stage-5.md` |
-| **6** | Red-team the code: cold review of code vs {1.5, 2}; mechanical `git diff` | → `stages/stage-6.md` (+ `stages/charter.md`) |
+| **5** | Build: implement per the plan (tests written to drive the build are scaffolding) | → `stages/stage-5.md` |
+| **6** | Red-team the code: cold review of code vs {1.5, 2}; mechanical `git diff` (plus checks on the tests the diff adds) | → `stages/stage-6.md` (+ `stages/charter.md`) |
 | **7** | Gate: route by worst finding | → `stages/stage-7.md` |
-| **8** | Harness: measure → conformance (always) + regression (if baseline) → verdict | → `stages/stage-8.md` |
+| **8** | Harness: measure → conformance (always) + regression (if baseline) → verdict (one-off proofs are recorded, not committed) | → `stages/stage-8.md` |
 
 The **most important gate is stage 3**, not 6 or 8 — the plan-red-team catches a missing
 measurement plan or an un-instrumented change *before a line of code is written*. Stages 3 and 6
 share the red-team charter in `stages/charter.md` (stage 3 adds the coverage-challenge + label
-audit; stage 6 adds the mechanical-diff duty). Gates 4/7/8 each carry the full severity table.
+audit; stage 6 adds the mechanical-diff duty). Stage 3 also audits proof homes and stage 6 checks the tests the diff adds. Gates 4/7/8 each carry the full severity table.
 The **iteration cap** (all gates): after 2 bounces at the same gate on the same finding class,
 stop and a human breaks the tie (see the gate files). A **second, run-level cap** guards the case
 the per-class cap is blind to — *proliferation*, where a **new** finding class each round never

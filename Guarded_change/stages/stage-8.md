@@ -84,8 +84,9 @@ pair it with the positive assertion AND normalize the text first (flatten newlin
 markers) so formatting cannot defeat the sweep.**
 
 **Per-criterion verification table — H7.** `8-harness.md` **must contain a per-criterion
-verification table**: one row per criterion with columns *criterion │ gating/advisory │ path
-exercised │ verified by execution? │ evidence │ result*. The **evidence** cell of every gating
+verification table**: one row per criterion with columns *criterion │ gating/advisory │ proof home │ path
+exercised │ verified by execution? │ evidence │ result*. Where each row's proof is kept afterwards (a permanent test, a registry line,
+or a record in this file) is governed by PT, below. The **evidence** cell of every gating
 `verified = yes` row cites where the raw output lives (the command run + an output file/excerpt);
 for a human-judged-rubric criterion the pointer is the named judge + where the verdict is
 recorded. A gating PASS row with no evidence pointer counts as `verified = no`, and the
@@ -170,6 +171,33 @@ fix — it supplies a default (prefer isolation) and a stop (cap rebuilds, chang
 **not** make the assembled-run test discriminating, attribute an assembled-run failure back to a
 component, or resolve the harness-reviewing-the-harness recursion. That parent problem stays open.
 
+**Only behavior criteria leave a permanent test; everything else is verified once and recorded
+(PT).** `8-harness.md` is where proof is kept for every criterion whose proof home (PH,
+`stages/stage-1.5.md`) is not a permanent test.
+- **Documentation and removal criteria** are verified by their one-off check; the command, its
+  output and the result are recorded in `8-harness.md`, and no test is committed for them.
+- **Removal where the config names a `removed_names_registry`:** add the name as one line to that
+  registry, the project's single standing guard against names returning, instead of writing a
+  test. Validate at run start that the registry path exists in the checkout (as CFG3 does for
+  reviewer paths); if it does not, treat the key as unset, use the one-off check, and tell the
+  human. Show the new line able to fail (ST1.5f): in a scratch copy re-add the name, confirm the
+  registry test fails, and record that.
+- **H6 oracle self-tests are run and recorded, not committed.** The proof that an oracle can fail
+  is needed once. Run it in a scratch copy of the code or against the pre-change commit, never by
+  breaking the tree that will be committed; record the command, the known-bad input and the
+  observed failure in `8-harness.md`; do not add it to the project's tests.
+- **The fail-on-base evidence for a permanent test that guards a fix** is either a recorded local
+  self-test or, when the project config names a CI check that fails a pull request's new tests
+  against the base code (`new_tests_fail_on_base_check`), a cited **completed passing run of that
+  check on this change** (a run id or link). A check that has not run yet, is not on the base
+  branch yet, or exempts the test by design is no evidence. With neither, the row is
+  `verified = no`. The check covers tests only; one-off checks keep their local self-test.
+- **One-off checks are specified in the plan** (stage 2) and reviewed at stage 6 with the diff,
+  which satisfies H6's targeted cold check for them; one first written after stage 6 gets that
+  check as usual.
+- A proof-home change is an edit through FRZ (below), and an H9 venue change does not by itself
+  change the proof home.
+
 ## Core principles + freeze + severity + gate log this stage enforces
 
 **A bar, set first (CP4).** "Done" is defined as measurable acceptance criteria *before*
@@ -205,7 +233,9 @@ post-freeze edit → the affected criteria's PASSes are invalid unless the edit 
 `decisions.md` entry (change + reason) and a targeted re-red-team of the edited criteria. Any
 **weakening** (gating→advisory, a loosened threshold, a narrowed scope) is audited exactly like
 an advisory relabel under the charter's label-audit — it needs a legitimate reason or the
-original stands.
+original stands. Moving a criterion's proof home away from a permanent test is a weakening of the
+same kind; an H9 venue move is a separate edit through FRZ and does not by itself change the
+proof home.
 
 **Severity model and gate routing (SEV1).**
 

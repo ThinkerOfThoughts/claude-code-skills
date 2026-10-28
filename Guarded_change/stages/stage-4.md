@@ -108,6 +108,8 @@ edit → the affected criteria's PASSes are invalid unless the edit carries a `d
 entry (change + reason) and a targeted re-red-team of the edited criteria. Any **weakening**
 (gating→advisory, a loosened threshold, a narrowed scope) is audited exactly like an advisory
 relabel under the charter's label-audit — it needs a legitimate reason or the original stands.
+Moving a criterion's proof home away from a permanent test is a weakening of the same kind; an H9
+venue move is a separate edit through FRZ and does not by itself change the proof home.
 
 **Paths are validated, not assumed — blocks gate 4 (CFG3).** Mechanically check every path
 handed to a cold reviewer (`redteam_context`, the spec's touched files, fixture paths) exists

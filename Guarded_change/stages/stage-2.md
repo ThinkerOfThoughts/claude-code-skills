@@ -7,7 +7,10 @@ measurement, instrumentation, and thresholds.
 
 Write `2-plan.md`: how, **plus** measurement (how each criterion will be verified),
 instrumentation (add to scope if a needed signal is absent), and severity→routing thresholds +
-which metrics are gating vs. advisory. A plan missing these is incomplete. If the change
+which metrics are gating vs. advisory. A plan missing these is incomplete. The plan also lists each criterion's proof home (PH,
+`stages/stage-1.5.md`), names the permanent tests it will add (behavior criteria only), and
+specifies each one-off check (the command, the expected output, and the known-bad input for its
+self-test) so the check exists, and is reviewed at stage 6, before stage 8. If the change
 introduces a new accessor or read-modify-write window over shared mutable state, the plan must
 enumerate every concurrent accessor and state which the guard covers vs. leaves out.
 

@@ -2,7 +2,8 @@
 
 This is the ONE copy of the red-team charter's common core. Stage 3 and stage 6 both read
 it, then add their stage-specific bullets (stage-3.md adds the coverage challenge + the label
-audit; stage-6.md adds the mechanical-diff duty). Verbatim from METHODOLOGY "The red-team
+audit; stage-6.md adds the mechanical-diff duty). Stage 3 also audits proof homes (CH9) and stage 6
+checks the tests the diff adds (ST6f). Verbatim from METHODOLOGY "The red-team
 charter."
 
 ---

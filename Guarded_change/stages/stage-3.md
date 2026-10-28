@@ -51,6 +51,10 @@ weight on each criterion is itself a claim to challenge, not a given:
     representative and was not);
   • a route-(b) named risk-acceptance must actually be present in `decisions.md` where a gating
     criterion is unverified.
+  • every criterion must name a **proof home** (PH, `stages/stage-1.5.md`): challenge a behavior
+    criterion filed as documentation or removal so that no test is written (the proof-home sibling
+    of the advisory relabel), a documentation criterion about wording that is really a promise
+    something depends on, and a criterion with no proof home.
   A gating criterion whose label or verification cannot survive this challenge is treated as
   unverified — the same as if it had been deferred.
 
