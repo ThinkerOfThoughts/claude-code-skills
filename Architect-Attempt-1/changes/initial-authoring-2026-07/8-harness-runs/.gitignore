@@ -1,0 +1,3 @@
+# The B5 dry-run catalog is a real nested git repo (evidence preserved as
+# fixtures/B5-template/git-evidence.txt); do not commit the nested .git.
+B5-catalog/

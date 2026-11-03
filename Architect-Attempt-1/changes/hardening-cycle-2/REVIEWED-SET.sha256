@@ -1,0 +1,19 @@
+# NOT a gate-4 freeze. Gate 4 returned BLOCKER, so no freeze is owed (the freeze fires on
+# route-to-build only). This manifest exists because reviewer G/14 caught a real process defect:
+# 1.5-criteria.md and 5-instrument-evidence.md were EDITED, and oracles/freeze-verify.sh was ADDED,
+# WHILE the three cold reviewers were reading. So "what was reviewed" and "what is on disk" differ,
+# and a later session must not assume otherwise. Recorded 2026-07-25, after the join.
+#
+# Reviewer G's read-time hashes (from 3-redteam-plan.G.verbatim.md, its own provenance section):
+#   1-spec.md                a9d3cef738408ddcc0033b3ca3e7fb8c036c542dfac8f398bfe2be165e6bd49f
+#   1.5-criteria.md          cd9a217e72ee7b56c9c159f45c3c9cd04a4583e955df54c4ed9c1a1fd025d8c7  (later 1f89851f…)
+#   2-plan.md                6a7048ab2858356586a76d86aef87687035175fa891d7bf01aa01751bb042d41
+#   oracles/criteria.tsv     8a36dd2d1e82b62868a1aadc54da7c09bd9e10c9ebaf523c593fa5fb5b10e891
+#   5-instrument-evidence.md 4a3a81e7f5d3df970e9e6992e7299b1bdc4c7a8940e82f0960b6d1fb1285d12c  (later a3199def…)
+#
+# CURRENT (post-join) hashes:
+a9d3cef738408ddcc0033b3ca3e7fb8c036c542dfac8f398bfe2be165e6bd49f  1-spec.md
+1f89851f5a0325c39904288b21e67e4fe8a0871a14f540db6638d0ee7eb0d1c1  1.5-criteria.md
+6a7048ab2858356586a76d86aef87687035175fa891d7bf01aa01751bb042d41  2-plan.md
+8a36dd2d1e82b62868a1aadc54da7c09bd9e10c9ebaf523c593fa5fb5b10e891  oracles/criteria.tsv
+a3199def72a46ba65004688d30d310dbfd9fc8c51fa9e7e10f4278cb557365f4  5-instrument-evidence.md
