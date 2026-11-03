@@ -4,7 +4,7 @@
 
 status: DRAFT     <!-- DRAFT | APPROVED <date> [<OWNER> <ts> "quote"] -->
 
-Source: <the owner's statements | the transcript sift, with the quote-check file>. Cited by id from ledger lines.
+Source: <the owner's statements | the transcript sift, with the quote-check file>. Cited by id from ledger lines. Every derived line, decision sheet and spec is checked against every principle on it (`stages/cascade-method.md` "Compliance").
 
 ## Principles
 P1. <one sentence, the owner's rule>  [<OWNER> <ts> "quote"]

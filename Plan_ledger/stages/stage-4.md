@@ -24,3 +24,5 @@ The builder spec is written FROM the approved sheet. Rules:
   rationale to a linked appendix.
 
 The spec file's basename ends in `-spec.md` or `-brief.md` so the read-gate hook covers it.
+
+> **Cascade mode** (only in cascade mode): the Cascade block's Principles check table (one row per principle on the principles sheet) is copied into the spec with the spec section that meets each row, next to the invariants table, and every spec statement that prescribes how code or data is handled names the existing shared mechanism for each operation it needs or says none exists. The spec meets every principle and prior decision (`stages/cascade-method.md` "Compliance"); the stage-5 cold pass checks it.

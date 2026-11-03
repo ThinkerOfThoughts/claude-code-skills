@@ -7,7 +7,7 @@
 
 status: APPROVED <date> [OWNER <ts> "all are good"]     <!-- v3 split several compound principles into a/b parts; v2 reworded eight lines at the owner's request -->
 
-Source: a sift of several hundred of the owner's past messages, with a separate quote-check pass. A "cold" agent is a fresh reviewer that has not seen the planning conversation; "the trio" is three cold judges whose majority settles a non-obvious call. Each line was narrowed where the check found it over-read. Cited by id from ledger lines. The ids I3, I7, I12, I13 and I14 refer to the example invariants doc.
+Source: a sift of several hundred of the owner's past messages, with a separate quote-check pass. A "cold" agent is a fresh reviewer that has not seen the planning conversation; "the trio" is three cold judges whose majority settles a non-obvious call. Each line was narrowed where the check found it over-read. Cited by id from ledger lines. Every derived line, decision sheet and spec is checked against every principle on it. The ids I3, I7, I12, I13 and I14 refer to the example invariants doc.
 
 ## Principles
 P1. One mechanism, one source of truth: when two paths, timers or lists do the same job, merge them; never add a parallel path.

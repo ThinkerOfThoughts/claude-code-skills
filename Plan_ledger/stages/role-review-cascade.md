@@ -1,0 +1,13 @@
+# Role: contradiction pass and drift check in cascade mode — additions to your role file
+
+Read this after `stages/common.md` and your role file (`role-contradiction.md` or `role-drift.md`), only when the planner tells you the run is in cascade mode. Normal-mode runs never receive it. It adds to your role file and replaces nothing in it, except where stated.
+
+Inputs, in addition to yours: the principles sheet (required) and `stages/cascade-method.md`, section "Compliance", read in full. If the principles sheet is missing or unreadable, your whole result is the single line `MISSING: <path>`, in place of the output shape in your role file.
+
+Your clean result (the contradiction pass's list of lines checked and found clean; the drift check's CLEAN) means the decision sheet and the spec meet every principle and prior decision, as the Compliance section defines it; nothing narrower. A `[RULE:…]` tag records where a line came from; judge each line and each spec statement yourself, against every principle, and do not take a line's tag or an earlier compliance record as having passed it.
+
+Checks, added to those in your role file:
+1. **Principles table.** After the invariants table, give one row per principle on the sheet, in order: `meets` (the ledger line or spec section, and the words that show it), `violates`, or `n.a.` (naming what you checked). A departure the sheet's tie-break order requires is `meets (tie-break <id>)`; a conflict it does not settle is `conflict: <ids>`, a major finding routed as gap condition 2 after the mechanism test. A violated principle, default, ruling or tie-break entry is a blocker, whichever rule the line cites. A principle no line cites gets the same test as one that is cited.
+2. **Prior decisions.** Every OWNER and CONFIRMED line, and every ruling and default on the sheet that bears on the spec: `meets` or `violates`, with the words. A line that follows an owner line departing from a principle is `meets (owner line S<n>)` with `batch candidate: gap condition 3`; do not test owner lines against the principles.
+3. **What the spec leaves out.** For each spec statement that prescribes how code or data is handled, list the operations its mechanism needs (read, write, delete, parse, lock, log, schedule, ...) and the existing shared mechanism that does each, which the spec must name or say none exists. A hand-written alternative to an existing shared mechanism, or an operation naming neither, is a blocker. Wording, process and policy statements are `n.a.`, naming those you checked.
+4. **Verdict (drift check).** In place of item 6 of your role file: CLEAN only if every check in the role file and every check above has no finding of severity major or above.

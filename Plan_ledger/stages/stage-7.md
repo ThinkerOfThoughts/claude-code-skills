@@ -20,4 +20,4 @@ delivered until the build lane acknowledges the quote back. Log the ack.
 **Milestones only.** The build lane reports stage landings and gate verdicts; the ledger records them.
 Everything else stays in the build lane's own files.
 
-> **Cascade mode** (only in cascade mode): answer build questions as `stages/cascade-build.md` says; it replaces the second and third routing bullets above, and the other bullets stand.
+> **Cascade mode** (only in cascade mode): answer build questions as `stages/cascade-build.md` says (the full procedure used for a level, with no reduced path); it replaces the second and third routing bullets above, and the other bullets stand. The first bullet applies only when the cited line itself states the answer, including every operation it needs (`stages/cascade-build.md` step 1).
