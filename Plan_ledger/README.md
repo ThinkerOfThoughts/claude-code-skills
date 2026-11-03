@@ -8,7 +8,7 @@ writes the spec a build lane will follow. It is the sibling of [guarded-change](
 ## The failure it guards against
 
 A spec written by an AI planner ends up containing decisions the owner never made, written in the same
-voice as the decisions the owner did make. Three real instances from one feature's planning:
+voice as the decisions the owner did make. Four real instances from real planning:
 
 - A research agent's recommendation ("add semantic search as the fallback for keyword misses") became the
   spec's default. The owner's design was the opposite. The owner answered a one-word option to a
@@ -19,21 +19,27 @@ voice as the decisions the owner did make. Three real instances from one feature
 - A pre-existing side database was inherited as "where the data already lives". Nobody ever decided
   that. The spec's "keep this change disjoint from the neighbouring migration" rule reproduced exactly
   the fragility that migration existed to remove.
+- An owner ruled that, in that case, mechanism X was the simplest option, on the strength of the planner's explanation of what X covered; the ledger kept only the owner's words. An hour later a proposal about another mechanism said in
+  passing that its changes "go through the normal queue like everything else"; the owner answered
+  "simplify", and the spec then applied X to every event, from every process.
 
-An audit that re-derived the design from the transcript passed all three, because the owner's standing
-principles were not an input, and because a later "good to go" was read as approving sub-decisions the
-proposal never stated.
+An audit that re-derived the design from the transcript passed the first three, because the owner's
+standing principles were not an input, and because a later "good to go" was read as approving
+sub-decisions the proposal never stated. A later drift check passed the fourth because it read the owner's
+quotes without the messages they answered.
 
 ## The four rules
 
 1. **Provenance on every decision.** Each line of the decision sheet carries the owner's own quote and
    timestamp, or a tag saying who proposed it and whether the owner confirmed that sentence, or a tag
-   saying the code already does it and nobody has decided. Only the first two count as decisions.
+   saying the code already does it and nobody has decided. Only the first two count as decisions. An answer
+   that depends on what the planner just said also records those words (a `rests on` clause).
 2. **Directions are confirmed as sentences.** Anything with an ordering, a default, or a fallback is read
    back as "X runs first; Y runs only when …" and the owner confirms the sentence, never a label.
 3. **Forks are always posed.** A choice of mechanism class inside an approved direction (fixed vs derived,
    side store vs on-row, sync vs background, constant vs tunable, which is primary …) is put to the owner,
-   named plainly, even when the planner has a preferred answer.
+   named plainly, even when the planner has a preferred answer. A "go" on a proposal confirms only the
+   mechanism claims put on their own lines.
 4. **Invariants are a file.** The owner's standing architecture rules live in a short checkable document
    that every cold reviewer receives and reports against.
 

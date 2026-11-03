@@ -17,14 +17,21 @@ section) / the quoted words / what is wrong in one sentence / the smallest fix. 
 (holds / violates / cannot tell, with the proving line). Then the list of lines you checked and found
 clean. No preamble, no advice beyond the fix column.
 
-Your job is to decide whether the spec says what the owner meant, using only the owner's quoted words in
-the ledger as the record of what was meant.
+Your job is to decide whether the spec says what the owner meant, using the owner's quoted words in the
+ledger, each read against the planner message it answered (the answered-messages file), as the record of
+what was meant.
 
-1. **Meaning check per owner line.** For every `[<OWNER> …]` and `CONFIRMED` line: restate the quote's
-   literal meaning in one sentence of your own, then compare it with the spec section that cites the line.
-   Report any narrowing, widening, inversion (which runs first, which is the fallback, which is the
-   default), or added condition. Pay particular attention to answers that were a single word or a letter:
-   the sentence they confirm must be present as a quote, or the line is UNCONFIRMED.
+1. **Meaning check per owner line.** For every `[<OWNER> …]` and `CONFIRMED` line: find the message it
+   answered in the answered-messages file (keyed by the line's owner timestamp; it holds the planner's text
+   the owner's words answered, verbatim from the transcript); a line with none (other than an entry saying
+   `none: owner spoke first`) is a major finding, because it cannot be read. Restate in one sentence of your
+   own what the quote literally means read against that message, including what "in that case", "ok",
+   "simplify", a yes or an option letter refers to and how far the mechanism there reaches; then compare it
+   with every spec section that cites the line or applies the mechanism it decides, and compare the meanings
+   you restated for owner lines about the same mechanism with each other. Report any narrowing, widening
+   (the spec applies the mechanism to more events, processes, paths or cases than that meaning covers),
+   inversion (which runs first, which is the fallback, which is the default), or added condition. Pay
+   particular attention to answers that were a single word or a letter: the sentence they confirm must be present as the owner's own quote (option text in an answered message or in a `rests on` clause is the planner's, not the owner's), or the line is UNCONFIRMED.
 2. **Approval scope.** For every entry in the ledger's Approvals section ("good to go", "send it", a sheet
    version approval): list the mechanisms the approved text stated. Then list every mechanism the spec
    contains that was written after that approval and is not on that list. Each is a finding unless a later

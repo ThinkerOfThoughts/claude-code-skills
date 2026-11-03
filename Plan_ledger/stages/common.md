@@ -7,7 +7,10 @@ from anyone's summary. Your inputs are files. Your output is findings with citat
 owner's decision, and only for what the quote literally says. `[PROPOSED … CONFIRMED ts "quote"]` counts as
 the owner's decision for the sentence the confirmation quote refers to, nothing wider. `UNCONFIRMED`,
 `INHERITED … UNEXAMINED` and `DERIVED` lines are not owner decisions. A spec mechanism that rests only on
-such a line, or on no line, is a finding.
+such a line, or on no line, is a finding. An OWNER or CONFIRMED line may end with a `rests on` clause (it is
+not a provenance tag): the planner's words, quoted from the transcript, that the owner's answer depended on.
+The line decides what the owner's answer names or accepts and no more; everything else the planner said in
+the clause is context that limits how far the line reaches, never a decision.
 
 **Read literally.** Judge a line by what the quote says, not by the tag's paraphrase and not by what would
 be sensible.
