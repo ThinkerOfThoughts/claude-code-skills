@@ -24,6 +24,9 @@ created: <YYYY-MM-DD>
 ## Owner questions
 <!-- Q1. "<quote>" (<ts>) — answered <ts> "<quote of the answer>" | OPEN -->
 
+## Owner statements (entries are never deleted and the Disagreement field is updated in place; a statement is not a decision: no provenance tag, never a sheet line)
+<!-- O1. <ts> "verbatim quote" — working on: <one line, what the owner was working through>. Disagrees with: S<n> or the draft line's id [<its tag>] / none. Disagreement: n/a / OPEN / surfaced <ts>, answered <ts> "quote" -->
+
 ## Invariants check
 | # | Invariant (short) | holds / violates / n.a. | proving line |
 |---|---|---|---|

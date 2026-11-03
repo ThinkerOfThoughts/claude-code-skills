@@ -8,7 +8,7 @@ writes the spec a build lane will follow. It is the sibling of [guarded-change](
 ## The failure it guards against
 
 A spec written by an AI planner ends up containing decisions the owner never made, written in the same
-voice as the decisions the owner did make. Four real instances from real planning:
+voice as the decisions the owner did make. Five real instances from real planning:
 
 - A research agent's recommendation ("add semantic search as the fallback for keyword misses") became the
   spec's default. The owner's design was the opposite. The owner answered a one-word option to a
@@ -22,13 +22,17 @@ voice as the decisions the owner did make. Four real instances from real plannin
 - An owner ruled that, in that case, mechanism X was the simplest option, on the strength of the planner's explanation of what X covered; the ledger kept only the owner's words. An hour later a proposal about another mechanism said in
   passing that its changes "go through the normal queue like everything else"; the owner answered
   "simplify", and the spec then applied X to every event, from every process.
+- An owner described, as a question, how a queue worked. The planner treated it as a question and corrected
+  the owner from a draft line that the owner had not written. The description stayed in a log line as a question, never became a statement or a decision, and the
+  spec was built on the draft's version.
 
 An audit that re-derived the design from the transcript passed the first three, because the owner's
 standing principles were not an input, and because a later "good to go" was read as approving
 sub-decisions the proposal never stated. A later drift check passed the fourth because it read the owner's
-quotes without the messages they answered.
+quotes without the messages they answered. No check compared the fifth, because the description was in no line
+the checks compared.
 
-## The four rules
+## The five rules
 
 1. **Provenance on every decision.** Each line of the decision sheet carries the owner's own quote and
    timestamp, or a tag saying who proposed it and whether the owner confirmed that sentence, or a tag
@@ -42,6 +46,10 @@ quotes without the messages they answered.
    mechanism claims put on their own lines.
 4. **Invariants are a file.** The owner's standing architecture rules live in a short checkable document
    that every cold reviewer receives and reports against.
+5. **Owner statements are recorded, not corrected.** Whatever the owner says about how a mechanism works, a question or a half-remembered description included, is logged in their words with its
+   transcript time, as a statement and not a decision, and no confirmation is asked for. A draft line that
+   disagrees is not the owner's: the planner says where it came from, logs the disagreement and surfaces it
+   when the topic wraps up. The drift check compares the spec with every statement, transcripts included.
 
 ## The loop
 
