@@ -92,7 +92,7 @@ This mode is called **cascade**; the ordinary mode is **normal**. The mode is ch
 
 Skip the rest of this section in normal mode; plan-ledger then behaves exactly as described above.
 
-Purpose: a few owner rules, stated once in a principles sheet, settle most fine-grained decisions. The planner derives each design line from a rule and cites it, a cold agent checks that the rule decides it, three cold judges settle the non-obvious ones by majority, and only what the rules cannot settle goes to the owner, in one batch per level. The same procedure answers the builder's questions at stage 7. Definitions and procedures: `stages/cascade-method.md`.
+Purpose: a few owner rules, stated once in a principles sheet, settle most fine-grained decisions. The planner derives each design line from a rule and cites it (that records where the line came from), a cold agent checks that the line meets every principle and prior decision, three cold judges settle the non-obvious ones by majority, and only what the rules cannot settle goes to the owner, in one batch per level. The principles are a test an answer must pass, never a justification for it: a pass means the artifact meets every principle and prior decision, and a cited rule never makes it pass. The same full procedure, including the red-team, answers the builder's questions at stage 7. Definitions and procedures: `stages/cascade-method.md` (section "Compliance" holds the pass rule).
 
 Cold-start in this mode: also read the principles sheet in full and the ledger's Cascade block; resume from Open forks, the Cascade block and the open Owner questions.
 
@@ -101,13 +101,13 @@ Cold-start in this mode: also read the principles sheet in full and the ledger's
 | 0 setup; first use builds the principles sheet | `stages/cascade-first-use.md` (sheet template: `stages/principles-sheet-template.md`) |
 | 1 capture, 2 forks | `stages/cascade-method.md`, `stages/cascade-levels.md` |
 | 3 sheet approval | `stages/cascade-levels.md` (the owner batch) |
-| 5, 6 cold passes | the principles sheet, with the hook text in those stages |
-| 7 build questions | `stages/cascade-build.md` |
-| the level loop (draft, trio, citation check, red-team, batch) | `stages/cascade-levels.md` |
+| 5, 6 cold passes | the principles sheet (required), `stages/role-review-cascade.md`, with the hook text in those stages |
+| 7 build questions | `stages/cascade-build.md` (the full level procedure, no reduced path) |
+| the level loop (draft, trio, compliance check, red-team, batch) | `stages/cascade-levels.md` |
 
-How the rules above read in this mode: a `[RULE:…]` line is derived, never an OWNER line; in rule 3 "posed" means put through `stages/cascade-method.md` "Order of work", and a fork reaches the owner only when the gap rule or the always-to-owner list sends it there; in rule 4 the owner approves the principles sheet once and each level's batch, and derived lines the owner is not asked about are authorised by the approved rules and shown in the batch for objection; the stop-for-human on a mechanism-class fork or build question applies only to what the gap rule or the always-to-owner list sends to the owner; the batch is pasted text in a turn with no question call, which is the exception to the one-question-per-call sentence and to stage 2's "never bundle forks".
+How the rules above read in this mode: a `[RULE:…]` line is derived, never an OWNER line; in rule 3 "posed" means put through `stages/cascade-method.md` "Order of work", and a fork reaches the owner only when the gap rule or the always-to-owner list sends it there; in rule 4 the owner approves the principles sheet once and each level's batch, and derived lines the owner is not asked about stand on the owner's approval of the rules plus a PASS from the compliance check, and are shown in the batch for objection; in rule 5 "checked" extends to the principles: the Cascade block carries a Principles check table (one row per principle on the sheet: meets / violates / n.a., with the line that shows it) beside the invariants table, and a cold pass reports per principle and per prior decision, any `violates` failing the artifact; the stop-for-human on a mechanism-class fork or build question applies only to what the gap rule or the always-to-owner list sends to the owner; the batch is pasted text in a turn with no question call, which is the exception to the one-question-per-call sentence and to stage 2's "never bundle forks".
 
-Dispatch: cascade agents read `stages/common.md`, `stages/cascade-common.md` and their role file (`stages/role-*.md` for the sift, trio, citation check and level red-team); the trio judge, citation checker and level red-team also read `stages/cascade-method.md`.
+Dispatch: cascade agents read `stages/common.md`, `stages/cascade-common.md` and their role file (`stages/role-*.md` for the sift, trio, compliance check and level red-team); the trio judge, compliance checker and level red-team also read `stages/cascade-method.md`. The stage-5 and stage-6 agents read `stages/common.md`, their role file, `stages/role-review-cascade.md` and `stages/cascade-method.md`, not `stages/cascade-common.md`. Every one of these roles signs off on the same thing: the artifact meets every principle and prior decision.
 
 ## Self-check
 

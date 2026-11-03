@@ -46,8 +46,12 @@ levels, top-down: <L1 name — status> | <L2 …>     <!-- order confirmed as a 
 <!-- <mechanism named plainly>: defining lines <S ids> | support lines <S ids> | latest pile-up verdict NOT / PILING UP -->
 ### Trio results
 <!-- <ts> <level> <question>: votes, adopted answer, confidence, flags -> <record path in cascade.records_dir> -->
-### Citation checks
-<!-- <ts> <level>: counts per verdict; failures and the route taken; re-check <ts> -> <record path> -->
+### Compliance checks
+<!-- <ts> <level or build>: counts of PASS and FAIL; failed rows and the route taken (fix / trio / owner); origin fixes; re-check <ts> -> <record path> -->
+### Principles check
+<!-- one row per principle on the principles sheet, from the latest compliance check of the whole decision sheet; no `violates` row may stand at stage 3 -->
+| # | Principle (short) | meets / violates / n.a. | proving line |
+|---|---|---|---|
 ### Owner batches
 <!-- <ts> <level>: posted; gap items; answered <ts> "quote"; sheet additions made -->
 

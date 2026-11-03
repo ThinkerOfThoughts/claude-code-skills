@@ -20,4 +20,4 @@ Run it in the foreground of your own turn (a delegated runner must never backgro
 **Iteration cap:** two bounces at this stage on the same finding class → stop and bring the owner the
 finding and the two attempts. Record every route in the ledger Decisions log.
 
-> **Cascade mode** (only in cascade mode): also give the agent the principles sheet, and tell it to treat a `[RULE:…]` line as the confirming line its mechanism checks ask for, as `stages/cascade-method.md` "Derived lines" explains.
+> **Cascade mode** (only in cascade mode): also give the agent `stages/role-review-cascade.md`, the principles sheet (required: the pass is invalid without it) and `stages/cascade-method.md`, and tell it to treat a `[RULE:…]` line as the provenance record its mechanism checks ask for, as `stages/cascade-method.md` "Derived lines" explains, while judging every line and spec statement against every principle itself. Its clean result means the sheet and spec meet every principle and prior decision.
