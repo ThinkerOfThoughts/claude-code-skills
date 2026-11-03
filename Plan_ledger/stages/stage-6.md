@@ -11,7 +11,7 @@ before spawning: for every owner message in the design conversation (from the le
 the planner message it answered (normally all the planner's text since the owner's previous message, and the
 earlier message too if the owner's words refer back to one) and that message's timestamp; an owner message
 with no planner message before it gets the entry `none: owner spoke first`. Make it as the Extract step of
-`stages/cascade-first-use.md` makes its records (only what the owner typed, each with the planner's text before it, from `cascade.owner_transcripts`, which stage 6 reads in either mode; absent: stop and ask for it), keeping all of that text, not its tail, copied verbatim from the transcript; by script or by a read-only agent, never from
+`stages/cascade-first-use.md` makes its records (only what the owner typed, plus the owner's own AskUserQuestion answers, each with the planner's text before it, from `cascade.owner_transcripts`, which stage 6 reads in either mode; absent: stop and ask for it), keeping all of that text, not its tail, copied verbatim from the transcript (for an AskUserQuestion answer the planner's text includes the question and all its options, kept in full in the planner half; the owner half holds only the selected option or the typed text); by script or by a read-only agent, never from
 memory, and save it next to the ledger as `<slug>-answered.md`. If one agent cannot read the file in full, split
 it into chunks as that Extract step sizes its chunks and run `stages/role-drift.md` item 6 once per chunk with a fresh
 agent, and merge the findings yourself; the agent that runs the other checks reads only the entries its owner lines key to. Optionally, if the config names a

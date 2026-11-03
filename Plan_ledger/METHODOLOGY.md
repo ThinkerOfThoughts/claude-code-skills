@@ -80,7 +80,7 @@ models:
 
 - `<ledger_dir>/<slug>-LEDGER.md` (the state; template in `stages/ledger-template.md`).
 - The builder spec (`*-spec.md` or `*-brief.md`), derived from the approved sheet.
-- `<ledger_dir>/<slug>-answered.md`: for each owner message of the design conversation, the planner message it answered, verbatim from the transcript (stage 6; also built at a topic wrap-up, stage 1).
+- `<ledger_dir>/<slug>-answered.md`: for each owner message of the design conversation (their own AskUserQuestion answers included, as the selected option or typed text), the planner message it answered, verbatim from the transcript (stage 6; also built at a topic wrap-up, stage 1).
 - Cold-pass reports appended to the ledger's Decisions log (or a `reports/` folder next to it).
 - Issues for any OPEN fork that shipped as a working assumption (stage 8).
 

@@ -47,8 +47,9 @@ doesn't fix this defect" in reply to "are there other models?"), that is an unan
 `Owner questions` list in the ledger: question (quote), answered at (ts, quote) or OPEN. Close it before
 posing anything new.
 
-**Owner statements.** Anything the owner says about how a mechanism works goes in the
-ledger's Owner statements section as an entry: their words verbatim (typos kept), the transcript timestamp,
+**Owner statements.** Anything the owner says about how a mechanism works, typed or given in their own
+AskUserQuestion answer (the selected option or the typed text, never the assistant's question or the options it wrote that were not
+selected), goes in the ledger's Owner statements section as an entry: their words verbatim (typos kept), the transcript timestamp,
 and a one-line note of what they were working through. Descriptions, half-remembered descriptions and
 questions that carry a description ("as I understand it, X does Y, not Z?") all count. An entry is a
 statement, not a decision: it has no provenance tag and is never a sheet line, so a detail the owner has

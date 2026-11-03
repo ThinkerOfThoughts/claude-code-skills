@@ -75,8 +75,9 @@ material update. Stage numbers are canonical (ledger, METHODOLOGY, decisions log
 5. **Invariants are checked, not remembered.** Every sheet and spec carries an invariants table (one row
    per invariant: holds / violates / n.a., with the line that proves it). Cold passes receive the
    invariants doc and the `adjacent_goals` as inputs and report per invariant.
-6. **Owner statements are recorded, never corrected.** What the owner says about how a mechanism works
-   (a description, a half-remembered one, a question that carries one) is logged in the ledger's
+6. **Owner statements are recorded, never corrected.** What the owner says about how a mechanism works, typed or in their own AskUserQuestion answer (a description, a half-remembered
+   one, a question that carries one; for an answer, the selected option or the typed text, never the
+   assistant's question or the options it wrote that were not selected) is logged in the ledger's
    Owner statements section in their words with its transcript time: a statement, not a decision, and no
    read-back is asked. A draft line that disagrees with it is not the owner's: say in one line where it came
    from, never correct the owner from it, log the disagreement, and surface it when the topic wraps up
