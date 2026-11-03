@@ -112,7 +112,7 @@ Moving a criterion's proof home away from a permanent test is a weakening of the
 venue move is a separate edit through FRZ and does not by itself change the proof home.
 
 **Paths are validated, not assumed — blocks gate 4 (CFG3).** Mechanically check every path
-handed to a cold reviewer (`redteam_context`, the spec's touched files, fixture paths) exists
+handed to a cold reviewer (`redteam_context`, `principles_context`, the spec's touched files, fixture paths) exists
 and is readable — at run start for paths that exist then, and at each cold-reviewer spawn for
 any path not yet validated. Gate 4 may not pass until the run-start validation result is
 recorded in `decisions.md`. A missing/empty path is surfaced to the human before proceeding

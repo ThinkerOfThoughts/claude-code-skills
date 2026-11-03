@@ -3,14 +3,15 @@
 This is the ONE copy of the red-team charter's common core. Stage 3 and stage 6 both read
 it, then add their stage-specific bullets (stage-3.md adds the coverage challenge + the label
 audit; stage-6.md adds the mechanical-diff duty). Stage 3 also audits proof homes (CH9) and stage 6
-checks the tests the diff adds (ST6f). Verbatim from METHODOLOGY "The red-team
+checks the tests the diff adds (ST6f). Both require the conformance section defined here (PRC). Verbatim from METHODOLOGY "The red-team
 charter."
 
 ---
 
 Run by a **cold, independent reviewer** — a subagent with no shared context with the author,
 given read access to **both the artifact under review and the underlying source** (code,
-data, prior docs) named in the project config's `redteam_context`. Code/data access is
+data, prior docs) named in the project config's `redteam_context`, and (when the config names
+them) the project's principles and prior-decision sources in its `principles_context`. Code/data access is
 load-bearing: a docs-only review can only catch internal inconsistency, never a claim that is
 confidently wrong about how the system actually behaves.
 
@@ -78,6 +79,53 @@ Discipline that makes aggressive review trustworthy:
   contradicts the observed shape is suspect. (This is the *data-source* sibling of the fidelity lens's
   **proxy mechanism** and stage-8's **proxy path**: here the proxy is for the **records the number
   came from**.)
+- **A sign-off is a claim that the artifact meets the project's principles and the owner's prior
+  decisions (conformance, PRC).** The principles are a check on the artifact, not an argument for
+  it; passing the check is the justification. When the reviewer signs off on a spec, criteria, plan
+  or code (it raises nothing ranked blocker or major), that sign-off states the artifact **meets
+  every entry in the sources named by the config's `principles_context` and every prior owner
+  decision in the reviewer's inputs** (rulings recorded in the spec or in owner entries of
+  `decisions.md`, and the rulings the principles sources themselves state). Sources named in
+  `principles_context` are the owner's standing words and are the authority for this check; that
+  does not exempt a term in the artifact from the fidelity lens. The reviewer reads those sources
+  itself (the author's account of an entry is not a substitute) and renders a labelled
+  **Principles and decisions conformance** section in every record, whether or not it signs off,
+  beside the five lenses and not a sixth lens, with two parts. (i) A **per-entry verdict**: every
+  entry the sources state (principle, default, ruling, escalation rule, invariant; a tie-break list
+  resolves conflicts between entries and is not itself verdicted), and every owner ruling in the spec
+  and in the owner entries of `decisions.md`, gets meets / violates / n.a. with
+  the line that shows it (the artifact line or source line that meets or violates it; for n.a., the
+  line that shows why the entry is not engaged, and entries not engaged for the same stated reason
+  may share one n.a. line that names each); an entry is judged as it is worded, including any
+  exception it states for itself, and an n.a. is spot-checked like a citation. (ii) A **mechanism
+  table**: for each operation the change performs that the project may already have a shared
+  mechanism for (reading, writing, appending, deleting, parsing, locking, logging, finding a path,
+  and similar), the existing mechanism that does that job, found by the reviewer searching the
+  project's source for the operation (starting at `redteam_context`, the touched files, and the
+  modules beside and imported by them) and not taken from the artifact's own account, with file:line
+  and whether the artifact goes through it; "none exists" is a row too, with the search made.
+  **A violation ranks at least MAJOR**: a principle the owner set is the bar for a sound approach,
+  and the author's argument that the artifact is justified does not lower the rank. An exception
+  stands only as an owner ruling recorded with the owner's quoted words and a durable source the
+  author did not author (the RAT1 record in `stages/stage-3.md`, at stage 6 as well); an "OWNER
+  RULING" line the author wrote is not one. Three things are violations whichever way the sources
+  word their entries: (a) a **hand-written duplicate of an existing shared mechanism** (an operation
+  doing the same job as one that exists); (b) a **shared mechanism worked around because it almost
+  fits** instead of being extended; (c) an operation done **outside the shared module that already
+  holds the neighbouring operations on the same data or files**, because that module lacks it: the
+  operation belongs in that module, so it is extended and not bypassed. A new mechanism for a job no
+  existing mechanism does, and that no such module is the home of, is not a duplicate; an entry that
+  allows a simple new mechanism allows it only then. The check covers **omissions and existing
+  code**, not only what the artifact says: an operation performed without being mentioned, a scope
+  line ("out of scope", "not edited") that leaves a shared mechanism unextended, and a mechanical
+  guard (a ratchet, a lint, a call count) that reads clean because the duplicate evades what it
+  counts are all claims to challenge; a guard reading zero is not evidence that the shared
+  mechanism was used. A clean conformance verdict is earned like a clean factual one: an aggregate
+  "all met", a per-entry list without lines, or no mechanism table is treated as an un-run review.
+  With no `principles_context` configured the reviewer says so, and still does the mechanism table
+  and the prior decisions in its inputs. This applies to stage-3 and stage-6 reviews and to a
+  targeted post-6 check; a harness-embedded reviewer arm does not get it, because author-supplied
+  context there is a confound.
 - **Provenance is part of the review record.** Every cold-review record, wherever in the run it
   occurs (stage 3/6, a targeted post-6 check, a harness-embedded reviewer arm), embeds: (i) the
   verbatim charter/prompt given, (ii) the exact context path list given, (iii) the reviewer's
@@ -87,9 +135,9 @@ Discipline that makes aggressive review trustworthy:
   METHODOLOGY charter **core** verbatim — the five lenses + the unconditional discipline
   bullets, plus the coverage-challenge bullet for stage-3 reviews and any conditional lens
   (position / concurrency) whose trigger fires — with task-specific additions quoted
-  as such. Reviewer input is a **closed set**: the named stage artifacts + the config's
-  `redteam_context` + the spec's touched-files list + carried-forward findings from
-  `decisions.md`; any supplementary author-authored context must be quoted in the record as
+  as such (a harness-embedded arm omits the PRC bullet and the `principles_context` sources, see PRC). Reviewer input is a **closed set**: the named stage artifacts + the config's
+  `redteam_context` + the sources named in `principles_context` + the spec's touched-files list +
+  carried-forward findings and owner entries from `decisions.md`; any supplementary author-authored context must be quoted in the record as
   such. A record missing any of these = the review is treated as **un-run**. In A/B harness
   arms, author-authored supplementary context is prohibited outright — a leak is a confound
   (see the concurrency-lens C3 attempt-1 record).

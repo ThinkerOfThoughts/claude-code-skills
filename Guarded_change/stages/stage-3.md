@@ -6,7 +6,7 @@ assumption-catcher, and the loop's most important gate.
 **Read `stages/charter.md` for the full red-team charter (the five lenses + the discipline
 bullets + provenance + the conditional position/concurrency lenses), then apply the additions
 below.** The charter core is given to the reviewer verbatim; the stage-3 additions
-(coverage challenge + label audit + the five-lens output-shape requirement) are given on top.
+(coverage challenge + label audit + the five-lens and conformance-section output-shape requirements) are given on top.
 
 ## Procedure
 
@@ -16,11 +16,12 @@ default background call) and capture its result in the **same turn** — do **no
 spawn and end your turn awaiting a completion notification; a delegated runner does not receive its
 own backgrounded child's completion (it routes to main), which deadlocks the gate
 (`stages/stage-8.md`, FG). Give it read access to `{1-spec, 1.5-criteria, 2-plan}` AND the
-priority-ordered `redteam_context` paths.
-Charter it with the five lenses + evidence discipline from `stages/charter.md`. Write
+priority-ordered `redteam_context` paths AND the `principles_context` paths, when the config names them.
+Charter it with the five lenses + evidence discipline from `stages/charter.md`, and with the conformance section (CH14). Write
 `3-redteam-plan.md` as a **verbatim record** per the charter's provenance rule: embed the
 charter given (core verbatim + task additions quoted), the exact context list (closed set:
-stage artifacts + config `redteam_context` + spec touched-files + carried findings), the
+stage artifacts + config `redteam_context` + config `principles_context` + spec touched-files + carried findings and owner
+entries of `decisions.md`), the
 reviewer's verbatim output, its agent type/model, and its reported context-file hashes —
 missing any ⇒ the review is un-run. Require the **coverage challenge** (below); no such section
 ⇒ lens 4 un-run. Charter the reviewer for the **five-lens output shape up front**, and reject a
@@ -110,6 +111,13 @@ its own child's completion). If a record is still short a lens despite the up-fr
 re-run a **fresh full five-lens** cold review, not a re-poll of the old one. This is the stage-3
 half of **ST6e** (`stages/stage-6.md`) — the two are one principle applied at both red-team gates.
 
+**Stage-3 reviewer emits the conformance section (CH14).** The charter the stage-3 reviewer is given must
+require the labelled **Principles and decisions conformance** section defined in `stages/charter.md` (PRC), in
+every record, up front at spawn. A `3-redteam-plan.md` record without it is treated like one missing a lens
+under CH13: un-run for it, re-run as a fresh full review, never re-polled. Stage-3 scope: the operations the
+mechanism table covers are those the spec and plan call for, including operations they imply but never name,
+and a spec or plan line that puts a shared mechanism out of scope is audited as a claim.
+
 ## Cross-cutting rules governing this stage
 
 **Nothing self-certifies (CP1).** The author of an artifact never approves it. Review is done
@@ -187,7 +195,7 @@ read a large codebase, list the most relevant entrypoints first with a short not
 check there. This keeps "independence" from degrading into "skimmed whatever fit in context."
 
 **Paths are validated, not assumed (CFG3).** Mechanically check every path handed to a cold
-reviewer (`redteam_context`, the spec's touched files, fixture paths) exists and is readable —
+reviewer (`redteam_context`, `principles_context`, the spec's touched files, fixture paths) exists and is readable —
 at run start for paths that exist then, and at each cold-reviewer spawn for any path not yet
 validated. Gate 4 may not pass until the run-start validation result is recorded in
 `decisions.md`. A missing/empty path is surfaced to the human before proceeding (fix the

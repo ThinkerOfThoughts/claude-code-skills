@@ -24,6 +24,14 @@ redteam_context:          # PRIORITY ORDER — read top-down; a cold subagent ca
   - path: "~/companion-token-trace/"
     note: "Prior investigation docs (caching-implementation-plan.md, bug reports) — context/priors, not authority. Verify their claims against the clone/logs above, don't inherit them."
 
+# PRINCIPLES AND PRIOR DECISIONS (stage 3 and 6 reviewers; stages/charter.md PRC). A reviewer's sign-off means the
+# artifact meets every entry below. Both are the owner's standing words, not drafts.
+principles_context:       # PRIORITY ORDER; same shape as redteam_context
+  - path: "~/.claude/plans/companion-principles-sheet.md"
+    note: "The owner's design principles (P1-P17), tie-break order, always-to-the-owner list, decision-kind defaults (D1-D5) and rulings (R1-R3). A symlink to the approved v3 sheet. Every numbered entry gets a verdict; P1 (one mechanism, one source of truth) and P7 (reuse an existing mechanism, remove duplicates) are the ones a hand-written parallel path breaks."
+  - path: "~/.claude/plans/companion-emergence-DESIGN-INVARIANTS.md"
+    note: "The design invariants the sheet cites (I3, I7, I12, I13, I14, ...). Prior decisions: an artifact that breaks one needs the owner's ruling."
+
 measurement:
   baseline:               # capture the CURRENT version's behavior before a change
     how: >
@@ -247,6 +255,7 @@ metrics:                  # standing regression metrics (source: the JSONL logs)
   via `tool_invocations.log.jsonl`. Any change touching an un-instrumented area must add
   logging in stage 2 (see the methodology's "instrument before you build") — the removed
   `background_generate` metric above is a live example of that requirement.
+- **Shared mechanisms (PRC mechanism table).** The shared JSON/JSONL module is brain/health/json_io.py (present on branches where it has landed; find it with a grep of brain/). Reads, writes and appends of persisted JSON or JSONL state go through it (append_jsonl, iter_jsonl, parse_jsonl and the rest); it has no delete function, so a delete of such a file belongs in it too. A change that hand-writes a reader, writer or delete instead of using or extending it is a conformance violation (principles P1, P7); look here first when filling the PRC mechanism table.
 - Reviewer independence matters extra here: the original caching-rejection failure was an AI
   assessment rubber-stamping itself. The stage-3 cold reviewer must prefer arguments from the
   JSONL data over arguments from reasoning, and a clean factual verdict is invalid without

@@ -16,8 +16,8 @@ the **router**: each stage's full procedure + the rules that govern it live in `
 - **A project config** (Layer 2). Look for one (e.g. `guarded-change.*.{md,yaml}` in or near
   the working dir). If none exists and the loop needs stage 0/8, ask for it or help author it
   against the config contract in `METHODOLOGY.md`. Do not invent project metrics.
-  **Validate every path a cold reviewer will be handed** (config `redteam_context`, spec
-  touched-files, fixtures) — at run start, and again at any later reviewer spawn for paths new
+  **Validate every path a cold reviewer will be handed** (config `redteam_context` and
+  `principles_context`, spec touched-files, fixtures) — at run start, and again at any later reviewer spawn for paths new
   since; record the result in `decisions.md` (gate 4 cannot pass without it) and surface dead
   paths to the human (METHODOLOGY "Paths are validated, not assumed"; stage-3/4/6 files carry
   the operative rule).
@@ -37,17 +37,19 @@ the full procedure + the rules it must apply:**
 | **1** | Spec: rich problem definition; declare the expected touched files | → `stages/stage-1.md` |
 | **1.5** | Criteria: the checkable, labeled (gating/advisory) accept bar with a proof home per criterion — mandatory | → `stages/stage-1.5.md` |
 | **2** | Plan: how + measurement + instrumentation + thresholds | → `stages/stage-2.md` |
-| **3** | Red-team the plan: cold review of {1, 1.5, 2} (incl. the proof-home audit) — the assumption-catcher | → `stages/stage-3.md` (+ `stages/charter.md`) |
+| **3** | Red-team the plan: cold review of {1, 1.5, 2} (incl. the proof-home audit and the principles-conformance section) — the assumption-catcher | → `stages/stage-3.md` (+ `stages/charter.md`) |
 | **4** | Gate: route by worst finding; freeze criteria on route-to-build | → `stages/stage-4.md` |
 | **5** | Build: implement per the plan (tests written to drive the build are scaffolding) | → `stages/stage-5.md` |
-| **6** | Red-team the code: cold review of code vs {1.5, 2}; mechanical `git diff` (plus checks on the tests the diff adds) | → `stages/stage-6.md` (+ `stages/charter.md`) |
+| **6** | Red-team the code: cold review of code vs {1.5, 2} + the spec; mechanical `git diff` (plus checks on the tests the diff adds, and the principles-conformance section) | → `stages/stage-6.md` (+ `stages/charter.md`) |
 | **7** | Gate: route by worst finding | → `stages/stage-7.md` |
 | **8** | Harness: measure → conformance (always) + regression (if baseline) → verdict (one-off proofs are recorded, not committed) | → `stages/stage-8.md` |
 
 The **most important gate is stage 3**, not 6 or 8 — the plan-red-team catches a missing
 measurement plan or an un-instrumented change *before a line of code is written*. Stages 3 and 6
 share the red-team charter in `stages/charter.md` (stage 3 adds the coverage-challenge + label
-audit; stage 6 adds the mechanical-diff duty). Stage 3 also audits proof homes and stage 6 checks the tests the diff adds. Gates 4/7/8 each carry the full severity table.
+audit; stage 6 adds the mechanical-diff duty). Stage 3 also audits proof homes and stage 6 checks the tests the diff adds. A cold reviewer's pass at either stage is a
+conformance claim: the artifact meets the project's principles and the owner's prior decisions (PRC, `stages/charter.md`;
+the config's `principles_context` names the sources). Gates 4/7/8 each carry the full severity table.
 The **iteration cap** (all gates): after 2 bounces at the same gate on the same finding class,
 stop and a human breaks the tie (see the gate files). A **second, run-level cap** guards the case
 the per-class cap is blind to — *proliferation*, where a **new** finding class each round never

@@ -11,7 +11,10 @@ which metrics are gating vs. advisory. A plan missing these is incomplete. The p
 `stages/stage-1.5.md`), names the permanent tests and registry lines it will add (behavior and removal criteria only), and
 specifies each one-off check (the command, the expected output, and the known-bad input for its
 self-test) so the check exists, and is reviewed at stage 6, before stage 8. The one-off checks are
-stored with the run's records so that the stage-6 reviewer is given them. If the change
+stored with the run's records so that the stage-6 reviewer is given them. The plan also
+names, for each operation it performs (read, write, append, delete, parse, lock, log, and similar), the existing
+shared mechanism that operation goes through, or that none exists after a search, and gives the reason when it leaves a
+shared mechanism unextended; the red-team audits this against the source (PRC, `stages/charter.md`). If the change
 introduces a new accessor or read-modify-write window over shared mutable state, the plan must
 enumerate every concurrent accessor and state which the guard covers vs. leaves out.
 

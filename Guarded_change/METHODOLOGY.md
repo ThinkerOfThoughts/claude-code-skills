@@ -45,7 +45,7 @@ criteria** defined up front (mode 2).
 3    RED-TEAM      independent cold review of {1, 1.5, 2} — the assumption-catcher
 4    GATE          blocker → 1 │ major → 2 │ minor → fix-and-proceed │ clean → 5
 5    BUILD         implement
-6    RED-TEAM      independent cold review of the code against {1.5, 2}
+6    RED-TEAM      independent cold review of the code against {1.5, 2} and the spec
 7    GATE          blocker/major → 5 │ minor → fix-and-proceed │ clean → 8
 8    HARNESS       measure actual behavior, then:
                      • CONFORMANCE (always): actual vs. acceptance criteria (1.5)
@@ -72,14 +72,14 @@ where, at each gate) lives written-in-full in each gate file — `stages/stage-4
 | 1 — Spec | `stages/stage-1.md` | rich problem def; declares expected touched files; refuse-to-start check |
 | 1.5 — Criteria | `stages/stage-1.5.md` | checkable, labeled accept bar; proof home per criterion (only behavior criteria leave a permanent test); position/concurrency criteria; self-check criteria; default-to-isolation testability |
 | 2 — Plan | `stages/stage-2.md` | how + measurement + instrumentation + thresholds; accessor enumeration; regression-history check |
-| 3 — Red-team plan | `stages/stage-3.md` + `stages/charter.md` | cold review of {1,1.5,2}; coverage challenge + label audit; proof-home audit; five-lens output shape |
+| 3 — Red-team plan | `stages/stage-3.md` + `stages/charter.md` | cold review of {1,1.5,2}; coverage challenge + label audit; proof-home audit; five-lens output shape; principles-conformance section (CH14) |
 | 4 — Gate | `stages/stage-4.md` | route by severity; criteria freeze; path-validation blocks gate 4; rounds-without-a-run termination cap |
 | 5 — Build | `stages/stage-5.md` | implement per the plan (tests written to drive the build are scaffolding) |
-| 6 — Red-team code | `stages/stage-6.md` + `stages/charter.md` | cold review of code vs {1.5,2}; mechanical `git diff`; test checks (proof home, timing); five-lens output shape |
+| 6 — Red-team code | `stages/stage-6.md` + `stages/charter.md` | cold review of code vs {1.5,2} + the spec; mechanical `git diff`; test checks (proof home, timing); five-lens output shape; principles-conformance section (ST6g) |
 | 7 — Gate | `stages/stage-7.md` | route by severity |
 | 8 — Harness | `stages/stage-8.md` | conformance + regression; per-criterion verification table; freeze verify; one-off proofs recorded, not committed; foreground-verification; isolation-harness cap |
 
-The **red-team charter** (five lenses + discipline + provenance + the conditional
+The **red-team charter** (five lenses + discipline + the principles-conformance duty + provenance + the conditional
 position/concurrency lenses) is shared by stages 3 and 6 in `stages/charter.md`. The **severity
 model** and the **stage-8 verification detail** live in the gate/harness stage files.
 
@@ -116,6 +116,14 @@ redteam_context:          # paths the cold reviewer MUST read to check claims vs
   - path: <secondary>
     note: <...>
 
+principles_context:       # OPTIONAL — the project's principles and prior-decision sources: a principles
+                          # sheet, a design-invariants file, a rulings log. Same shape and priority order
+                          # as redteam_context. When present, these paths are required reviewer inputs at
+                          # stages 3 and 6, and every reviewer sign-off is a claim that the artifact meets
+                          # them (stages/charter.md, PRC). Omit if the project keeps none.
+  - path: <principles sheet>
+    note: <what it holds / how to read it>
+
 measurement:
   baseline:               # OPTIONAL — omit for greenfield; enables stage-0 + regression
     how: <command to run | manual procedure description>
@@ -144,8 +152,11 @@ Rules:
   large codebase, list the most relevant entrypoints first with a short note on what to check
   there. This keeps "independence" from degrading into "skimmed whatever fit in context." (The
   operative reviewer-spawn form of this rule lives in `stages/stage-3.md` / `stages/stage-6.md`.)
+- **`principles_context` is optional and makes sign-off a conformance claim.** The sources it names join the
+  reviewer's closed input set. What a reviewer must do with them is defined once, in `stages/charter.md` (PRC);
+  stages 3 and 6 require the section (CH14, ST6g).
 - **Paths are validated, not assumed.** Every path handed to a cold reviewer
-  (`redteam_context`, the spec's touched files, fixture paths) is mechanically checked to exist
+  (`redteam_context`, `principles_context`, the spec's touched files, fixture paths) is mechanically checked to exist
   and be readable — at run start and at each reviewer spawn. **Gate 4 may not pass until the
   run-start validation result is recorded in `decisions.md`.** The full operative rule (and its
   gate-4 block) lives written-in-full in `stages/stage-3.md`, `stages/stage-4.md`, and
@@ -178,7 +189,7 @@ One folder per change, e.g. `changes/<slug>/`:
 2-plan.md           how + measurement + instrumentation + thresholds
 3-redteam-plan.md   cold review of {1,1.5,2} with ranked findings
    ...build...
-6-redteam-code.md   cold review of code vs {1.5,2}
+6-redteam-code.md   cold review of code vs {1.5,2} and the spec
 8-harness.md        conformance + regression results, per-criterion table with proof homes, one-off check results, verdict
 decisions.md        append-only gate log (see below)
 ```

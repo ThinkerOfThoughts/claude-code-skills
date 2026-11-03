@@ -1,18 +1,19 @@
 # Stage 6 — Red-team the code
 
 **What this stage does:** independent cold review of the built code against {1.5-criteria,
-2-plan}. A backstop to stage 3.
+2-plan} and the spec's scope lines and owner rulings. A backstop to stage 3.
 
 **Read `stages/charter.md` for the full red-team charter (the five lenses + the discipline
 bullets + provenance + spot-verify + the conditional position/concurrency lenses), then apply
 the additions below.** The charter core is given to the reviewer verbatim; the stage-6 additions
-below (the mechanical-diff duty and the five-lens output-shape requirement) govern how the
+below (the mechanical-diff duty and the five-lens and conformance-section output-shape requirements) govern how the
 reviewed diff is produced and how the reviewer's output must be shaped. ST6f adds the checks the
 reviewer applies to the tests the diff adds.
 
 ## Procedure
 
-Spawn a fresh **cold subagent** with the code diff/files + `{1.5, 2}` + `redteam_context`. Spawn it
+Spawn a fresh **cold subagent** with the code diff/files + `{1.5, 2}` + `1-spec.md` (its scope lines and recorded
+owner rulings) + `redteam_context` + the `principles_context` paths, when the config names them. Spawn it
 **foreground / blocking** (concretely: **`run_in_background: false`** on the spawn, never the
 default background call) and capture its result in the **same turn** — a delegated runner does not
 receive its own backgrounded child's completion (it routes to main), so a background-then-end-turn
@@ -22,7 +23,7 @@ cited file:lines actually exist** (guards fabricated citations — the charter's
 CH6). Generate the reviewed diff **mechanically** (`git diff <recorded-base>`; record the
 command) — hand-curated ⇒ un-run for the omitted scope. Charter the reviewer for the **five-lens
 output shape up front**, and reject a returned record missing any lens — re-run fresh, never
-re-polled (ST6e). Charter it for the ST6f test checks as well and require their labelled section.
+re-polled (ST6e). Charter it for the ST6f test checks and the ST6g conformance section as well, and require their labelled sections. The reviewer's input is the charter's closed set (its owner entries of `decisions.md` and touched-files list included).
 Write `6-redteam-code.md` as a verbatim
 record (same provenance duties as stage 3).
 
@@ -66,6 +67,13 @@ the stage-8 FG rule warns against: a delegated runner does not receive its own c
 completion). If a record is still short a lens despite the up-front requirement, re-run a **fresh
 full five-lens** cold review, not a re-poll of the old one.
 
+**Stage-6 reviewer emits the conformance section (ST6g).** The charter the stage-6 reviewer is given must
+require the labelled **Principles and decisions conformance** section defined in `stages/charter.md` (PRC), in
+every record, up front at spawn. A `6-redteam-code.md` record without it is treated like one missing a lens
+under ST6e: un-run for it, re-run as a fresh full review, never re-polled. Stage-6 scope: the operations the
+mechanism table covers are derived from the mechanical diff (every file, parse, lock, log and delete call it
+adds), and the mechanism claims of the plan and the spec are re-checked against the code, not trusted.
+
 ## Cross-cutting rules governing this stage
 
 **Nothing self-certifies (CP1).** The author of an artifact never approves it. Review is done
@@ -107,7 +115,7 @@ read a large codebase, list the most relevant entrypoints first with a short not
 check there. This keeps "independence" from degrading into "skimmed whatever fit in context."
 
 **Paths are validated, not assumed (CFG3).** Mechanically check every path handed to a cold
-reviewer (`redteam_context`, the spec's touched files, fixture paths) exists and is readable —
+reviewer (`redteam_context`, `principles_context`, the spec's touched files, fixture paths) exists and is readable —
 at run start for paths that exist then, and at each cold-reviewer spawn for any path not yet
 validated. A missing/empty path is surfaced to the human before proceeding (fix the config, or
 record a named degraded-review acceptance in `decisions.md`) — a reviewer handed dead paths

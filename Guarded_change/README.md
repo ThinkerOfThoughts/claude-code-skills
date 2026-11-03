@@ -63,7 +63,7 @@ The loop below is just these two rules made into steps.
 3    RED-TEAM    a cold, independent reviewer attacks {spec, criteria, plan}   ← most important
 4    GATE        blocker→back to 1 │ major→back to 2 │ minor→fix & go │ clean→build
 5    BUILD       implement
-6    RED-TEAM    a cold reviewer checks the code against {criteria, plan}
+6    RED-TEAM    a cold reviewer checks the code against {criteria, plan, spec}
 7    GATE        blocker/major→back to build │ minor→fix & go │ clean→harness
 8    HARNESS     measure reality → conformance (vs criteria) + regression (vs baseline)
                  bounce by severity, or done
