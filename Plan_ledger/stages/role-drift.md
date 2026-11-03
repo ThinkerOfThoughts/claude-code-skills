@@ -19,7 +19,7 @@ clean. No preamble, no advice beyond the fix column.
 
 Your job is to decide whether the spec says what the owner meant, using the owner's quoted words in the
 ledger, each read against the planner message it answered (the answered-messages file), as the record of
-what was meant.
+what was meant; check 6 adds the owner's statements.
 
 1. **Meaning check per owner line.** For every `[<OWNER> …]` and `CONFIRMED` line: find the message it
    answered in the answered-messages file (keyed by the line's owner timestamp; it holds the planner's text
@@ -42,5 +42,23 @@ what was meant.
 4. **Owner questions.** Every OPEN item in the ledger's Owner questions list is a major finding: an
    unanswered owner question means the owner decided without an answer they asked for.
 5. **Invariants and adjacent goals**, as in the block above, from the spec's literal text.
-6. **Verdict:** CLEAN only if every check above has no finding of severity major or above. Otherwise list
+6. **Owner statements.** The ledger's Owner statements section lists what the owner said about how a
+   mechanism works: statements, not decisions, so an entry has no provenance tag and check 1
+   does not apply to it; this check does. The answered-messages file holds every owner message of the design
+   conversation with the planner message it answered: search it for further statements about any mechanism the
+   spec applies that the section does not list. A statement the section lacks is a minor finding (the fix is to
+   add it to the section), and you check it as below. For every statement, listed or found: restate in one
+   sentence what it literally says read against the planner message in its entry (keyed by timestamp), and
+   compare that with every spec section that applies the mechanism. A spec passage that says something
+   different is a major finding, unless the entry records the owner's answer to that disagreement (`answered
+   <ts> "quote"`) and the spec follows the answer. Write each such finding, in the "what is wrong" place of
+   the output shape, as `while working out <X>, you said <A>; the spec says <B>, which came from <Y>`, then the
+   owner's words verbatim with their timestamp, the planner message they answered, quoted, and the spec passage
+   with its source tag; for a statement the section lacks, give its timestamp and answered-file entry where the
+   output shape asks for a ledger line. X is the entry's `working on` note or, for a statement you found, your
+   one-line reading of what the owner was working through. Y is where the spec passage's sheet line came from
+   (the owner, a proposal, a vote, an inherited store, a derivation), followed through its tags.
+   When you are run at a topic wrap-up, "the spec" is the sheet and draft text that apply the mechanism the
+   topic was about, and you check only statements about that mechanism and leave out the per-invariant table.
+7. **Verdict:** CLEAN only if every check above has no finding of severity major or above. Otherwise list
    findings, owner-line findings first.

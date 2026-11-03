@@ -3,7 +3,7 @@
 ## Why it exists
 
 A design conversation between a human owner and an AI planner produces a spec that a build lane treats as
-the owner's decisions. Four failures, observed in real planning, motivate this skill:
+the owner's decisions. Five failures, observed in real planning, motivate this skill:
 
 1. **A recommendation became a decision.** A research agent framed the feature one way; the planner
    repeated the framing; the owner answered a one-word option to a question whose premise was inverted;
@@ -18,23 +18,32 @@ the owner's decisions. Four failures, observed in real planning, motivate this s
    through the normal queue like everything else"; the owner answered "simplify"; the passing premise
    counted as confirmed, and the spec sent every event, from every process, through the queue. The drift
    check passed both rulings because its record of what the owner meant was the owner's quotes alone.
+5. **An owner's description was corrected from a draft.** The owner described how a mechanism worked, phrased as
+   a question ("as I understand it the queue holds X, not Y?"). The planner treated it as a question and
+   answered by correcting the owner from a draft line that the owner had not written. The description stayed in a log line as a question and never became a
+   statement or a decision, so nothing later could be checked against it, and the spec was built on the draft's
+   version. Asking the owner to confirm each such description is no cure: they work a design out by describing
+   it and asking until the answer falls out, they may have it mixed up with another mechanism, and each
+   confirmation request costs attention they are spending on the design.
 
 A transcript-only drift audit passed the first three, because the owner's standing principles were not an
 input and because a later "good to go" was read as confirming sub-decisions the proposal never stated. A
 later ledger-only drift check passed the fourth, because it read the owner's quotes without the messages
-they answered.
+they answered. No check compared the fifth, because the description was in no line the checks compared.
 
-The discipline therefore has four parts: **provenance** on every decision (and, where an answer depends on
+The discipline therefore has five parts: **provenance** on every decision (and, where an answer depends on
 what the planner said, that explanation as a `rests on` clause); **sentence-level confirmation**
-of anything with a direction; **forks always posed**; and **invariants as a checkable file** that cold
-reviewers receive.
+of anything with a direction; **forks always posed**; **invariants as a checkable file** that cold
+reviewers receive; and **owner statements** recorded in the owner's words, as statements and not decisions,
+never corrected from a draft, and compared with the spec by the drift check.
 
 ## Where it sits among the siblings
 
 `plan-ledger` (decide, with provenance) → `guarded-change` (build, gated) ; `dragonfly` (diagnose) and
 `data-distiller` (distill) feed it. Drift-Detector, when built, is the heavy transcript-based audit; the
 stage-6 drift check here is the light one that runs on the ledger's quotes and the messages they answered,
-not the whole transcript.
+plus a search of the owner's messages (the answered-messages file) for statements about the mechanisms the spec
+applies, not a full audit of the transcript.
 
 ## Config contract (Layer 2) — `plan-ledger.<project>.md`
 
@@ -55,11 +64,11 @@ redteam_context:                  # read paths for the cold agents (priority ord
 build_handoff:                    # who builds and with what
   lane: <session or person>
   guarded_change_config: <path>
-cascade:                          # OPTIONAL block; cascade mode needs it; normal mode needs only owner_transcripts, for stage 6
+cascade:                          # OPTIONAL block; cascade mode needs it; normal mode needs only owner_transcripts, for the answered-messages file
   enabled: true                   # the default mode for a new ledger whose invocation names neither (`/plan-ledger cascade` or `/plan-ledger normal`); false or absent = normal
   principles_path: <path>         # the owner-approved principles sheet (template: stages/principles-sheet-template.md); may be absent on first use
   records_dir: <dir>              # raw outputs of trio judges, compliance checks, red-teams, sift agents, facts files; created on first use
-  owner_transcripts: <path>       # where the owner's own past messages can be read (sift; quote verification; the stage-6 answered-messages file, in either mode)
+  owner_transcripts: <path>       # where the owner's own past messages can be read (sift; quote verification; the answered-messages file of stages 1 and 6, in either mode)
   redteam:                        # guarded-change files the level red-team reuses by path
     charter: <path to guarded-change stages/charter.md>
     stage3: <path to guarded-change stages/stage-3.md>
@@ -71,7 +80,7 @@ models:
 
 - `<ledger_dir>/<slug>-LEDGER.md` (the state; template in `stages/ledger-template.md`).
 - The builder spec (`*-spec.md` or `*-brief.md`), derived from the approved sheet.
-- `<ledger_dir>/<slug>-answered.md`: for each owner line, the planner message it answered, verbatim from the transcript (stage 6).
+- `<ledger_dir>/<slug>-answered.md`: for each owner message of the design conversation (their own AskUserQuestion answers included, as the selected option or typed text), the planner message it answered, verbatim from the transcript (stage 6; also built at a topic wrap-up, stage 1).
 - Cold-pass reports appended to the ledger's Decisions log (or a `reports/` folder next to it).
 - Issues for any OPEN fork that shipped as a working assumption (stage 8).
 
@@ -81,7 +90,7 @@ models:
 
 **Selecting it.** The mode is called cascade and is chosen per request: `/plan-ledger cascade` turns it on for that ledger, `/plan-ledger normal` turns it off for that ledger, and the config's `cascade.enabled` only sets the default for a new ledger when neither is given. An existing ledger keeps its `mode:` line (one with no `mode:` line takes the config default); an invocation naming the other mode for it stops and tells the owner. Cascade mode needs the config's `cascade` block, and first use with no principles sheet stated or sifted stops and tells the owner. The ledger's `mode:` line records the mode so a resume knows it.
 
-**What it adds.** A principles sheet (principles, a tie-break order, defaults per kind of decision, rulings, an always-to-owner list), built once per project from the owner's statements or from a sift of the owner's past messages. Planning then runs top-down in levels: draft with a cited rule on every line, a trio of cold judges for the non-obvious, a cold compliance check (a pass means the line meets every principle and prior decision, recorded per principle as meets, violates or n.a. with the line that shows it; the rule a line cites records where it came from and never makes it pass), a cold red-team for spec gaps, principle compliance and design checks before the next level, and one owner batch per level. Builder questions at stage 7 go through the same full procedure, red-team included, with no reduced path. The mode lives in its own stage files and in one gated paragraph in each of stages 0, 1, 2, 3, 4, 5, 6, 7 and 8; in normal mode none of it applies, except that the stage-6 answered-messages file reads `cascade.owner_transcripts` and the first-use Extract step in either mode.
+**What it adds.** A principles sheet (principles, a tie-break order, defaults per kind of decision, rulings, an always-to-owner list), built once per project from the owner's statements or from a sift of the owner's past messages. Planning then runs top-down in levels: draft with a cited rule on every line, a trio of cold judges for the non-obvious, a cold compliance check (a pass means the line meets every principle and prior decision, recorded per principle as meets, violates or n.a. with the line that shows it; the rule a line cites records where it came from and never makes it pass), a cold red-team for spec gaps, principle compliance and design checks before the next level, and one owner batch per level. Builder questions at stage 7 go through the same full procedure, red-team included, with no reduced path. The mode lives in its own stage files and in one gated paragraph in each of stages 0, 1, 2, 3, 4, 5, 6, 7 and 8; in normal mode none of it applies, except that the answered-messages file (stages 1 and 6) reads `cascade.owner_transcripts` and the first-use Extract step in either mode.
 
 | File | What it holds |
 |---|---|
