@@ -2,9 +2,9 @@
 
 Spawn ONE cold agent (default model: sonnet, reason: semantic review of documents against documents; opus
 only with a stated sonnet-specific shortfall). It receives `stages/common.md` verbatim plus
-`stages/role-contradiction.md`, and read access to: the ledger, the spec, the invariants doc, the
-`adjacent_goals` sources, and `redteam_context` from the config. It does not receive the transcript and
-does not receive your summary of the conversation.
+`stages/role-contradiction.md`, and read access to: the ledger (its `rests on` clauses included), the spec,
+the invariants doc, the `adjacent_goals` sources, and `redteam_context` from the config. It does not receive
+the transcript and does not receive your summary of the conversation.
 
 Run it in the foreground of your own turn (a delegated runner must never background a gated check).
 

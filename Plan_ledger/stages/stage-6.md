@@ -4,18 +4,25 @@
 current version; stage 5 clean.
 
 Spawn ONE fresh cold agent (sonnet, same reasoning as stage 5) with `stages/common.md` verbatim plus
-`stages/role-drift.md`. Inputs: the ledger (the sheet with its quotes is the owner record), the spec, the
-invariants doc, the adjacent goals. Optionally, if the config names a transcript extract or a
+`stages/role-drift.md`. Inputs: the ledger (the sheet with its quotes is the owner record), the
+answered-messages file, the spec, the invariants doc, the adjacent goals. Make the answered-messages file
+before spawning: for every `[<OWNER> …]` and CONFIRMED line, an entry holding the owner message's timestamp,
+the planner message it answered (normally all the planner's text since the owner's previous message, and the
+earlier message too if the owner's words refer back to one) and that message's timestamp; an owner message
+with no planner message before it gets the entry `none: owner spoke first`. Make it as the Extract step of
+`stages/cascade-first-use.md` makes its records (only what the owner typed, each with the planner's text before it, from `cascade.owner_transcripts`, which stage 6 reads in either mode; absent: stop and ask for it), keeping all of that text, not its tail, copied verbatim from the transcript; by script or by a read-only agent, never from
+memory, and save it next to the ledger as `<slug>-answered.md`. Optionally, if the config names a
 drift-detector run, include it; the drift check does not depend on it.
 
 The agent answers three questions per sheet line and per spec section: does the spec say what the owner's
-quote means (not what the tag claims); does any spec mechanism lack an owner-confirmed sheet line; does
-the spec, read literally, violate an invariant or defeat an adjacent goal. It also lists every "good to
-go" style confirmation in the Approvals section and checks that nothing written after it introduced a
-mechanism the approved text did not state.
+quote means, read against the message it answered (not what the tag claims); does any spec mechanism lack an
+owner-confirmed sheet line; does the spec, read literally, violate an invariant or defeat an adjacent goal.
+It also lists every "good to go" style confirmation in the Approvals section and checks that nothing written
+after it introduced a mechanism the approved text did not state.
 
-**Route:** any finding on an owner line, an invariant, or an adjacent goal → owner (paste the finding,
-not a summary). Findings only on DERIVED lines → fix and re-run. Clean → hand off.
+**Route:** any finding on an owner line, an invariant, or an adjacent goal → owner (paste the finding, not a
+summary). Findings only on DERIVED lines → fix and re-run. Clean → hand off. A finding that an owner line
+has no answered message is fixed by adding the message and re-running, not sent to the owner.
 
 **Hand-off** to the build lane / guarded-change: the approved sheet version, the spec, the ledger path,
 and one line stating that build-time questions which change a mechanism class come back as stage-7 forks.

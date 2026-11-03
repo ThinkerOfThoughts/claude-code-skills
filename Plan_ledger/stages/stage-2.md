@@ -23,10 +23,16 @@ Options are mechanisms, not adjectives: write "a hardcoded constant, -9.25, vali
 model" rather than "a trustworthy floor". Always include "None of these; I'll describe it". Never bundle
 forks into one call; never bury a fork inside a proposal paragraph that ends "say go".
 
-**What a "go" covers.** The owner's approval of a proposal confirms exactly the sentences the proposal
-stated. If the proposal said "not a threshold; I'll bring you the forks", then a threshold written
-afterwards is an unposed fork, however well-justified. Before writing any mechanism into the sheet, ask:
-which ledger line, with which quote, confirms this mechanism? If none, pose it.
+**What a "go" covers.** Post a proposal so that every mechanism claim in it is its own numbered line:
+anything such as what is stored where, what runs when, what path something takes, or how far a mechanism
+reaches. A passing premise ("like everything else", "as before", "the normal queue") is a mechanism claim:
+write it out as the sentence it stands for, naming what "everything else" is. The owner's "ok", "go" or
+"simplify" confirms those lines and nothing else; an option letter or other label confirms no direction
+(rule 2 of the router). A mechanism claim that appears only in the prose around them is not confirmed: put
+it on its own line and ask, or tag the line that uses it `[PROPOSED:<who> | UNCONFIRMED]`. If the proposal
+said "not a threshold; I'll bring you the forks", then a threshold written afterwards is an unposed fork,
+however well-justified. Before writing any mechanism into the sheet, ask: which ledger line, with which
+quote, confirms this mechanism? If none, pose it.
 
 **Teammate self-resolutions** (a build lane resolving an ambiguity itself) are recorded
 `[PROPOSED:<lane> | UNCONFIRMED]` and reported to the owner as such; they may proceed as a working

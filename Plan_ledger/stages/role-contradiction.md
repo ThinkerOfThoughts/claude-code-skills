@@ -20,9 +20,12 @@ clean. No preamble, no advice beyond the fix column.
 Your job is to find the places where the sheet and the spec cannot both be true, or where the spec is not
 finished enough to build from. Check, in this order:
 
-1. **Internal contradictions.** Two spec statements that prescribe different behaviour for the same case;
-   a constraint that forbids a mechanism the spec elsewhere requires; a spec statement that contradicts
-   its cited sheet line.
+1. **Internal contradictions.** Two spec statements that prescribe different behaviour for the same case; a
+   constraint that forbids a mechanism the spec elsewhere requires; a spec statement that contradicts its
+   cited sheet line; a ledger line, quoted planner statement or spec statement that reaches further than, or
+   states a different scope from, the `rests on` clause of an owner line about the same mechanism (a blocker
+   when it is cited as the owner's); two `rests on` clauses of owner lines about the same mechanism that
+   state a different scope for it (a major finding, a blocker when both lines are cited as the owner's).
 2. **Underspecification.** Every branch, path, mode, or "both" that a builder could implement two ways.
    Name the two ways.
 3. **Unposed forks.** Every mechanism-class choice in the spec (fixed vs derived value; separate store vs

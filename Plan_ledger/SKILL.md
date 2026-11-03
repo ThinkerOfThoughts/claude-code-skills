@@ -10,7 +10,9 @@ against the project's standing design invariants.** The founding failures: an ag
 the spec default and inverted the owner's design; a sub-decision (a hardcoded constant) slid in as narration
 under an approved direction; a pre-existing code shape was inherited as architecture with no ruling at all;
 and a transcript-only audit passed all three because the owner's standing principles were never a
-checkable input. This file is the **router**; the procedures and prompts live in `stages/`.
+checkable input. A fourth: the explanation an owner ruling rested on was not recorded, a premise stated in
+passing inside a proposal counted as confirmed, and a drift check that saw only the owner's quotes passed
+both. This file is the **router**; the procedures and prompts live in `stages/`.
 `METHODOLOGY.md` is the reference (why, the config contract, what a run produces).
 
 ## Inputs
@@ -54,7 +56,9 @@ material update. Stage numbers are canonical (ledger, METHODOLOGY, decisions log
    `[PROPOSED:<who> | UNCONFIRMED]`, `[INHERITED:<where> | UNEXAMINED]`, `[DERIVED]` (a pure
    mechanical consequence of a confirmed line, named), or, in cascade mode, `[DERIVED: equivalent rewrite of <what>]`. Nothing hands off while any mechanism-class line
    is UNCONFIRMED or INHERITED. An agent's recommendation, a research report's framing, a teammate's
-   self-resolution, and an existing table in the code are all PROPOSED or INHERITED, never OWNER.
+   self-resolution, and an existing table in the code are all PROPOSED or INHERITED, never OWNER. An OWNER or
+   CONFIRMED line whose meaning depends on what the planner said also records it (`rests on`,
+   `stages/stage-1.md`).
 2. **Direction-carrying decisions are confirmed as a sentence.** If the decision contains an ordering,
    a default, a fallback, a which-first or a which-wins, read it back on its own line in the form
    "X runs first; Y runs only when <condition>" and record the owner's confirmation of that sentence.
@@ -62,7 +66,8 @@ material update. Stage numbers are canonical (ledger, METHODOLOGY, decisions log
 3. **Unposed forks are forbidden.** Any mechanism-class choice inside an approved direction is posed
    (stage 2), even when you have a preferred answer, and named plainly by mechanism ("a hardcoded
    constant of -9.25 pinned to this model"), never by virtue ("a trustworthy floor"). The class list is in
-   `stages/stage-2.md`. A "good to go" on a proposal confirms only what the proposal stated.
+   `stages/stage-2.md`. A "good to go" on a proposal confirms only the mechanism claims put on their own lines
+   (`stages/stage-2.md`); a premise in the prose around them is not confirmed.
 4. **The sheet is what the owner approves; the spec is derived from it.** The sheet is pasted in chat
    verbatim (files are not reliably opened); approval is recorded against a sheet version. Anything in
    the spec that is not on the approved sheet is a fork under rule 3. The spec holds the current design
@@ -82,7 +87,8 @@ current default stated and a "none of these" option.
 
 Stop and ask when: a mechanism-class fork is open (stage 2); the sheet needs approval (stage 3); the
 contradiction pass or the drift check returns a finding that touches an owner line or an invariant
-(stages 5 and 6; a clean pass auto-advances); the invariants doc is missing or unreviewed; config is
+(stages 5 and 6; a clean pass auto-advances; a finding that an owner line has no answered message is fixed
+by adding the message, `stages/stage-6.md`); the invariants doc is missing or unreviewed; config is
 missing; or a teammate's build question changes a mechanism class (stage 7). Refuse to resolve any of
 these by inference, including "the owner would obviously want X".
 
@@ -90,7 +96,7 @@ these by inference, including "the owner would obviously want X".
 
 This mode is called **cascade**; the ordinary mode is **normal**. The mode is chosen per request: invoking the skill as `/plan-ledger cascade` turns cascade mode on for that ledger, and `/plan-ledger normal` turns it off for that ledger. A new ledger takes the mode the invocation names, else the config's `cascade.enabled` (absent means normal), and records it in its `mode:` line. An existing ledger keeps the mode on its `mode:` line (a ledger with no `mode:` line takes the config default and gets the line); an invocation naming the other mode for an existing ledger stops, and you tell the owner rather than switch silently. Cascade mode needs the config's `cascade` block; if it is missing, stop and tell the owner the config needs one.
 
-Skip the rest of this section in normal mode; plan-ledger then behaves exactly as described above.
+Skip the rest of this section in normal mode; plan-ledger then behaves exactly as described above (stage 6's answered-messages file reads `cascade.owner_transcripts` and the first-use Extract step in either mode).
 
 Purpose: a few owner rules, stated once in a principles sheet, settle most fine-grained decisions. The planner derives each design line from a rule and cites it (that records where the line came from), a cold agent checks that the line meets every principle and prior decision, three cold judges settle the non-obvious ones by majority, and only what the rules cannot settle goes to the owner, in one batch per level. The principles are a test an answer must pass, never a justification for it: a pass means the artifact meets every principle and prior decision, and a cited rule never makes it pass. The same full procedure, including the red-team, answers the builder's questions at stage 7. Definitions and procedures: `stages/cascade-method.md` (section "Compliance" holds the pass rule).
 

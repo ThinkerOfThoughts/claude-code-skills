@@ -8,13 +8,14 @@ spec: <path to the builder spec, once it exists>
 invariants: <path>
 created: <YYYY-MM-DD>
 
-## Decisions (the sheet — current design only; one sentence per line; one provenance tag per line)
+## Decisions (the sheet — current design only; one sentence per line; one provenance tag per line, plus an optional `rests on` clause)
 <!-- S1. <full sentence in the owner's meaning>  [<OWNER> <ts> "verbatim quote"]
      S2. <sentence>  [PROPOSED:<who> | CONFIRMED <ts> "quote"]
      S3. <sentence>  [PROPOSED:<who> | UNCONFIRMED]
      S4. <sentence>  [INHERITED:<file/table> | UNEXAMINED]
      S5. <sentence>  [DERIVED from S2]
      S6. <sentence>  [DERIVED: equivalent rewrite of <what>]    (cascade mode only)
+     S7. <sentence>  [<OWNER> <ts> "quote"]  rests on: [<who> <ts> "the planner's words the answer depended on, verbatim"]
      Direction-carrying lines are written "X runs first; Y runs only when <condition>." -->
 
 ## Open forks
