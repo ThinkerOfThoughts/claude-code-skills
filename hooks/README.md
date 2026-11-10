@@ -1,8 +1,9 @@
 # Hooks
 
 Reference implementations of the Claude Code hooks that back these skills, plus a
-standalone git-workflow guard. Each is stdlib-only Python, fails open (never crashes the
-tool it gates), and reads the hook event as JSON on stdin. Wire them in
+standalone git-workflow guard. Each is stdlib-only Python and reads the hook event as JSON on
+stdin. All fail open (never crash the tool they gate) except `build_answer_gate.py`, which fails
+closed for the lane it gates (a crash on a message addressed to that lane denies it). Wire them in
 `~/.claude/settings.json` (see snippet below).
 
 | Hook | Event(s) | What it does |
@@ -10,6 +11,7 @@ tool it gates), and reads the hook event as JSON on stdin. Wire them in
 | `read_gate.py` | `PreToolUse` (Edit/Write/MultiEdit) + `PostToolUse` (Read/Bash) | **Read-before-edit gate** for `*-brief.md` / `*-spec.md` / `*-LEDGER.md` / `*-HANDOFF.md`. Denies editing one of these that has not been read in this session since the last compaction, so a spec/ledger/handoff is never edited (or quoted) from stale memory. Backs the **plan-ledger** skill. |
 | `compact_reinject.py` | `SessionStart` (matcher `compact`) | **Post-compaction re-injection.** A compaction drops the standing rules a session was following; this prints a short reminder block back into context and flags any `status: ACTIVE` ledger so the session re-invokes plan-ledger and re-reads it. It also records when the compaction happened, which `read_gate.py` uses to require a *post-compaction* re-read. Backs the **plan-ledger** skill. |
 | `branch_guard.py` | `PreToolUse` (Bash) | **Branch-target guard.** Stops fix-work from landing on the wrong branch: denies branch **creation** (showing the repo's open PRs, so a fix that belongs in an open PR isn't stacked on a new branch) and denies cross-branch commit/file **moves** (cherry-pick / rebase --onto / format-patch\|am / cross-ref extraction). It denies to the *agent* and is cleared per-command by re-issuing with a `BRANCH_GUARD_ACK="<reason>"` prefix. Routine commits, rebases onto an upstream, listing and status are not flagged. Standalone — not tied to a skill. |
+| `build_answer_gate.py` (+ `build_answer_gate.sh`) | `PreToolUse` (`send_message` / `SendMessage`) | **Cold-check gate for answers sent to a build lane.** A planning lane may relay a build answer only when its record file shows a compliance PASS and a red-team result with no open MAJOR/BLOCKER for the exact answer text (and a trio when the answer cites one). Each of those `CHECK` lines must be backed by a cold subagent's own transcript, written by Claude Code under `<project>/<session>/subagents/`: `stamp` refuses a verdict unless a non-fork agent of this session, whose prompt holds the answer's 16-hex hash and which received no input after its prompt, ended its final message with `<id> hash=<hash> COMPLIANCE: PASS\|FAIL\|HELD` (or `REDTEAM: CLEAN\|MINOR\|MAJOR\|BLOCKER`); a trio needs three such judges on the question block's hash and a majority. The send check re-reads the recorded agent, so a hand-written `CHECK` line is rejected. An agent whose prompt tells it the verdict should end with `REFUSED` (one sentence in its role brief) and never qualifies. It guards against skipped checks, not against a hand-forged transcript file. Backs the **plan-ledger** skill's cascade mode (`Plan_ledger/stages/cascade-build.md`). Tests: `test_build_answer_gate.py` + `test_fixtures/`. Config: copy `build_answer_gate.config.example.json` to `build_answer_gate.config.json` beside the script and fill in the lane ids. |
 
 ## Why these gate the *agent*, and block
 
@@ -65,6 +67,17 @@ add:
 Hook config is snapshotted at session start, so a change here arms for **new** sessions; an
 already-running session picks it up only on restart.
 
+```json
+{ "matcher": "mcp__ccd_session_mgmt__send_message|SendMessage",
+  "hooks": [ { "type": "command", "command": "sh ~/.claude/hooks/build_answer_gate.sh", "timeout": 35 } ] }
+```
+
+(`build_answer_gate.py` ships as a `PreToolUse` entry for the matcher above. Use the `.sh`
+wrapper: it denies a message addressed to the gated lane if the script itself crashes or times
+out. Stamping: `python3 ~/.claude/hooks/build_answer_gate.py stamp [--session ID] <record> <id> compliance|redteam|trio <RESULT>`;
+the session comes from `--session` or `CLAUDE_CODE_SESSION_ID`. Run the tests with
+`python3 test_build_answer_gate.py`.)
+
 ## Notes / defaults you may want to adjust
 
 - `compact_reinject.py` looks for active ledgers in `~/.claude/plans/*-LEDGER.md` and the
@@ -75,3 +88,7 @@ already-running session picks it up only on restart.
 - `branch_guard.py` applies to every git repo. To scope it, gate on the origin remote at the
   top of `main()`. The open-PR list needs `gh` authenticated; without it the branch-creation
   gate still fires, just without the list.
+- `build_answer_gate.py` needs its config (lane ids, `transcript_glob` of your project's session
+  transcripts, `allowed_record_dirs`); see the example file. After installing the evidence rule,
+  every `CHECK` line written without an agent id is rejected at send: existing records need
+  re-checking by fresh cold agents.

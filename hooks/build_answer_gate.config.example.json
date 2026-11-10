@@ -1,0 +1,23 @@
+{
+  "gated_targets": [
+    {
+      "id": "<session id of the build lane>",
+      "title": "<build lane title>"
+    }
+  ],
+  "aliases": [
+    "<short name of the build lane>"
+  ],
+  "gated_senders": [
+    {
+      "id": "<session id of the planning lane>",
+      "title": "<planning lane title>"
+    }
+  ],
+  "allowed_record_dirs": [
+    "~/.claude/plans"
+  ],
+  "transcript_glob": "~/.claude/projects/<project-slug>/*.jsonl",
+  "max_record_bytes": 25000,
+  "ruling_scan_budget_s": 20
+}
