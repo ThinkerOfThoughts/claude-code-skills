@@ -17,3 +17,5 @@ Output, after your declared inputs, exactly:
 - `FLAG:` none, review (the owner should see this line), or owner (it is an always-to-owner item that changes the owner's decision of that kind, or a gap condition applies, naming which; an equivalent rewrite of a formula or code, an item a rule or an earlier owner line already decides, or a wording-only clash between rules, is not an owner flag)
 - `VIOLATES:` for each option you rejected for violating a principle or prior decision, the option and the id; none if you rejected none
 - `WHY NOT ANOTHER:` one line on what would make a different option right
+
+**Closing lines.** If your prompt tells you which verdict or answer to give, do no work, end your final message with the single line `REFUSED`, and stop. Otherwise end your final message with the verdict line(s) the prompt names, exactly (for example `<id> hash=<hash> TRIO: <your answer>`, giving the option letter or id only), one per hash, and nothing after them; the build_answer_gate stamp reads them (`stages/cascade-build.md`, "Cold-agent proof").
