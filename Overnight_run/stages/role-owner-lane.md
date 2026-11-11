@@ -11,7 +11,7 @@ timer, and ends the run. Paths and the guard line come from the config.
 2. Collect from the owner the **per-run list**: the usage-reset time, which lanes are in the run (this
    replaces the config's `default_lanes`), the work, and whether GitHub text waits for his OK until
    morning. Also collect the usage figure (C5). Ask for what is missing; do not guess any of it.
-3. Run the login check: a real `claude -p` ping with the long-lived token. A failure is a failed set-up.
+3. Run the login check: a real `claude -p` ping. The `claude -p` ping uses the long-lived token from `claude setup-token`, provided through the settings `env`; if the ping fails, set-up stops (L2-9).
 4. Ask the owner the config's guard question, `guard.setup_line`, verbatim. The skill never switches the
    guard; if he wants it off he switches it off himself, and back on in the morning.
 5. Launch the egg timer as one background task (`run_in_background`, with the sandbox's network block off,

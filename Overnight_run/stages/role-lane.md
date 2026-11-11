@@ -4,7 +4,7 @@ Read after `common.md`. Nothing here repeats it.
 
 **On the start message** (S2, "overnight run started: invoke the overnight-run skill", followed by a line
 `reset: <date> <time>`): invoke the skill, note the reset time, acknowledge, and go on with your
-work list. Every ack, and every report to the owner lane (R1, R2, R4), goes through the messaging tool
+work list. Ack the start message to the owner lane, the lane that sent it. Every ack, and every report to the owner lane (R1, R2, R4), goes through the messaging tool
 (GATE: MILESTONE where it is a milestone, an ordinary message otherwise), never as chat text. **On a re-invocation** (a restart, resume or compaction, or the re-point line the compaction hook
 prints): read your handoff doc in full and resume the work list; no set-up is run here. You have no run
 tasks to start or stop; the egg timer belongs to the owner lane.
