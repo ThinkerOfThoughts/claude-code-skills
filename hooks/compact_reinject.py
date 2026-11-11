@@ -1,15 +1,25 @@
 #!/usr/bin/env python3
-"""SessionStart (matcher "compact") hook: re-inject rules that decay across a compaction.
+"""SessionStart hook (matchers "compact" and "startup|resume"): re-inject rules that decay across a compaction.
 
 A context-window compaction silently drops the standing rules a session was following —
 "answer the literal question first," "quote don't recite," "read the handoff doc" — because
 those live in earlier turns that compaction summarizes away. This hook fires only on the
-"compact" SessionStart matcher and prints a short plain-text reminder block to stdout, which
+"compact" source and prints a short plain-text reminder block to stdout, which
 Claude Code adds as plain-text context (SessionStart's stdout-injection contract; see
 https://code.claude.com/docs/en/hooks.md). It also scans for any ACTIVE plan_ledger run and
 flags it, and drops a marker file recording when this compaction happened, so the sibling
 read_gate.py hook (PreToolUse/PostToolUse) can tell whether a gated file was re-read AFTER
 the most recent compaction rather than only "at some point in the session."
+
+The hook branches on the input's `source`. `compact`, or no usable `source`: the reminder block,
+plus the overnight-run line when the run marker exists. `startup` and `resume`: only the
+overnight-run line, and only while the marker exists; no `compacted` marker is written. `clear`
+and any other source: nothing. `OVERNIGHT_EGGTIMER_PING=1` in the environment: nothing, so the
+egg timer's own `claude -p` ping starts fast.
+
+Accepted edges (overnight run): while the run marker exists, any session started or resumed in
+any project also gets the run line; a marker left behind by a crash keeps printing it until the
+owner lane deletes the marker.
 
 Conventions: stdlib only, defensive parsing, never raise out of main().
 """
@@ -29,6 +39,9 @@ REMINDER_BLOCK = """[post-compaction re-injection — a compaction just happened
 3. Claims about the past (what was said/decided/why, by you or the owner) are LOOKUPS: quote the transcript or file, or mark the claim unverified.
 4. Before quoting or editing any file, re-read the relevant part now; your pre-compaction memory of it is stale.
 5. Read the project handoff doc IN FULL and quote its `## Secret:` token before substantive work (global handoff rule)."""
+
+OVERNIGHT_MARKER = "~/.claude/hooks-state/overnight-run-active"
+RUN_LINE = "an overnight run is on: read your handoff doc in full and invoke the overnight-run skill again"
 
 ACTIVE_STATUS_RE = re.compile(r"^status:\s*ACTIVE\s*$", re.IGNORECASE | re.MULTILINE)
 
@@ -84,8 +97,24 @@ def _touch_compacted_marker(session_id: str) -> None:
         pass
 
 
+def _run_marker_exists() -> bool:
+    try:
+        return os.path.exists(os.path.expanduser(OVERNIGHT_MARKER))
+    except Exception:
+        return False
+
+
 def main() -> int:
+    if os.environ.get("OVERNIGHT_EGGTIMER_PING") == "1":
+        return 0
     data = _read_stdin_json()
+    source = data.get("source") if isinstance(data.get("source"), str) else ""
+    if source in ("startup", "resume"):
+        if _run_marker_exists():
+            print(RUN_LINE)
+        return 0
+    if source not in ("", "compact"):
+        return 0
     cwd = data.get("cwd") if isinstance(data.get("cwd"), str) else ""
     session_id = data.get("session_id") if isinstance(data.get("session_id"), str) else ""
 
@@ -104,6 +133,9 @@ def main() -> int:
         )
     else:
         lines.append("6. No active plan_ledger run found.")
+
+    if _run_marker_exists():
+        lines.append(RUN_LINE)
 
     print("\n".join(lines))
 
