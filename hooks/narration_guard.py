@@ -27,6 +27,10 @@ Accepted edges (owner, L2-13):
 - An owner-started turn whose message the gate's owner-typed test rejects (text
   starting with "<", image-only content, slash-command wrappers) counts as not
   owner-typed, so such a turn is blocked if it wrote text.
+- A user entry with origin human whose raw content carries a cross-session-message or
+  task-notification wrapper (open or closed) counts as not owner-typed, even when the
+  gate's test returns text for it. Other wrappers the gate strips (system-reminder,
+  scheduled-task) are not checked here.
 - A user entry whose origin kind is none of human, peer or task-notification (for
   example a channel message) is not a turn start, so the scan passes it and uses an
   earlier turn's start.
@@ -96,6 +100,20 @@ def _origin_kind(d):
     return o.get("kind") if isinstance(o, dict) else None
 
 
+RELAY_MARKERS = ("<cross-session-message", "<task-notification")
+
+
+def _has_relay_wrapper(d):
+    """True when the entry's raw content carries a cross-session or task-notification
+    wrapper, open or closed (compared lower-case). The gate's owner-typed test strips a
+    closed wrapper and keeps the text around it, so it cannot see this on its own."""
+    try:
+        raw = json.dumps(_content(d), ensure_ascii=False).lower()
+    except Exception:
+        return False
+    return any(m in raw for m in RELAY_MARKERS)
+
+
 def is_turn_start(d):
     """A user entry that is a prompt: typed (human), a cross-session message (peer) or a
     task notification; origin-less text prompts also count (see the docstring)."""
@@ -152,7 +170,7 @@ def scan_turn(path, owner_typed, chunk=CHUNK):
             if _origin_kind(d) is None and d.get("origin") is None:
                 typed = True
             else:
-                typed = owner_typed(d) is not None
+                typed = owner_typed(d) is not None and not _has_relay_wrapper(d)
             return True, typed, mid_owner, wrote
     return False, False, mid_owner, wrote
 

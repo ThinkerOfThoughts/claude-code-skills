@@ -104,6 +104,35 @@ class TestHook(Base):
         self.write([peer("go"), asst_text("working"), asst_tool(), tool_result()])
         self.assertBlock(self.run_hook(""))
 
+    def test_c3_cross_session_prompt_human_origin_blocks(self):
+        # second real shape: origin human, isMeta false, text is the cross-session preamble plus its wrapper
+        self.marker()
+        text = ('Another Claude session sent a message:\n<cross-session-message from="uds:/x" session="s1">\n'
+                'status update\n</cross-session-message>')
+        self.write([user(text, kind="human", isMeta=False), asst_text("working"), asst_tool(), tool_result()])
+        self.assertBlock(self.run_hook(""))
+
+    def test_c3_cross_session_unclosed_wrapper_human_origin_blocks(self):
+        self.marker()
+        text = 'Another Claude session sent a message:\n<cross-session-message from="uds:/x" session="s1">\nstatus update'
+        self.write([user(text, kind="human", isMeta=False), asst_text("working"), asst_tool(), tool_result()])
+        self.assertBlock(self.run_hook(""))
+
+    def test_c3_task_notification_wrapper_human_origin_blocks(self):
+        self.marker()
+        text = 'A background task finished.\n<task-notification>\n<status>done</status>\n</task-notification>'
+        self.write([user(text, kind="human", isMeta=False), asst_text("working"), asst_tool(), tool_result()])
+        self.assertBlock(self.run_hook(""))
+
+    def test_c3_cross_session_list_content_human_origin_blocks(self):
+        self.marker()
+        text = ('Another Claude session sent a message:\n<cross-session-message from="uds:/x" session="s1">\n'
+                'status update\n</cross-session-message>')
+        e = user("", kind="human", isMeta=False)
+        e["message"]["content"] = [{"type": "text", "text": text}]
+        self.write([e, asst_text("working"), asst_tool(), tool_result()])
+        self.assertBlock(self.run_hook(""))
+
     def test_c3_peer_final_only_blocks(self):
         self.marker()
         self.write([peer("go"), asst_tool(), tool_result()])
