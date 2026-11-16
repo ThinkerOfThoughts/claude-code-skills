@@ -38,7 +38,7 @@ REMINDER_BLOCK = """[post-compaction re-injection — a compaction just happened
 2. No relay/status traffic from sibling lanes in owner-facing messages; it goes in the handoff/ledger file.
 3. Claims about the past (what was said/decided/why, by you or the owner) are LOOKUPS: quote the transcript or file, or mark the claim unverified.
 4. Before quoting or editing any file, re-read the relevant part now; your pre-compaction memory of it is stale.
-5. Read the project handoff doc IN FULL and quote its `## Secret:` token before substantive work (global handoff rule)."""
+5. Read the project handoff doc IN FULL and quote the Secret token on its last line (a plain body line, not a heading) before substantive work (global handoff rule)."""
 
 OVERNIGHT_MARKER = "~/.claude/hooks-state/overnight-run-active"
 RUN_LINE = "an overnight run is on: read your handoff doc in full and invoke the overnight-run skill again"
@@ -129,7 +129,7 @@ def main() -> int:
         lines.append(
             "6. ACTIVE plan_ledger run(s): "
             + ", ".join(active)
-            + ". Re-invoke the plan-ledger skill and read the ledger IN FULL; quote its Secret token."
+            + ". Re-invoke the plan-ledger skill and read the ledger IN FULL; quote the Secret token on its last line."
         )
     else:
         lines.append("6. No active plan_ledger run found.")

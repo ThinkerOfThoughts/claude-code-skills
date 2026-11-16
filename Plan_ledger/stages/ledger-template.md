@@ -65,4 +65,4 @@ levels, top-down: <L1 name — status> | <L2 …>     <!-- order confirmed as a 
 ## As built
 <!-- filled at stage 8 -->
 
-## Secret: <random hex, rotate on every material update>
+Secret: <random hex, rotate on every material update>

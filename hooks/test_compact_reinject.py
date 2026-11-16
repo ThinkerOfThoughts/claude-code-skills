@@ -20,7 +20,7 @@ OLD_OUTPUT = (
     "2. No relay/status traffic from sibling lanes in owner-facing messages; it goes in the handoff/ledger file.\n"
     "3. Claims about the past (what was said/decided/why, by you or the owner) are LOOKUPS: quote the transcript or file, or mark the claim unverified.\n"
     "4. Before quoting or editing any file, re-read the relevant part now; your pre-compaction memory of it is stale.\n"
-    "5. Read the project handoff doc IN FULL and quote its `## Secret:` token before substantive work (global handoff rule).\n"
+    "5. Read the project handoff doc IN FULL and quote the Secret token on its last line (a plain body line, not a heading) before substantive work (global handoff rule).\n"
     "6. No active plan_ledger run found.\n"
 )
 

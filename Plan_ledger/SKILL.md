@@ -29,7 +29,7 @@ both. A fifth: the owner described how a mechanism worked, as a question; the pl
 ## Cold-start / resume
 
 The ledger is the state; the session is not. On invocation, or after any compaction: read the ledger IN
-FULL, quote its `## Secret:` token in your first message, and continue from `Open forks`. The ledger's `mode:` line says which mode the run uses (see "Cascade mode" for an invocation that names the other mode). If the ledger is
+FULL, quote the Secret token on its last line (a plain body line, not a heading) in your first message, and continue from `Open forks`. The ledger's `mode:` line says which mode the run uses (see "Cascade mode" for an invocation that names the other mode). If the ledger is
 stale relative to the conversation, reconcile from the transcript by quotation, never from memory.
 
 ## Loop
