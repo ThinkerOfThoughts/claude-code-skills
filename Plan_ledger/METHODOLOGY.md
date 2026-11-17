@@ -83,6 +83,7 @@ models:
 - `<ledger_dir>/<slug>-answered.md`: for each owner message of the design conversation (their own AskUserQuestion answers included, as the selected option or typed text), the planner message it answered, verbatim from the transcript (stage 6; also built at a topic wrap-up, stage 1).
 - Cold-pass reports appended to the ledger's Decisions log (or a `reports/` folder next to it).
 - Issues for any OPEN fork that shipped as a working assumption (stage 8).
+- In cascade mode, an `ANSWER` block per owner batch or at-once item, with its stamped checks (`stages/cascade-levels.md` step e, "Record, stamp, post").
 
 ## Cascade mode (optional; `/plan-ledger cascade`)
 
