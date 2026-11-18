@@ -1065,8 +1065,8 @@ class TestRobustness(Base):
 # =============================================================================== C18b doc and code agree
 class TestDocExample(Base):
     def doc_path(self):
-        for p in (os.environ.get("BAG_DOC"), "~/.claude/skills/plan-ledger/stages/cascade-build.md",
-                  os.path.join(HERE, "..", "Plan_ledger", "stages", "cascade-build.md")):
+        for p in (os.environ.get("BAG_DOC"), os.path.join(HERE, "..", "Plan_ledger", "stages", "cascade-build.md"),
+                  "~/.claude/skills/plan-ledger/stages/cascade-build.md"):
             if p and os.path.exists(os.path.expanduser(p)):
                 return os.path.expanduser(p)
         return None
@@ -1075,10 +1075,35 @@ class TestDocExample(Base):
         p = self.doc_path()
         if not p:
             self.skipTest("cascade-build.md not found (set BAG_DOC)")
-        self.skipTest("DEPENDS ON THE NEXT INCREMENT: the gate-record example in cascade-build.md is still in the old CHECK format "
-                      "(compliance/redteam with a verdict) until the skill text is rewritten from this change's report; once that "
-                      "example uses REVIEWED blocks and review1/review2/fixcheck lines, restore this test (parse it, check its shas, "
-                      "and have the hook accept it with real cold-agent transcripts)")
+        text = open(p).read()
+        m = re.search(r"```gate-record\n(.*?)```", text, re.S)
+        self.assertIsNotNone(m, "the gate-record example is missing from %s" % p)
+        rec = bag.parse_record(m.group(1))
+        self.assertEqual(rec["malformed"], [])
+        self.assertEqual(rec["struct"], [])
+        self.assertEqual(rec["old"], {})
+        self.assertTrue(rec["blocks"])
+        kinds = {k for (_, k) in rec["checks"]}
+        self.assertEqual(kinds, {"review1", "review2", "fixcheck"})
+        ans = rec["blocks"]["Q1"][0]
+        # the example's REVIEWED block hashes to the sha its review lines cite, and its fix-check line names the line changed since it
+        shas = {c["sha"] for k in ("review1", "review2") for c in rec["checks"][("Q1", k)]}
+        self.assertEqual(len(shas), 1)
+        reviewed_txt, err = bag.reviewed_text(rec, "Q1", shas.pop())
+        self.assertIsNone(err)
+        changed = [bag.text_hash(l) for l in bag.lines_changed(bag.answer_lines(reviewed_txt), bag.answer_lines(ans))]
+        self.assertTrue(changed)
+        self.assertEqual(rec["checks"][("Q1", "fixcheck")][-1]["lines"], changed)
+        # and the hook accepts the example's record once real cold-agent transcripts back its lines (the example's agent ids are placeholders)
+        head = "\n".join(l for l in m.group(1).split("\n") if not l.startswith("CHECK "))
+        lines = [chk_review("Q1", n, who, reviewed_txt) for n in (1, 2) for who in ("compliance", "redteam")]
+        fix = self.env.make_agent("Check these lines: %s." % ", ".join(changed), "Findings.\n" + "\n".join("Q1 hash=%s FIXCHECK: PASS" % h for h in changed))
+        lines.append("CHECK Q1 fixcheck %s lines=%s agent=%s" % (now_iso(), ",".join(changed), fix))
+        path = self.env.record("doc-example.md", head + "\n" + "\n".join(lines) + "\n")
+        self.assertAllow(answer_msg(path, "Q1", ans))
+        edited = ans.replace("full-open", "full-tier")      # one more changed line: the example's fix check does not name it
+        path2 = self.env.record("doc-example-edited.md", (head + "\n" + "\n".join(lines) + "\n").replace(ans, edited, 1))
+        self.assertDeny(answer_msg(path2, "Q1", edited), "no cold fix check")
 
 
 # =============================================================================== helper modes

@@ -89,7 +89,7 @@ material update. Stage numbers are canonical (ledger, METHODOLOGY, decisions log
 Owner questions get their own message, answer first, data not summary. Relay and status traffic with
 sibling lanes goes in the ledger's Coordination log, never in owner-facing messages. Questions to the
 owner go through AskUserQuestion, one question per call, options written as full sentences with the
-current default stated and a "none of these" option. In cascade mode, owner batch text and text put to the owner at once are checked, recorded and stamped before they are posted, as step e of `stages/cascade-levels.md` ("Record, stamp, post") says.
+current default stated and a "none of these" option. In cascade mode, a question or batch put to the owner is reviewed before it is posted, as `stages/review-order.md` ("Text put to the owner") says.
 
 ## Stop-for-human
 
@@ -106,7 +106,7 @@ This mode is called **cascade**; the ordinary mode is **normal**. The mode is ch
 
 Skip the rest of this section in normal mode; plan-ledger then behaves exactly as described above (the answered-messages file of stages 1 and 6 reads `cascade.owner_transcripts` and the first-use Extract step in either mode).
 
-Purpose: a few owner rules, stated once in a principles sheet, settle most fine-grained decisions. The planner derives each design line from a rule and cites it (that records where the line came from), a cold agent checks each line (`stages/review-order.md`), three cold judges settle the non-obvious ones by majority, and only what the rules cannot settle goes to the owner, in one batch per level; each topic, and each builder question no spec line answers, starts with the picture check (`stages/cascade-method.md` "The picture check"). The principles are a test an answer must pass, never a justification for the answer, and a cited rule never makes the answer pass. Definitions and procedures: `stages/cascade-method.md`. Before an owner batch or an at-once item is posted, its text gets the two cold checks, a record and a stamp, as step e of `stages/cascade-levels.md` ("Record, stamp, post") says.
+Purpose: a few owner rules, stated once in a principles sheet, settle most fine-grained decisions. The planner derives each design line from a rule and cites it (that records where the line came from), a cold agent checks each line (`stages/review-order.md`), three cold judges settle the non-obvious ones by majority, and only what the rules cannot settle goes to the owner, in one batch per level; each topic, and each builder question no spec line answers, starts with the picture check (`stages/cascade-method.md` "The picture check"). The principles are a test an answer must pass, never a justification for the answer, and a cited rule never makes the answer pass. Definitions and procedures: `stages/cascade-method.md`.
 
 Cold-start in this mode: also read the principles sheet in full and the ledger's Cascade block; resume from Open forks, the Cascade block and the open Owner questions.
 
@@ -115,7 +115,7 @@ Cold-start in this mode: also read the principles sheet in full and the ledger's
 | 0 setup; first use builds the principles sheet | `stages/cascade-first-use.md` (sheet template: `stages/principles-sheet-template.md`) |
 | 1 capture, 2 forks | `stages/cascade-method.md`, `stages/cascade-levels.md` |
 | 3 sheet approval | `stages/cascade-levels.md` (the owner batch) |
-| 5, 6 cold passes | the principles sheet (required), `stages/role-review-cascade.md`, with the hook text in those stages |
+| 5, 6 cold passes | the principles sheet (required), `stages/role-review-cascade.md`, with the clause on text put to the owner in those stages |
 | 7 build questions | `stages/cascade-build.md` |
 | the level loop (draft, trio, compliance check, red-team, batch) | `stages/cascade-levels.md` |
 
