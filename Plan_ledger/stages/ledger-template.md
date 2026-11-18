@@ -53,7 +53,7 @@ levels, top-down: <L1 name — status> | <L2 …>     <!-- order confirmed as a 
 ### Compliance checks
 <!-- <ts> <level or build>: the `violates` and `conflict` rows and the route taken (fix / trio / owner); origin fixes (correct / tag / re-cite); fix check <ts> -> <record path> -->
 ### Principles check
-<!-- the table of the latest full review of the decision sheet (`stages/review-order.md`, "What a full review returns"); states: meets / violates / conflict / n.a.; an owner-routed line is a batch item, not a sheet line, until it is answered -->
+<!-- the table copied from the latest full review of the decision sheet (`stages/review-order.md`, "What a full review returns"); states: meets / violates / n.a., and conflict where the gap rule marks one (`stages/cascade-method.md`, "Conflicts and owner lines"); an owner-routed line is a batch item, not a sheet line, until it is answered -->
 | # | List entry (short) | meets / violates / conflict / n.a. | proving line |
 |---|---|---|---|
 ### Owner batches

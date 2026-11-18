@@ -24,6 +24,10 @@ A reviewer may label a finding by severity in its report. The label does not dec
 
 A full review returns a table with one row per entry on the artifact's list, each row `meets`, `violates` or `n.a.`, and then its findings, each marked blocking or not. There is no table over every principle on the sheet, and no PASS, FAIL or HELD per line. A line counts when the order above completes for it. A conflict between two rules that the tie-break order does not settle goes to the owner through the gap rule (`stages/cascade-method.md`, "The gap rule").
 
+## Builder notes
+
+For a level draft or a build answer, a gap is a builder note and not a finding against the draft or answer when `stages/role-gap-redteam.md` ("Design checks") says it is reported as a builder note, or when the two ways a builder could implement something differ only in implementation detail. A builder note is one line saying what the builder must settle; it takes no severity and does not go to the batch. A gap where the two ways differ in what is wanted, where it lives or which mechanism is reused is a finding, and blocks. The runner returns the notes with its two lists, and Planning adds them to the artifact so that they travel with the answer. Notes from the first review are added before the second review. A note added to a build answer after the second review is a changed line and gets a fix check (Fix checks).
+
 ## Fix checks
 
 For a build answer, every line changed after the second full review gets a cold fix check, whether or not the finding behind it blocks. For a level draft or a spec, a blocking fix is fix-checked and any other fix is made with no check.

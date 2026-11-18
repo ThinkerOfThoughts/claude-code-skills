@@ -2,7 +2,7 @@
 
 Read this after `stages/common.md` and your role file (`role-contradiction.md` or `role-drift.md`), only when the planner tells you the run is in cascade mode. Normal-mode runs never receive it. It adds to your role file and replaces nothing in it, except where stated.
 
-Inputs, in addition to yours: the principles sheet (required) and `stages/cascade-method.md`, section "Compliance", read in full. If the principles sheet is missing or unreadable, your whole result is the single line `MISSING: <path>`, in place of the output shape in your role file.
+Inputs, in addition to yours: the principles sheet (required) and `stages/cascade-method.md`, in section "Compliance" the paragraphs "Conflicts and owner lines" and "The whole job", read in full. If the principles sheet is missing or unreadable, your whole result is the single line `MISSING: <path>`, in place of the output shape in your role file.
 
 Your clean result (the contradiction pass's list of lines checked and found clean; the drift check's CLEAN) is judged as `stages/review-order.md` says ("What blocks"; the list: "The list for a spec"). A `[RULE:…]` tag records where a line came from; judge each line and each spec statement yourself, and do not take a line's tag or an earlier compliance record as having passed it.
 
