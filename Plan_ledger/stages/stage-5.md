@@ -8,16 +8,6 @@ the transcript and does not receive your summary of the conversation.
 
 Run it in the foreground of your own turn (a delegated runner must never background a gated check).
 
-**Route by the worst finding:**
-- `blocker` (an owner line contradicted; an invariant violated; an unposed mechanism-class fork; an
-  INHERITED store treated as decided): fix the sheet/spec or pose the fork (stage 2), bump the sheet
-  version if a line changed, re-run the pass.
-- `major` (underspecification a builder would resolve two ways; a spec statement with no sheet line): fix
-  and re-run.
-- `minor`: fix, no re-run needed.
-- clean: proceed to stage 6 without asking the owner.
+**Routes and limits:** as `stages/review-order.md` says. A fix that changes a sheet line bumps the sheet version. Record every route in the ledger Decisions log.
 
-**Iteration cap:** two bounces at this stage on the same finding class → stop and bring the owner the
-finding and the two attempts. Record every route in the ledger Decisions log.
-
-> **Cascade mode** (only in cascade mode): also give the agent `stages/role-review-cascade.md`, the principles sheet (required: the pass is invalid without it) and `stages/cascade-method.md`, and tell it to treat a `[RULE:…]` line as the provenance record its mechanism checks ask for, as `stages/cascade-method.md` "Derived lines" explains, while judging every line and spec statement against every principle itself. Its clean result means the sheet and spec meet every principle and prior decision. Two texts of this stage go to the owner at once and get one pass of both cold checks first: the two-bounce stop (the finding and the two attempts) and a finding of the contradiction pass that touches an owner line or an invariant and is sent at once (`SKILL.md` "Stop-for-human"). Each is recorded as one `ANSWER` block of its own and stamped as "Record, stamp, post" in step e of `stages/cascade-levels.md` says, and is posted verbatim.
+> **Cascade mode** (only in cascade mode): also give the agent `stages/role-review-cascade.md`, the principles sheet (required: the pass is invalid without it) and `stages/cascade-method.md`, and tell it to treat a `[RULE:…]` line as the provenance record its mechanism checks ask for, as `stages/cascade-method.md` "Derived lines" explains, while judging each line and spec statement itself. Each text of this stage that goes to the owner (`stages/review-order.md`, `SKILL.md` "Stop-for-human") is recorded as one `ANSWER` block of its own and stamped as "Record, stamp, post" in step e of `stages/cascade-levels.md` says, and is posted verbatim.
