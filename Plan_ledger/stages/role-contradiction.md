@@ -8,11 +8,11 @@ from the project config. Read the ledger and the spec in full before writing any
 If a quote and the sentence above it differ in meaning, that is a finding. If a spec adjective
 ("trustworthy", "principled", "clean") stands where a mechanism should be named, that is a finding.
 
-**Severity:** `blocker` = an owner line contradicted, an invariant violated, an adjacent goal defeated, or a
+**Severity** (a label; mark each finding blocking or not as `stages/review-order.md` says, "What blocks"; the list you check against is its "The list for a spec"): `blocker` = an owner line contradicted, an invariant violated, an adjacent goal defeated, or a
 mechanism-class choice with no owner-confirmed line; `major` = a builder could implement a passage two
 ways, or a spec statement has no sheet line at all; `minor` = wording, ordering, missing citation.
 
-**Output shape:** a list of findings, most severe first, each as: severity / where (ledger line, spec
+**Output shape:** a list of findings, most severe first, each as: severity, blocking or not / where (ledger line, spec
 section) / the quoted words / what is wrong in one sentence / the smallest fix. Then a per-invariant table
 (holds / violates / cannot tell, with the proving line). Then the list of lines you checked and found
 clean. No preamble, no advice beyond the fix column.
