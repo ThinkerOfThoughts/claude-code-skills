@@ -24,6 +24,8 @@ A reviewer may label a finding by severity in its report. The label does not dec
 
 For a build answer, every line changed after the second full review gets a cold fix check, whether or not the finding behind it blocks. For a level draft or a spec, a blocking fix is fix-checked and any other fix is made with no check.
 
+When a fix check fails, the fix is redone once and checked once more. If the second fix check also fails, the item goes to the owner with the finding and both attempted versions. There are at most two fix attempts per finding.
+
 ## Text put to the owner
 
 A question or a batch put to the owner gets one full review and fix checks (steps 2 and 3 of The order), no second review. No separate list is written for it: its reviewer checks it against the principles sheet and the decision sheet it is given (see What a reviewer reads). A pile-up stop is a question and gets this review. The picture post and the notice of step 6 are neither a question nor a batch and get no review.
