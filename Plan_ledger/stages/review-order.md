@@ -14,7 +14,7 @@ Take these steps in order.
 
 ## What blocks
 
-A finding blocks only when it changes what the builder builds or contradicts something the owner said. The blocking test alone decides the route.
+A finding blocks only when it changes what the builder builds or contradicts something the owner decided. A disagreement between the artifact and a statement of the owner's about how something works (`stages/stage-1.md`, "Owner statements") is not a finding Planning fixes: it is put to the owner as a question, reviewed as "Text put to the owner" says, before the work goes further. The blocking test alone decides the route of every other finding.
 
 There are at most two full reviews, never a third. A full review checks the artifact against its list, and a second review that raises no blocking finding is a pass. A fix check, where one is required, covers only the changed lines, and a fix does not trigger a review of the whole artifact. In stage 5, in both modes, the two-bounce limit does not apply.
 
@@ -70,6 +70,6 @@ For a build answer or a level draft, a reviewer checks that each cited rule give
 
 ## The runner
 
-For a build answer or a level draft, Planning hands it and its list to one runner agent. The runner spawns the reviewers and returns to Planning two short plain-words lists: the blocking findings, and the non-blocking ones as one line each. Planning writes the fixes for both and hands back for the fix checks and the second review.
+For a build answer or a level draft, Planning hands it and its list to one runner agent. The runner spawns the reviewers and returns to Planning two short plain-words lists: the blocking findings, and the non-blocking ones as one line each. Planning writes the fixes for both and hands back for the fix checks and the second review. Each hand-off (the first review; then the fix checks and the second review) is a fresh runner, and the records on disk carry the state between them. For a level, the first hand-off covers steps c and d on the draft with its candidate batch as one artifact; the batch text assembled after that is text put to the owner, and Planning spawns its reviewer. For a build answer Planning computes the answer's hash (`sha`) and gives the runner the hash and the closing lines the reviewers must end with (`stages/cascade-build.md`, "Cold-agent proof"); `stamp` finds the reviewers' transcripts by that hash. Each item on the lists carries its kind and route as `stages/cascade-method.md` ("The check") gives them; a pile-up verdict of PILING UP and a conflict the tie-break order does not settle are blocking items, and origin verdicts are findings on the lists.
 
-Planning itself spawns the two spec passes and the reviewer of a question or batch.
+Planning itself spawns the two spec passes, the reviewer of a question or batch, the pile-up scan over all lines and the scan of a new rule.
