@@ -20,6 +20,10 @@ There are at most two full reviews, never a third. A full review checks the arti
 
 A reviewer may label a finding by severity in its report. The label does not decide the route.
 
+## What a full review returns
+
+A full review returns a table with one row per entry on the artifact's list, each row `meets`, `violates` or `n.a.`, and then its findings, each marked blocking or not. There is no table over every principle on the sheet, and no PASS, FAIL or HELD per line. A line counts when the order above completes for it. A conflict between two rules that the tie-break order does not settle goes to the owner through the gap rule (`stages/cascade-method.md`, "The gap rule").
+
 ## Fix checks
 
 For a build answer, every line changed after the second full review gets a cold fix check, whether or not the finding behind it blocks. For a level draft or a spec, a blocking fix is fix-checked and any other fix is made with no check.
@@ -55,6 +59,10 @@ The contradiction pass reads the ledger, the spec, the invariants doc, the adjac
 ### A question or batch
 
 A reviewer of a question or batch put to the owner is given: that text, the principles sheet, the facts file, and from the ledger only the decision sheet (the owner's decided lines with their quotes). Not the rest of the ledger, not the transcripts.
+
+## The origin check
+
+For a build answer or a level draft, a reviewer checks that each cited rule gives the answer and that each quote matches what it is given: the list's quoted lines for an answer, the ledger for a draft. It does not look quotes up in the transcripts.
 
 ## The runner
 
