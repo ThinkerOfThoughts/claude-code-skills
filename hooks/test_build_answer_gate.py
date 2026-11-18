@@ -108,7 +108,7 @@ class Env:
 
     # ---- cold-agent fixtures: a transcript in the real Claude Code layout (see the module docstring of build_answer_gate.py)
     def make_agent(self, prompt, final, agent_id=None, meta=None, workflow=False, ts=None, tool_tail=False, stop="end_turn",
-                   inbound=None, truncate=False, session=None):
+                   inbound=None, truncate=False, session=None, start_ts=None):
         self.agent_n += 1
         aid = agent_id or ("a%015x" % (0x1000 + self.agent_n))
         base = os.path.join(self.transcripts, session or self.session, "subagents")
@@ -121,7 +121,7 @@ class Env:
             d = {"isSidechain": True, "agentId": aid, "sessionId": session or self.session, "timestamp": t0}
             d.update(kw)
             return json.dumps(d)
-        L = [ent(type="user", message={"role": "user", "content": prompt}),
+        L = [ent(type="user", message={"role": "user", "content": prompt}, **({"timestamp": start_ts} if start_ts else {})),
              ent(type="attachment", attachment={"type": "hook_success"}),
              ent(type="assistant", message={"role": "assistant", "content": [{"type": "thinking", "thinking": ""}], "stop_reason": None}),
              ent(type="assistant", message={"role": "assistant", "content": [{"type": "tool_use", "id": "tu1", "name": "Read", "input": {}}],
@@ -181,17 +181,29 @@ CUR = [None]    # the Env of the running test: the chk_* builders attach cold-ag
 TQ_TEXT = bag.parse_record(open(os.path.join(FX, "records", "FX2-record.md")).read())["trioq"]["Tq"][0]
 
 
-def _agent_for(ident, text, kind_label, result):
+def rev_agent(ident, text, label, n, ts=None, **kw):     # ts: the finish time of the agent; start_ts (in kw): its start
+    """A cold agent that ran full review number n (1 first, 2 second) of `text` as reviewer `label` (COMPLIANCE|REDTEAM)."""
     h = bag.text_hash(text)
-    return CUR[0].make_agent("Check the answer %s. Its hash is %s." % (ident, h), "Findings.\n%s hash=%s %s: %s" % (ident, h, kind_label, result))
+    return CUR[0].make_agent("Review the whole answer %s against its list. Its hash is %s." % (ident, h),
+                             "Findings.\n%s hash=%s %s: %s" % (ident, h, label, ("FIRST", "SECOND")[n - 1]), ts=ts, **kw)
 
 
-def chk_comp(ident, result, text, ts=None):
-    return "CHECK %s compliance %s %s sha=%s agent=%s" % (ident, result, ts or now_iso(), bag.text_hash(text), _agent_for(ident, text, "COMPLIANCE", result))
+def reviewed(ident, text):
+    """The REVIEWED block that holds the text a review saw."""
+    h = bag.text_hash(text)
+    return "REVIEWED %s %s BEGIN\n%s\nREVIEWED %s %s END" % (ident, h, bag.norm_text(text), ident, h)
 
 
-def chk_rt(ident, result, text, ts=None):
-    return "CHECK %s redteam %s %s sha=%s agent=%s" % (ident, result, ts or now_iso(), bag.text_hash(text), _agent_for(ident, text, "REDTEAM", result))
+def chk_review(ident, n, who, text, ts=None, agent_ts=None, **kw):
+    return "CHECK %s review%d %s %s sha=%s agent=%s" % (ident, n, who, ts or now_iso(), bag.text_hash(text),
+                                                         rev_agent(ident, text, who.upper(), n, ts=agent_ts, **kw))
+
+
+def chk_reviews(ident, text):
+    """Evidence of the standard flow on one text that is not edited afterwards: the REVIEWED block, then the first and the second
+    full review by both reviewers (four fresh cold agents, created in review order so each starts after the previous finished)."""
+    parts = [reviewed(ident, text)] + [chk_review(ident, n, who, text) for n in (1, 2) for who in ("compliance", "redteam")]
+    return "\n".join(parts) + "\n"
 
 
 def chk_trio(ident, text, ts=None, answers=("(a)", "(a)", "(a)"), qtext=None):
@@ -219,12 +231,12 @@ class Base(unittest.TestCase):
             self.assertIn(n, why)
         return why
 
-    def good_t1(self, rt="MINOR"):
+    def good_t1(self):
         text = open(os.path.join(FX, "records", "FX1-record.md")).read()
         ans = block_text(text, "T1")
-        lines = [chk_comp("T1", "PASS", ans), chk_rt("T1", rt, ans)]
-        path = self.env.record("FX1-record.md", text + "\n".join(lines) + "\n")
-        return path, ans, lines
+        ev = chk_reviews("T1", ans)
+        path = self.env.record("FX1-record.md", text + ev)
+        return path, ans, ev.strip().split("\n")
 
 
 # =============================================================================== C1 header
@@ -265,23 +277,20 @@ class TestAnswer(Base):
         self.assertAllow(answer_msg(path, "T1", ans))
         self.assertAllow(answer_msg(path, "T1", ans), tool="mcp__ccd_session_mgmt__send_message")
 
-    def test_c2_clean(self):
-        path, ans, lines = self.good_t1(rt="CLEAN")
-        self.assertAllow(answer_msg(path, "T1", ans))
-
     def test_c2_single_mutations_flip_to_deny(self):
         path, ans, lines = self.good_t1()
         good = answer_msg(path, "T1", ans)
         text = open(path).read()
+        i = text.index("REVIEWED")
         muts = {
             "body char": good.replace("tests go in", "tests went in"),
             "body extra sentence": good + "\nAlso do X.",
             "body missing text": "GATE: ANSWER %s#T1\nT1:\n" % path,
             "wrong id in header": good.replace("#T1", "#T9", 1),
-            "compliance sha": text.replace("sha=%s" % bag.text_hash(ans), "sha=0123456789abcdef", 1),
-            "ts garbage": re.sub(r"(CHECK T1 compliance PASS )\S+", r"\1notatime", text),
-            "result FAIL": text.replace("compliance PASS", "compliance FAIL"),
-            "redteam MAJOR": text.replace("redteam MINOR", "redteam MAJOR"),
+            "review2 sha": re.sub(r"(CHECK T1 review2 compliance \S+ sha=)[0-9a-f]{16}", r"\g<1>0123456789abcdef", text),
+            "ts garbage": re.sub(r"(CHECK T1 review2 compliance )\S+", r"\1notatime", text),
+            "review kind": text.replace("review2 redteam", "review3 redteam"),
+            "reviewed block text edited": text[:i] + text[i:].replace("tests go in", "tests belong in", 1),
         }
         for name, m in muts.items():
             with self.subTest(mutation=name):
@@ -320,79 +329,73 @@ class TestAnswer(Base):
         open(p, "wb").write(b"\xff\xfe\x00\x80 not utf8")
         return p
 
-    def test_c4_compliance_cases(self):
+    def test_c4_record_structure_cases(self):
         path, ans, lines = self.good_t1()
         text = open(path).read()
-        base = text.split("CHECK T1 compliance")[0]
-        rt = lines[1] + "\n"
+        base = text.split("REVIEWED")[0]
+        ev = text[len(base):]
+        comp2 = [l for l in lines if " review2 compliance " in l][0]
 
         def put(body):
             self.env.record("FX1-record.md", body)
             return self.assertDeny(answer_msg(path, "T1", ans))
-        why = put(base + rt)
-        self.assertIn("no compliance line", why); self.assertIn("stamp", why)
-        why = put(base + lines[0].replace("PASS", "FAIL") + "\n" + rt); self.assertIn("is FAIL", why)
-        why = put(base + lines[0].replace("PASS", "HELD") + "\n" + rt); self.assertIn("is HELD", why)
-        why = put(base + lines[0].replace("PASS", "MAYBE") + "\n" + rt); self.assertIn("malformed CHECK line", why)
-        why = put(base + lines[0] + " junk\n" + rt); self.assertIn("malformed", why)
-        why = put(base.replace("ANSWER T1 END", "ANSWER T1 END\nANSWER T1 BEGIN\nother\nANSWER T1 END") + lines[0] + "\n" + rt)
+        why = put(base + ev.replace(comp2 + "\n", ""))
+        self.assertIn("no `review2 compliance` line", why); self.assertIn("stamp", why)
+        why = put(base + ev.replace("review2 compliance", "review2 compliant")); self.assertIn("malformed CHECK line", why)
+        why = put(base + ev.rstrip("\n") + " junk\n"); self.assertIn("malformed", why)
+        why = put(base.replace("ANSWER T1 END", "ANSWER T1 END\nANSWER T1 BEGIN\nother\nANSWER T1 END") + ev)
         self.assertIn("2 ANSWER blocks", why)
-        why = put("# nothing\n" + lines[0] + "\n" + rt); self.assertIn("no ANSWER block", why)
-        why = put(base.replace("ANSWER T1 END", "") + lines[0] + "\n" + rt); self.assertIn("no END", why)
-        # latest line wins
-        self.env.record("FX1-record.md", base + lines[0].replace("PASS", "FAIL") + "\n" + lines[0] + "\n" + rt)
+        why = put("# nothing\n" + ev); self.assertIn("no ANSWER block", why)
+        why = put(base.replace("ANSWER T1 END", "") + ev); self.assertIn("no END", why)
+        why = put(base + ev.replace("REVIEWED T1 %s END" % bag.text_hash(ans), "")); self.assertIn("REVIEWED T1 %s BEGIN has no END" % bag.text_hash(ans), why)
+        # the latest review2 line of a reviewer decides
+        bad = comp2.replace(comp2.split("agent=")[1], "a000000000000ff")
+        self.env.record("FX1-record.md", base + ev.replace(comp2, bad + "\n" + comp2))
         self.assertAllow(answer_msg(path, "T1", ans))
-        self.env.record("FX1-record.md", base + lines[0] + "\n" + lines[0].replace("PASS", "FAIL") + "\n" + rt)
-        self.assertDeny(answer_msg(path, "T1", ans))
+        self.env.record("FX1-record.md", base + ev.replace(comp2, comp2 + "\n" + bad))
+        self.assertDeny(answer_msg(path, "T1", ans), "no agent transcript with id")
 
-    def test_c5_stale_and_whitespace(self):
+    def test_c5_edited_text_and_whitespace(self):
         path, ans, lines = self.good_t1()
         text = open(path).read()
-        edited = text.replace("tests go in", "tests belong in")
+        edited = text[:text.index("REVIEWED")].replace("tests go in", "tests belong in") + text[text.index("REVIEWED"):]
         self.env.record("FX1-record.md", edited)
         new_ans = block_text(edited, "T1")
-        why = self.assertDeny(answer_msg(path, "T1", new_ans), "changed since the compliance check", "changed since the redteam check")
-        self.assertIn(bag.text_hash(new_ans), why)
+        why = self.assertDeny(answer_msg(path, "T1", new_ans), "changed since the second review and has no cold fix check")
+        self.assertIn(bag.text_hash(bag.answer_lines(new_ans)[0]), why)
         ws = text.replace("ANSWER T1 BEGIN\n", "ANSWER T1 BEGIN\n\n\n").replace("\nANSWER T1 END", "   \n\n\nANSWER T1 END")
         self.env.record("FX1-record.md", ws)
         self.assertAllow(answer_msg(path, "T1", ans))
-        # each check goes stale on its own: only the red-team line is re-stamped
-        only_rt = edited + chk_rt("T1", "CLEAN", new_ans) + "\n"
-        self.env.record("FX1-record.md", only_rt)
-        why = self.assertDeny(answer_msg(path, "T1", new_ans), "changed since the compliance check")
-        self.assertNotIn("changed since the redteam check", why)
 
-    def test_c6_redteam(self):
+    def test_c6_each_reviewer_has_its_own_second_review(self):
         path, ans, lines = self.good_t1()
         text = open(path).read()
-        self.env.record("FX1-record.md", text.replace(lines[1], ""))
-        self.assertDeny(answer_msg(path, "T1", ans), "no redteam line")
-        for bad in ("MAJOR", "BLOCKER"):
-            self.env.record("FX1-record.md", text.replace("redteam MINOR", "redteam " + bad))
-            self.assertDeny(answer_msg(path, "T1", ans), "still open")
-        # a later CLEAN resolves an earlier MAJOR
-        self.env.record("FX1-record.md", text.replace("redteam MINOR", "redteam MAJOR") + chk_rt("T1", "CLEAN", ans) + "\n")
-        self.assertAllow(answer_msg(path, "T1", ans))
+        for who in ("compliance", "redteam"):
+            with self.subTest(who=who):
+                gone = [l for l in lines if " review2 %s " % who in l][0]
+                self.env.record("FX1-record.md", text.replace(gone + "\n", ""))
+                self.assertDeny(answer_msg(path, "T1", ans), "no `review2 %s` line" % who)
 
     def test_c7_trio(self):
         text = open(os.path.join(FX, "records", "FX2-record.md")).read()
         ans = block_text(text, "T2")
         self.assertIn("TRIO:Tq", ans)
-        c, r, t = chk_comp("T2", "PASS", ans), chk_rt("T2", "MINOR", ans), chk_trio("T2", ans)
-        path = self.env.record("FX2-record.md", text + "\n".join([c, r, t]) + "\n")
+        ev, t = chk_reviews("T2", ans), chk_trio("T2", ans)
+        path = self.env.record("FX2-record.md", text + ev + t + "\n")
         msg = answer_msg(path, "T2", ans)
         self.assertAllow(msg)
-        base = text + c + "\n" + r + "\n"
+        base = text + ev
         self.env.record("FX2-record.md", base)
         self.assertDeny(msg, "no trio line")
         self.env.record("FX2-record.md", base + chk_trio("T2", "different text") + "\n")
-        self.assertDeny(msg, "changed since the trio check")
+        why = self.assertDeny(msg, "changed since the trio check")
+        self.assertIn("stamp", why); self.assertIn("trio DONE", why)       # the message says how to re-stamp
         self.env.record("FX2-record.md", base + t.replace("trio DONE", "trio PASS") + "\n")
         self.assertDeny(msg, "malformed")
         # no TRIO token: no trio line demanded
         plain = text.replace("TRIO:Tq", "no trio here")
         pans = block_text(plain, "T2")
-        p2 = self.env.record("FX2-plain.md", plain + chk_comp("T2", "PASS", pans) + "\n" + chk_rt("T2", "CLEAN", pans) + "\n")
+        p2 = self.env.record("FX2-plain.md", plain + chk_reviews("T2", pans))
         self.assertAllow(answer_msg(p2, "T2", pans))
 
     def test_c9_body_binding_whole_block(self):
@@ -411,20 +414,20 @@ class TestAnswer(Base):
             with self.subTest(spelling=spelling):
                 t = text.replace("TRIO:Tq", spelling)
                 ans = block_text(t, "T2")
-                path = self.env.record("FX2-s.md", t + chk_comp("T2", "PASS", ans) + "\n" + chk_rt("T2", "CLEAN", ans) + "\n")
+                path = self.env.record("FX2-s.md", t + chk_reviews("T2", ans))
                 self.assertDeny(answer_msg(path, "T2", ans), "no trio line")
 
     def test_prose_about_a_trio_is_not_a_trio_tag(self):
         t = open(os.path.join(FX, "records", "FX1-record.md")).read().replace("T1 (where", "The trio: Alice and Bob agreed. T1 (where")
         ans = block_text(t, "T1")
-        path = self.env.record("FX1-p.md", t + chk_comp("T1", "PASS", ans) + "\n" + chk_rt("T1", "CLEAN", ans) + "\n")
+        path = self.env.record("FX1-p.md", t + chk_reviews("T1", ans))
         self.assertAllow(answer_msg(path, "T1", ans))
 
     def test_answer_text_that_starts_like_a_marker_word(self):
         t = open(os.path.join(FX, "records", "FX1-record.md")).read().replace(
             "T1 (where", "CHECK the config first. ANSWER: use option b.\nT1 (where")
         ans = block_text(t, "T1")
-        path = self.env.record("FX1-m.md", t + chk_comp("T1", "PASS", ans) + "\n" + chk_rt("T1", "CLEAN", ans) + "\n")
+        path = self.env.record("FX1-m.md", t + chk_reviews("T1", ans))
         self.assertAllow(answer_msg(path, "T1", ans))
         # a real marker line inside the block still denies
         t2 = t.replace("CHECK the config first. ANSWER: use option b.\n", "ANSWER T1 BEGIN\n")
@@ -436,15 +439,15 @@ class TestAnswer(Base):
         a1 = block_text(t1, "T1")
         t2 = open(os.path.join(FX, "records", "FX2-record.md")).read()
         a2 = block_text(t2, "T2")
-        p1 = self.env.record("FX1-record.md", t1 + chk_comp("T1", "PASS", a1) + "\n" + chk_rt("T1", "CLEAN", a1) + "\n")
-        p2 = self.env.record("FX2-record.md", t2 + "\n".join([chk_comp("T2", "PASS", a2), chk_rt("T2", "CLEAN", a2), chk_trio("T2", a2)]) + "\n")
+        p1 = self.env.record("FX1-record.md", t1 + chk_reviews("T1", a1))
+        p2 = self.env.record("FX2-record.md", t2 + chk_reviews("T2", a2) + chk_trio("T2", a2) + "\n")
         body = "T1:\n%s\n\nT2:\n%s" % (bag.norm_text(a1), bag.norm_text(a2))
         self.assertAllow("GATE: ANSWER %s#T1 %s#T2\n%s" % (p1, p2, body))
         swapped = "T2:\n%s\n\nT1:\n%s" % (bag.norm_text(a2), bag.norm_text(a1))
         self.assertDeny("GATE: ANSWER %s#T1 %s#T2\n%s" % (p1, p2, swapped))
         # one id failing blocks the whole message and every failure is reported
         self.env.record("FX1-record.md", t1)
-        why = self.assertDeny("GATE: ANSWER %s#T1 %s#T2\n%s" % (p1, p2, body), "no compliance line", "no redteam line")
+        why = self.assertDeny("GATE: ANSWER %s#T1 %s#T2\n%s" % (p1, p2, body), "no `review2 compliance` line", "no `review2 redteam` line")
 
     def test_duplicate_ids_in_header(self):
         path, ans, _ = self.good_t1()
@@ -916,9 +919,9 @@ class TestRobustness(Base):
     def test_c15_actionable_all_failures_in_one(self):
         path, ans, lines = TestAnswer.good_t1(self)
         text = open(path).read()
-        self.env.record("FX1-record.md", text.split("CHECK T1 compliance")[0])      # both lines missing
+        self.env.record("FX1-record.md", text.split("REVIEWED")[0])      # all review evidence missing
         why = self.assertDeny(answer_msg(path, "T1", ans))
-        self.assertIn("no compliance line", why); self.assertIn("no redteam line", why)
+        self.assertIn("no `review2 compliance` line", why); self.assertIn("no `review2 redteam` line", why)
         self.assertIn("FX1-record.md#T1", why); self.assertIn(bag.text_hash(ans), why)
         self.assertIn("build_answer_gate.py stamp", why)
 
@@ -1072,25 +1075,10 @@ class TestDocExample(Base):
         p = self.doc_path()
         if not p:
             self.skipTest("cascade-build.md not found (set BAG_DOC)")
-        text = open(p).read()
-        m = re.search(r"```gate-record\n(.*?)```", text, re.S)
-        if not m:
-            self.skipTest("doc paragraph not written yet")
-        rec = bag.parse_record(m.group(1))
-        self.assertEqual(rec["malformed"], [])
-        self.assertEqual(rec["struct"], [])
-        self.assertTrue(rec["blocks"])
-        kinds = {k for (_, k) in rec["checks"]}
-        self.assertEqual(kinds, {"compliance", "redteam", "trio"})
-        # the example's hash line agrees with the code
-        for (ident, kind), ls in rec["checks"].items():
-            self.assertEqual(ls[-1]["sha"], bag.text_hash(rec["blocks"][ident][0]), "example sha must be the real hash")
-        # and the hook accepts the example's record once real cold-agent transcripts back its lines (the example's agent ids are placeholders)
-        ans = rec["blocks"]["Q1"][0]
-        head = "\n".join(l for l in m.group(1).split("\n") if not l.startswith("CHECK "))
-        lines = [chk_comp("Q1", "PASS", ans), chk_rt("Q1", "MINOR", ans), chk_trio("Q1", ans, qtext=rec["trioq"]["Tq"][0])]
-        path = self.env.record("doc-example.md", head + "\n" + "\n".join(lines) + "\n")
-        self.assertAllow(answer_msg(path, "Q1", ans))
+        self.skipTest("DEPENDS ON THE NEXT INCREMENT: the gate-record example in cascade-build.md is still in the old CHECK format "
+                      "(compliance/redteam with a verdict) until the skill text is rewritten from this change's report; once that "
+                      "example uses REVIEWED blocks and review1/review2/fixcheck lines, restore this test (parse it, check its shas, "
+                      "and have the hook accept it with real cold-agent transcripts)")
 
 
 # =============================================================================== helper modes
@@ -1101,16 +1089,16 @@ class TestStamp(Base):
         flags = ["--config", self.env.config_path, "--session", PLANNER]
         out = subprocess.run(base + ["sha", path, "T1"] + flags, capture_output=True, text=True)
         ans = block_text(open(path).read(), "T1")
-        _agent_for("T1", ans, "COMPLIANCE", "PASS")      # the cold agents that back the two stamps below
-        _agent_for("T1", ans, "REDTEAM", "MINOR")
         self.assertEqual(out.stdout.strip(), bag.text_hash(ans))
-        for kind, res in (("compliance", "PASS"), ("redteam", "MINOR")):
-            r = subprocess.run(base + ["stamp", path, "T1", kind, res] + flags, capture_output=True, text=True)
-            self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        for n in (1, 2):                      # the cold agents that back the four stamps below, in review order
+            for who in ("compliance", "redteam"):
+                rev_agent("T1", ans, who.upper(), n)
+                r = subprocess.run(base + ["stamp", path, "T1", "review%d" % n, who] + flags, capture_output=True, text=True)
+                self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         self.assertAllow(answer_msg(path, "T1", ans))
         before = open(path).read()
-        for args in (["T1", "redteam", "BOGUS"], ["T1", "compliance", "MINOR"], ["T9", "compliance", "PASS"], ["T1", "trio", "DONE"],
-                     ["T1", "weird", "PASS"]):
+        for args in (["T1", "review2", "BOGUS"], ["T1", "review1", "MINOR"], ["T9", "review1", "compliance"], ["T1", "trio", "DONE"],
+                     ["T1", "weird", "PASS"], ["T1", "compliance", "PASS"], ["T1", "redteam", "CLEAN"], ["T1", "fixcheck", "x"]):
             r = subprocess.run(base + ["stamp", path] + args + flags, capture_output=True, text=True)
             self.assertNotEqual(r.returncode, 0, args)
             self.assertEqual(open(path).read(), before)
@@ -1171,89 +1159,92 @@ class EvBase(Base):
 
 class TestEvidenceStamp(EvBase):
     def test_c1_no_agent_refused_both_kinds(self):
-        for kind, res in (("compliance", "PASS"), ("redteam", "CLEAN")):
-            out = self.refused(kind, res, self.H, "no qualifying cold agent", "hash=%s" % self.H)
+        for kind, who in (("review1", "compliance"), ("review1", "redteam")):
+            out = self.refused(kind, who, self.H, "no qualifying cold agent", "hash=%s" % self.H)
             self.assertIn(self.env.subagents, out)
-
     def test_c1_empty_world_no_subagents_dir(self):
         shutil.rmtree(self.env.subagents)
-        self.refused("compliance", "PASS", "no subagents directory")
+        self.refused("review1", "compliance", "no subagents directory")
 
     def test_c2_per_hash_line_stamps_and_send_allows(self):
-        a = self.agent([self.vline("COMPLIANCE", "PASS")])
-        b = self.agent([self.vline("REDTEAM", "MINOR")])
-        self.assertIn("agent=%s" % a, self.stamped("compliance", "PASS"))
-        self.assertIn("agent=%s" % b, self.stamped("redteam", "MINOR"))
+        ids = {}
+        for n in (1, 2):                     # created in review order: each review starts after the previous one finished
+            for who in ("compliance", "redteam"):
+                ids[(n, who)] = self.agent([self.vline(who.upper(), ("FIRST", "SECOND")[n - 1])])
+        for n in (1, 2):
+            for who in ("compliance", "redteam"):
+                self.assertIn("agent=%s" % ids[(n, who)], self.stamped("review%d" % n, who))
         self.assertAllow(answer_msg(self.path, "T1", self.ans))
         rows = [json.loads(l) for l in open(self.env.log)]
-        self.assertEqual(sorted(rows[-1]["agents"]), sorted(["%s:compliance:PASS" % a, "%s:redteam:MINOR" % b]))
+        self.assertEqual(sorted(rows[-1]["agents"]), sorted("%s:review%d:%s" % (ids[k], k[0], k[1]) for k in ids))
 
-    def test_c2_bare_line_with_one_hash_in_prompt(self):
-        self.agent(["COMPLIANCE: PASS"])
-        self.stamped("compliance", "PASS")
-
+    def test_c2_bare_line_with_one_hash_in_prompt_no_longer_counts(self):
+        self.agent(["COMPLIANCE: FIRST"])       # a review line carries the answer id: a bare line cannot be tied to the answer
+        self.refused("review1", "compliance", "no qualifying cold agent")
     def test_c2_one_agent_carries_both_kinds(self):
-        a = self.agent([self.vline("COMPLIANCE", "PASS"), self.vline("REDTEAM", "CLEAN")])
-        self.assertIn(a, self.stamped("compliance", "PASS"))
-        self.assertIn(a, self.stamped("redteam", "CLEAN"))
+        a = self.agent([self.vline("COMPLIANCE", "FIRST"), self.vline("REDTEAM", "FIRST")])
+        self.assertIn(a, self.stamped("review1", "compliance"))
+        self.assertIn(a, self.stamped("review1", "redteam"))
+        for who in ("compliance", "redteam"):              # the second reviews are two other agents: the record is then allowed
+            self.agent([self.vline(who.upper(), "SECOND")])
+            self.stamped("review2", who)
         self.assertAllow(answer_msg(self.path, "T1", self.ans))
-
     def test_c2_batch_agent_each_hash_its_own_verdict(self):
         h2, h3 = "1" * 16, "2" * 16
         prompt = "Check three answers: %s %s %s." % (self.H, h2, h3)
-        a = self.agent([self.vline("COMPLIANCE", "FAIL", h2), self.vline("COMPLIANCE", "PASS"), self.vline("COMPLIANCE", "HELD", h3)], prompt=prompt)
-        self.assertIn(a, self.stamped("compliance", "PASS"))      # its own verdict for H, not the FAIL it gave h2
-
+        a = self.agent([self.vline("COMPLIANCE", "SECOND", h2), self.vline("COMPLIANCE", "FIRST"), self.vline("COMPLIANCE", "SECOND", h3)], prompt=prompt)
+        self.assertIn(a, self.stamped("review1", "compliance"))      # its own line for H, not the SECOND it gave h2
     def test_c2_prompt_as_list_of_text_blocks_is_accepted(self):
-        self.agent([self.vline("COMPLIANCE", "PASS")], prompt=[{"type": "text", "text": self.prompt()}])
-        self.stamped("compliance", "PASS")
+        self.agent([self.vline("COMPLIANCE", "FIRST")], prompt=[{"type": "text", "text": self.prompt()}])
+        self.stamped("review1", "compliance")
 
     def test_c2_skill_text_is_not_input(self):
-        self.agent([self.vline("COMPLIANCE", "PASS")], inbound="skill")
-        self.stamped("compliance", "PASS")
+        self.agent([self.vline("COMPLIANCE", "FIRST")], inbound="skill")
+        self.stamped("review1", "compliance")
 
     def test_c2_truncated_tail_is_skipped(self):
-        self.agent([self.vline("COMPLIANCE", "PASS")], truncate=True)
-        self.stamped("compliance", "PASS")
+        self.agent([self.vline("COMPLIANCE", "FIRST")], truncate=True)
+        self.stamped("review1", "compliance")
 
     def test_c2_workflow_agent_is_found(self):
-        self.agent([self.vline("REDTEAM", "CLEAN")], workflow=True)
-        self.stamped("redteam", "CLEAN")
+        self.agent([self.vline("REDTEAM", "FIRST")], workflow=True)
+        self.stamped("review1", "redteam")
 
     def test_c3_refusals(self):
         h2 = "3" * 16
         cases = {
-            "prompt holds another hash": dict(lines=[self.vline("COMPLIANCE", "PASS")], prompt=self.prompt(h2)),
-            "hash only inside a longer hex run": dict(lines=[self.vline("COMPLIANCE", "PASS")], prompt="hash is %sab" % self.H),
-            "line carries another hash": dict(lines=[self.vline("COMPLIANCE", "PASS", h2)]),
-            "line hash absent from the prompt": dict(lines=[self.vline("COMPLIANCE", "PASS", h2)], prompt="only %s here" % self.H),
-            "other kind": dict(lines=[self.vline("REDTEAM", "CLEAN")]),
-            "verdict followed by prose": dict(lines=[self.vline("COMPLIANCE", "PASS"), "Files are in /x"]),
-            "decorated": dict(lines=["**" + self.vline("COMPLIANCE", "PASS") + "**"]),
-            "bare line with two hex tokens in the prompt": dict(lines=["COMPLIANCE: PASS"], prompt="%s and %s" % (self.H, h2)),
-            "unfinished (tool_use last)": dict(lines=[self.vline("COMPLIANCE", "PASS")], tool_tail=True),
-            "no stop_reason": dict(lines=[self.vline("COMPLIANCE", "PASS")], stop=None),
-            "stop_reason max_tokens": dict(lines=[self.vline("COMPLIANCE", "PASS")], stop="max_tokens"),
-            "fork (isFork)": dict(lines=[self.vline("COMPLIANCE", "PASS")], meta={"isFork": True}),
-            "fork (agentType)": dict(lines=[self.vline("COMPLIANCE", "PASS")], meta={"agentType": "fork"}),
+            "prompt holds another hash": dict(lines=[self.vline("COMPLIANCE", "FIRST")], prompt=self.prompt(h2)),
+            "hash only inside a longer hex run": dict(lines=[self.vline("COMPLIANCE", "FIRST")], prompt="hash is %sab" % self.H),
+            "line carries another hash": dict(lines=[self.vline("COMPLIANCE", "FIRST", h2)]),
+            "line hash absent from the prompt": dict(lines=[self.vline("COMPLIANCE", "FIRST", h2)], prompt="only %s here" % self.H),
+            "other kind": dict(lines=[self.vline("REDTEAM", "FIRST")]),
+            "verdict followed by prose": dict(lines=[self.vline("COMPLIANCE", "FIRST"), "Files are in /x"]),
+            "decorated": dict(lines=["**" + self.vline("COMPLIANCE", "FIRST") + "**"]),
+            "bare line with two hex tokens in the prompt": dict(lines=["COMPLIANCE: FIRST"], prompt="%s and %s" % (self.H, h2)),
+            "closing line names another answer id": dict(lines=["T9 hash=%s COMPLIANCE: FIRST" % self.H]),
+            "unfinished (tool_use last)": dict(lines=[self.vline("COMPLIANCE", "FIRST")], tool_tail=True),
+            "no stop_reason": dict(lines=[self.vline("COMPLIANCE", "FIRST")], stop=None),
+            "stop_reason max_tokens": dict(lines=[self.vline("COMPLIANCE", "FIRST")], stop="max_tokens"),
+            "fork (isFork)": dict(lines=[self.vline("COMPLIANCE", "FIRST")], meta={"isFork": True}),
+            "fork (agentType)": dict(lines=[self.vline("COMPLIANCE", "FIRST")], meta={"agentType": "fork"}),
             "refused": dict(lines=["REFUSED"]),
-            "refused then verdict": dict(lines=["REFUSED", self.vline("COMPLIANCE", "PASS")]),
-            "revived (coordinator message)": dict(lines=[self.vline("COMPLIANCE", "PASS")], inbound="coordinator"),
-            "queued command mid-run": dict(lines=[self.vline("COMPLIANCE", "PASS")], inbound="queued"),
+            "refused then verdict": dict(lines=["REFUSED", self.vline("COMPLIANCE", "FIRST")]),
+            "revived (coordinator message)": dict(lines=[self.vline("COMPLIANCE", "FIRST")], inbound="coordinator"),
+            "queued command mid-run": dict(lines=[self.vline("COMPLIANCE", "FIRST")], inbound="queued"),
             "invalid verdict word": dict(lines=[self.vline("COMPLIANCE", "CLEAN")]),
         }
         for name, kw in cases.items():
             with self.subTest(name):
                 lines = kw.pop("lines")
                 a = self.agent(lines, **kw)
-                self.refused("compliance", "PASS", "no qualifying cold agent")
+                self.refused("review1", "compliance", "no qualifying cold agent")
                 self.drop(a)
 
     def test_c3_bare_line_is_not_attributed_when_the_prompt_holds_two_hashes(self):
-        a = self.agent(["COMPLIANCE: PASS"], prompt="%s and %s" % (self.H, "5" * 16))
+        a = self.agent(["COMPLIANCE: FIRST"], prompt="%s and %s" % (self.H, "5" * 16))
         info, reason = bag.read_agent(glob.glob(os.path.join(self.env.subagents, "agent-%s.jsonl" % a))[0], [self.H])
         self.assertIsNone(reason)
-        self.assertEqual(info["verdicts"], {})          # deterministic: no hash gets the bare verdict
+        self.assertEqual(info["reviews"], {})          # deterministic: no hash gets the bare line
 
     def test_c5_malformed_session_ids_find_no_directory(self):
         cfg = bag.load_config(self.env.config_path)
@@ -1262,9 +1253,9 @@ class TestEvidenceStamp(EvBase):
             self.assertEqual(bag.session_dirs(cfg, bad), [], bad)
 
     def test_c18_fifo_meta_file_does_not_hang(self):
-        a = self.agent([self.vline("COMPLIANCE", "PASS")])
+        a = self.agent([self.vline("COMPLIANCE", "FIRST")])
         os.mkfifo(os.path.join(self.env.subagents, "agent-%s.meta.json" % a))
-        self.assertIn(a, self.stamped("compliance", "PASS"))
+        self.assertIn(a, self.stamped("review1", "compliance"))
 
     def test_sha_prints_the_trio_question_hash(self):
         p = self.env.record("FX2-record.md", src="FX2-record.md")
@@ -1275,135 +1266,132 @@ class TestEvidenceStamp(EvBase):
         for kw, needle in ((dict(inbound="coordinator"), "no longer the cold check"), (dict(meta={"isFork": True}), "fork"), (dict(stop=None), "stop_reason"),
                            (dict(tool_tail=True), "unfinished")):
             with self.subTest(needle):
-                a = self.agent([self.vline("COMPLIANCE", "PASS")], **kw)
-                self.refused("compliance", "PASS", needle)
+                a = self.agent([self.vline("COMPLIANCE", "FIRST")], **kw)
+                self.refused("review1", "compliance", needle)
                 self.drop(a)
         self.agent(["REFUSED"])
-        self.refused("compliance", "PASS", "run a fresh cold agent")
+        self.refused("review1", "compliance", "run a fresh cold agent")
 
-    def test_c3_weaker_than_the_agent_is_refused_equal_or_worse_allowed(self):
-        label = {"redteam": "REDTEAM", "compliance": "COMPLIANCE"}
-        for kind, agent_v, stamp_v in [("redteam", "MINOR", "CLEAN"), ("redteam", "MAJOR", "MINOR"), ("redteam", "BLOCKER", "MAJOR"),
-                                       ("compliance", "FAIL", "HELD"), ("compliance", "FAIL", "PASS"), ("compliance", "HELD", "PASS")]:
-            with self.subTest("refuse", kind=kind, agent=agent_v, stamp=stamp_v):
-                a = self.agent([self.vline(label[kind], agent_v)])
-                self.refused(kind, stamp_v, "may be the agent's verdict or a worse one")
-                self.drop(a)
-        for kind, agent_v, stamp_v in [("redteam", "MINOR", "MINOR"), ("redteam", "MINOR", "MAJOR"), ("redteam", "CLEAN", "BLOCKER"),
-                                       ("compliance", "PASS", "FAIL"), ("compliance", "HELD", "FAIL"), ("compliance", "PASS", "PASS")]:
-            with self.subTest("allow", kind=kind, agent=agent_v, stamp=stamp_v):
-                a = self.agent([self.vline(label[kind], agent_v)])
-                self.stamped(kind, stamp_v)
-                self.rollback()
-                self.drop(a)
-
+    def test_c3_review_labels_are_matched(self):
+        a = self.agent([self.vline("COMPLIANCE", "SECOND")])
+        self.refused("review1", "compliance", "no qualifying cold agent")      # a SECOND line does not back a first review
+        self.drop(a)
+        a = self.agent([self.vline("COMPLIANCE", "FIRST")])
+        self.refused("review2", "compliance", "no qualifying cold agent")      # nor a FIRST line a second one
+        self.drop(a)
+        self.agent([self.vline("COMPLIANCE", "FIRST"), self.vline("REDTEAM", "SECOND")])
+        self.refused("review1", "redteam", "no qualifying cold agent")         # the labels are independent
+        self.stamped("review1", "compliance")
     def test_c4_any_qualifying_agent_suffices_and_the_latest_is_recorded(self):
-        old = self.agent([self.vline("REDTEAM", "MAJOR")], ts="2026-01-01T00:00:00Z")
-        new = self.agent([self.vline("REDTEAM", "CLEAN")], ts="2026-01-02T00:00:00Z")
-        self.assertIn("agent=%s" % new, self.stamped("redteam", "CLEAN"))
+        old = self.agent([self.vline("REDTEAM", "FIRST")], ts="2026-01-01T00:00:00Z")
+        new = self.agent([self.vline("REDTEAM", "FIRST")], ts="2026-01-02T00:00:00Z")
+        self.assertIn("agent=%s" % new, self.stamped("review1", "redteam"))
         self.rollback()
         self.drop(old, new)
-        old = self.agent([self.vline("REDTEAM", "CLEAN")], ts="2026-01-01T00:00:00Z")
-        self.agent([self.vline("REDTEAM", "MAJOR")], ts="2026-01-02T00:00:00Z")
-        self.assertIn("agent=%s" % old, self.stamped("redteam", "CLEAN"))    # an older CLEAN and a newer MAJOR: CLEAN still stamps
-        self.rollback()
-        self.assertIn("redteam MAJOR", self.stamped("redteam", "MAJOR"))
-
-    def test_c4_worst_line_of_one_agent_counts(self):
-        self.agent([self.vline("COMPLIANCE", "PASS"), self.vline("COMPLIANCE", "FAIL")])
-        self.refused("compliance", "PASS", "may be the agent's verdict or a worse one")
-
+        old = self.agent([self.vline("REDTEAM", "FIRST")], ts="2026-01-01T00:00:00Z")
+        self.agent([self.vline("REDTEAM", "SECOND")], ts="2026-01-02T00:00:00Z")
+        self.assertIn("agent=%s" % old, self.stamped("review1", "redteam"))    # an older FIRST and a newer SECOND: the FIRST stamps
+    def test_c4_first_and_second_for_one_hash_count_for_neither(self):
+        self.agent([self.vline("COMPLIANCE", "FIRST"), self.vline("COMPLIANCE", "SECOND")])
+        self.refused("review1", "compliance", "no qualifying cold agent")
+        self.refused("review2", "compliance", "no qualifying cold agent")
     def test_c5_session_discovery(self):
-        self.agent([self.vline("COMPLIANCE", "PASS")])
-        self.refused("compliance", "PASS", "no session id", session=None)
-        self.stamped("compliance", "PASS", session=None, env_session=PLANNER)             # env var alone works
+        self.agent([self.vline("COMPLIANCE", "FIRST")])
+        self.refused("review1", "compliance", "no session id", session=None)
+        self.stamped("review1", "compliance", session=None, env_session=PLANNER)             # env var alone works
         self.rollback()
-        out = self.stamped("compliance", "PASS", session=PLANNER, env_session="bbbbbbbb-cccc-4ddd-8eee-ffffffffffff")   # --session wins
+        out = self.stamped("review1", "compliance", session=PLANNER, env_session="bbbbbbbb-cccc-4ddd-8eee-ffffffffffff")   # --session wins
         self.assertIn("warning", out)
         self.rollback()
-        self.refused("compliance", "PASS", "no qualifying", session="bbbbbbbb-cccc-4ddd-8eee-ffffffffffff")   # no such session file
+        self.refused("review1", "compliance", "no qualifying", session="bbbbbbbb-cccc-4ddd-8eee-ffffffffffff")   # no such session file
         for bad in ("../x", "a/b", "abcdefgh\n", "short"):
             with self.subTest(bad=bad):
-                rc, out = self.stamp("compliance", "PASS", session=bad)
+                rc, out = self.stamp("review1", "compliance", session=bad)
                 self.assertNotEqual(rc, 0)
                 self.assertEqual(open(self.path).read(), self.before)
 
     def test_c5_another_sessions_agent_is_not_used(self):
         other = "bbbbbbbb-cccc-4ddd-8eee-ffffffffffff"
         open(os.path.join(self.env.transcripts, other + ".jsonl"), "w").close()
-        self.agent([self.vline("COMPLIANCE", "PASS")], session=other)
-        self.refused("compliance", "PASS", "no qualifying cold agent")
+        self.agent([self.vline("COMPLIANCE", "FIRST")], session=other)
+        self.refused("review1", "compliance", "no qualifying cold agent")
 
     def test_c18_special_files_do_not_hang_the_scan(self):
         os.mkfifo(os.path.join(self.env.subagents, "agent-fifo000001.jsonl"))
         os.mkdir(os.path.join(self.env.subagents, "agent-dir0000001.jsonl"))
         with open(os.path.join(self.env.subagents, "agent-odd0000001.jsonl"), "w") as f:
             f.write('{"type":"user","message":"a string, not an object","hash":"%s"}\n' % self.H)
-        a = self.agent([self.vline("COMPLIANCE", "PASS")])
-        self.assertIn(a, self.stamped("compliance", "PASS"))
+        a = self.agent([self.vline("COMPLIANCE", "FIRST")])
+        self.assertIn(a, self.stamped("review1", "compliance"))
 
     def test_stamp_scan_budget_exceeded_refuses(self):
-        self.agent([self.vline("COMPLIANCE", "PASS")])
-        self.refused("compliance", "PASS", "did not finish", extra=["--scan-budget", "0"])
+        self.agent([self.vline("COMPLIANCE", "FIRST")])
+        self.refused("review1", "compliance", "did not finish", extra=["--scan-budget", "0"])
 
 
 class TestEvidenceSend(EvBase):
-    def stamped_record(self, comp="PASS", rt="MINOR"):
-        a = self.agent([self.vline("COMPLIANCE", comp)])
-        b = self.agent([self.vline("REDTEAM", rt)])
-        self.stamped("compliance", comp)
-        self.stamped("redteam", rt)
-        return a, b
+    def stamped_record(self):
+        """The four reviews stamped through the CLI, in review order. Returns the agent ids (first compliance, first redteam, second compliance,
+        second redteam)."""
+        ids = []
+        for n in (1, 2):
+            for who in ("compliance", "redteam"):
+                ids.append(self.agent([self.vline(who.upper(), ("FIRST", "SECOND")[n - 1])]))
+                self.stamped("review%d" % n, who)
+        return ids
 
-    def line(self, kind, result, agent, h=None, key="agent"):
-        return "CHECK T1 %s %s %s sha=%s %s=%s" % (kind, result, now_iso(), h or self.H, key, agent)
+    def line(self, n, who, agent, h=None, key="agent"):
+        return "CHECK T1 review%d %s %s sha=%s %s=%s" % (n, who, now_iso(), h or self.H, key, agent)
 
-    def put(self, *lines):
+    def put(self, *lines, block=True):
         with open(self.path, "w") as f:
-            f.write(self.before + "\n".join(lines) + "\n")
+            f.write(self.before + (reviewed("T1", self.ans) + "\n" if block else "") + "\n".join(lines) + "\n")
 
     def test_c6_genuine_stamped_record_allowed(self):
         self.stamped_record()
         self.assertAllow(answer_msg(self.path, "T1", self.ans))
 
     def test_c6_hand_typed_lines_without_agent_denied(self):
-        self.put("CHECK T1 compliance PASS %s sha=%s" % (now_iso(), self.H), "CHECK T1 redteam CLEAN %s sha=%s" % (now_iso(), self.H))
+        self.put(*["CHECK T1 review%d %s %s sha=%s" % (n, who, now_iso(), self.H) for n in (1, 2) for who in ("compliance", "redteam")])
         self.assertDeny(answer_msg(self.path, "T1", self.ans), "carries no agent id")
 
     def test_c6_forged_lines(self):
-        good_rt = self.agent([self.vline("REDTEAM", "CLEAN")])
-        other_hash = self.agent([self.vline("COMPLIANCE", "PASS", "4" * 16)], prompt=self.prompt("4" * 16))
-        other_kind = self.agent([self.vline("REDTEAM", "CLEAN")])
-        fail = self.agent([self.vline("COMPLIANCE", "FAIL")])
-        fork = self.agent([self.vline("COMPLIANCE", "PASS")], meta={"isFork": True})
+        c1, r1 = self.agent([self.vline("COMPLIANCE", "FIRST")]), self.agent([self.vline("REDTEAM", "FIRST")])
+        r2 = self.agent([self.vline("REDTEAM", "SECOND")])
+        other_hash = self.agent([self.vline("COMPLIANCE", "SECOND", "4" * 16)], prompt=self.prompt("4" * 16))
+        other_kind = self.agent([self.vline("REDTEAM", "SECOND")])
+        first_typed_as_second = self.agent([self.vline("COMPLIANCE", "FIRST")])
+        other_id = self.agent(["T9 hash=%s COMPLIANCE: SECOND" % self.H])
+        fork = self.agent([self.vline("COMPLIANCE", "SECOND")], meta={"isFork": True})
         refused = self.agent(["REFUSED"])
-        revived = self.agent([self.vline("COMPLIANCE", "PASS")], inbound="coordinator")
+        revived = self.agent([self.vline("COMPLIANCE", "SECOND")], inbound="coordinator")
         cases = {
-            "nonexistent agent id": (self.line("compliance", "PASS", "a000000000000ff"), "no agent transcript with id"),
-            "agent of another hash": (self.line("compliance", "PASS", other_hash), "prompt lacks the hash"),
-            "agent of the other kind": (self.line("compliance", "PASS", other_kind), "has no `hash=%s COMPLIANCE" % self.H),
-            "PASS typed over an agent FAIL": (self.line("compliance", "PASS", fail), "said FAIL"),
-            "a fork": (self.line("compliance", "PASS", fork), "fork"),
-            "a refused agent": (self.line("compliance", "PASS", refused), "refused"),
-            "a revived agent": (self.line("compliance", "PASS", revived), "no longer the cold check"),
+            "nonexistent agent id": (self.line(2, "compliance", "a000000000000ff"), "no agent transcript with id"),
+            "agent of another hash": (self.line(2, "compliance", other_hash), "prompt lacks the hash"),
+            "agent of the other reviewer": (self.line(2, "compliance", other_kind), "has no `T1 hash=%s COMPLIANCE: SECOND`" % self.H),
+            "a first review typed as a second": (self.line(2, "compliance", first_typed_as_second), "has no `T1 hash=%s COMPLIANCE: SECOND`" % self.H),
+            "closing line of another answer id": (self.line(2, "compliance", other_id), "has no `T1 hash=%s COMPLIANCE: SECOND`" % self.H),
+            "a fork": (self.line(2, "compliance", fork), "fork"),
+            "a refused agent": (self.line(2, "compliance", refused), "refused"),
+            "a revived agent": (self.line(2, "compliance", revived), "no longer the cold check"),
         }
-        for name, (comp, needle) in cases.items():
+        for name, (comp2, needle) in cases.items():
             with self.subTest(name):
-                self.put(comp, self.line("redteam", "CLEAN", good_rt))
+                self.put(self.line(1, "compliance", c1), self.line(1, "redteam", r1), comp2, self.line(2, "redteam", r2))
                 self.assertDeny(answer_msg(self.path, "T1", self.ans), needle)
 
     def test_c6_transcript_edited_after_stamping_is_denied(self):
-        a, _ = self.stamped_record()
+        a = self.stamped_record()[2]
         p = glob.glob(os.path.join(self.env.subagents, "agent-%s.jsonl" % a))[0]
         lines = open(p).read().rstrip("\n").split("\n")
         last = json.loads(lines[-1])
-        last["message"]["content"][0]["text"] = "Findings.\n" + self.vline("COMPLIANCE", "FAIL")
+        last["message"]["content"][0]["text"] = "Findings.\n" + self.vline("COMPLIANCE", "FIRST")
         lines[-1] = json.dumps(last)
         open(p, "w").write("\n".join(lines) + "\n")
-        self.assertDeny(answer_msg(self.path, "T1", self.ans), "said FAIL")        # each hook call is a fresh process: no stale cache
+        self.assertDeny(answer_msg(self.path, "T1", self.ans), "has no `T1 hash=%s COMPLIANCE: SECOND`" % self.H)   # each hook call is a fresh process: no stale cache
 
     def test_c6_revival_after_stamping_is_denied(self):
-        a, _ = self.stamped_record()
+        a = self.stamped_record()[2]
         p = glob.glob(os.path.join(self.env.subagents, "agent-%s.jsonl" % a))[0]
         with open(p, "a") as f:
             f.write(json.dumps({"type": "user", "isMeta": True, "origin": {"kind": "coordinator"}, "message": {"role": "user", "content": "more input"}}) + "\n")
@@ -1416,22 +1404,24 @@ class TestEvidenceSend(EvBase):
                 self.assertDeny(answer_msg(self.path, "T1", self.ans), "no usable session_id", sender=sender)
 
     def test_c6_odd_agent_file_denied_without_a_crash(self):
-        self.put(self.line("compliance", "PASS", "oddfile0000001"), self.line("redteam", "CLEAN", "oddfile0000001"))
+        self.put(*[self.line(n, who, "oddfile0000001") for n in (1, 2) for who in ("compliance", "redteam")])
         with open(os.path.join(self.env.subagents, "agent-oddfile0000001.jsonl"), "w") as f:
             f.write('{"type":"user","message":"a string","h":"%s"}\n' % self.H)
         self.assertDeny(answer_msg(self.path, "T1", self.ans), "oddfile0000001")
 
     def test_c6_truncated_tail_still_allowed(self):
-        a = self.agent([self.vline("COMPLIANCE", "PASS")], truncate=True)
-        b = self.agent([self.vline("REDTEAM", "CLEAN")])
-        self.put(self.line("compliance", "PASS", a), self.line("redteam", "CLEAN", b))
+        c1, r1 = self.agent([self.vline("COMPLIANCE", "FIRST")]), self.agent([self.vline("REDTEAM", "FIRST")])
+        c2 = self.agent([self.vline("COMPLIANCE", "SECOND")], truncate=True)
+        r2 = self.agent([self.vline("REDTEAM", "SECOND")])
+        self.put(self.line(1, "compliance", c1), self.line(1, "redteam", r1), self.line(2, "compliance", c2), self.line(2, "redteam", r2))
         self.assertAllow(answer_msg(self.path, "T1", self.ans))
 
     def test_c7_agent_field_grammar(self):
-        _, b = self.stamped_record()
+        ids = self.stamped_record()
         for bad in ("agent=", "agent=../x", "agent=abc", "agent=a b"):
             with self.subTest(bad):
-                self.put("CHECK T1 compliance PASS %s sha=%s %s" % (now_iso(), self.H, bad), self.line("redteam", "CLEAN", b))
+                self.put(self.line(1, "compliance", ids[0]), self.line(1, "redteam", ids[1]),
+                         "CHECK T1 review2 compliance %s sha=%s %s" % (now_iso(), self.H, bad), self.line(2, "redteam", ids[3]))
                 self.assertDeny(answer_msg(self.path, "T1", self.ans), "malformed CHECK line")
 
 
@@ -1451,8 +1441,8 @@ class TestEvidenceTrio(EvBase):
     def stamp_t2(self, kind, result):
         return self.stamp(kind, result, ident="T2")
 
-    def cold(self, label, v):
-        return self.env.make_agent("Check T2, hash %s." % self.H, "T2 hash=%s %s: %s" % (self.H, label, v))
+    def cold(self, label, n):
+        return self.env.make_agent("Check T2, hash %s." % self.H, "T2 hash=%s %s: %s" % (self.H, label, ("FIRST", "SECOND")[n - 1]))
 
     def test_c16_three_judges_and_a_majority_stamp(self):
         ids = [self.judge("(a)"), self.judge("(A)"), self.judge("(b)")]
@@ -1460,9 +1450,11 @@ class TestEvidenceTrio(EvBase):
         self.assertEqual(rc, 0, out)
         self.assertEqual(sorted(out.split("agents=")[1].split()[0].split(",")), sorted(ids))
         self.rollback()
-        self.cold("COMPLIANCE", "PASS"); self.cold("REDTEAM", "CLEAN")
-        for kind, res in (("compliance", "PASS"), ("redteam", "CLEAN"), ("trio", "DONE")):
-            self.assertEqual(self.stamp_t2(kind, res)[0], 0)
+        for n in (1, 2):
+            for who in ("compliance", "redteam"):
+                self.cold(who.upper(), n)
+                self.assertEqual(self.stamp_t2("review%d" % n, who)[0], 0)
+        self.assertEqual(self.stamp_t2("trio", "DONE")[0], 0)
         self.assertAllow(answer_msg(self.path, "T2", self.ans))
 
     def test_c16_two_judges_refused(self):
@@ -1499,21 +1491,20 @@ class TestEvidenceTrio(EvBase):
         self.assertIn("question block", out)
 
     def test_c16_send_rechecks_the_trio(self):
-        comp, rt = self.cold("COMPLIANCE", "PASS"), self.cold("REDTEAM", "CLEAN")
+        ev = chk_reviews("T2", self.ans)
+        comp = rev_agent("T2", self.ans, "COMPLIANCE", 2)        # an agent whose prompt holds the answer hash, posing as a judge
         js = [self.judge("(a)"), self.judge("(a)"), self.judge("(a)")]
-        c = "CHECK T2 compliance PASS %s sha=%s agent=%s" % (now_iso(), self.H, comp)
-        r = "CHECK T2 redteam CLEAN %s sha=%s agent=%s" % (now_iso(), self.H, rt)
         t = lambda ids: "CHECK T2 trio DONE %s sha=%s agents=%s" % (now_iso(), self.H, ",".join(ids))
 
         def put(trio_line, base=None):
-            self.env.record("FX2-record.md", (base or self.before) + "\n".join([c, r, trio_line]) + "\n")
+            self.env.record("FX2-record.md", (base or self.before) + ev + trio_line + "\n")
         put(t(js))
         self.assertAllow(answer_msg(self.path, "T2", self.ans))
         put("CHECK T2 trio DONE %s sha=%s" % (now_iso(), self.H))
         self.assertDeny(answer_msg(self.path, "T2", self.ans), "needs agents=")
         put(t([js[0], js[0], js[1]]))
         self.assertDeny(answer_msg(self.path, "T2", self.ans), "three distinct")
-        put(t([js[0], js[1], comp]))                                      # a compliance agent posing as a judge
+        put(t([js[0], js[1], comp]))                                      # a review agent posing as a judge
         self.assertDeny(answer_msg(self.path, "T2", self.ans), "prompt lacks the hash")
         put(t([js[0], js[1], "a000000000000ee"]))
         self.assertDeny(answer_msg(self.path, "T2", self.ans), "no agent transcript with id")
@@ -1521,6 +1512,567 @@ class TestEvidenceTrio(EvBase):
         self.assertNotEqual(edited, self.before)
         put(t(js), base=edited)
         self.assertDeny(answer_msg(self.path, "T2", self.ans), "prompt lacks the hash")
+
+
+# =============================================================================== second review plus fix checks (answer condition)
+FX3 = os.path.join(FX, "records", "FX3-record.md")
+
+
+class RevBase(EvBase):
+    """FX3: answers T3 (six lines) and T4 (five lines) in one record file. Agents are created in review order, so each starts after the
+    previous one finished (Env.make_agent gives every agent a start one second after the previous agent's)."""
+    ident = "T3"
+
+    def setUp(self):
+        Base.setUp(self)
+        self.path = self.env.record("FX3-record.md", src="FX3-record.md")
+        self.before = open(self.path).read()
+        self.ans0 = block_text(self.before, "T3")
+        self.ans = self.ans0
+        self.H = bag.text_hash(self.ans0)
+        self.lines0 = bag.answer_lines(self.ans0)
+
+    # ---- texts
+    def edit(self, text, i, new):
+        ls = bag.answer_lines(text)
+        ls[i] = new
+        return "\n".join(ls)
+
+    def drop_line(self, text, i):
+        ls = bag.answer_lines(text)
+        del ls[i]
+        return "\n".join(ls)
+
+    def with_answer(self, cur, ident="T3", base=None):
+        base = base if base is not None else self.before
+        old = block_text(base, ident)
+        return base.replace("ANSWER %s BEGIN\n%s\nANSWER %s END" % (ident, old, ident), "ANSWER %s BEGIN\n%s\nANSWER %s END" % (ident, cur, ident))
+
+    def write(self, cur, blocks, lines, ident="T3", base=None):
+        self.env.record("FX3-record.md", self.with_answer(cur, ident, base) + "\n".join(blocks) + "\n" + "\n".join(lines) + "\n")
+
+    def msg(self, cur, ident="T3"):
+        return answer_msg(self.path, ident, cur)
+
+    # ---- agents and lines
+    def fix_agent(self, texts, ident="T3", verdicts=None, final=None, prompt=None, **kw):
+        hs = [bag.text_hash(t) for t in texts]
+        lines = final if final is not None else ["%s hash=%s FIXCHECK: %s" % (ident, h, (verdicts or {}).get(h, "PASS")) for h in hs]
+        return self.env.make_agent(prompt if prompt is not None else "Check only these changed lines against their finding. Line hashes: %s." % " ".join(hs),
+                                   "Checked.\n" + "\n".join(lines), **kw)
+
+    def fix_line(self, texts, ident="T3", **kw):
+        a = self.fix_agent(texts, ident, **kw)
+        return "CHECK %s fixcheck %s lines=%s agent=%s" % (ident, now_iso(), ",".join(bag.text_hash(t) for t in texts), a)
+
+    def flow(self, first, second, cur=None, fix=(), ident="T3", write=True):
+        """The review order on texts: first full review of `first` by both reviewers, second of `second`, then one fix check per entry of
+        `fix` (a list of line texts). The record is written with the answer block `cur` (default: `second`). Returns (cur, blocks, lines)."""
+        lines = [chk_review(ident, n, who, t) for n, t in ((1, first), (2, second)) for who in ("compliance", "redteam")]
+        lines += [self.fix_line(f, ident) for f in fix]
+        blocks = list(dict.fromkeys([reviewed(ident, first), reviewed(ident, second)]))
+        cur = second if cur is None else cur
+        if write:
+            self.write(cur, blocks, lines, ident)
+        return cur, blocks, lines
+
+    def stamp(self, kind, *rest, session=PLANNER, ident="T3", extra=()):
+        env = dict(os.environ)
+        env.pop("CLAUDE_CODE_SESSION_ID", None)
+        args = [sys.executable, SCRIPT, "stamp"] + (["--session", session] if session else []) + ["--config", self.env.config_path] + list(extra) \
+            + [self.path, ident, kind] + list(rest)
+        r = subprocess.run(args, capture_output=True, text=True, env=env, timeout=60)
+        return r.returncode, r.stdout + r.stderr
+
+    def refused2(self, kind, *rest, needles=(), **kw):
+        snap = open(self.path).read()
+        rc, out = self.stamp(kind, *rest, **kw)
+        self.assertNotEqual(rc, 0, out)
+        self.assertEqual(open(self.path).read(), snap, "a refused stamp must write nothing")
+        for n in needles:
+            self.assertIn(n, out)
+        return out
+
+    def stamped2(self, kind, *rest, **kw):
+        rc, out = self.stamp(kind, *rest, **kw)
+        self.assertEqual(rc, 0, out)
+        return out
+
+    def sha_changed(self):
+        r = subprocess.run([sys.executable, SCRIPT, "sha", self.path, "T3", "changed", "--config", self.env.config_path], capture_output=True, text=True)
+        return r.returncode, r.stdout.strip()
+
+    def stamp_reviews(self, text, ns=(1, 2)):
+        """Cold agents review `text` (which is the block in the record now) and each review is stamped right after, as the docs say."""
+        for n in ns:
+            for who in ("compliance", "redteam"):
+                rev_agent("T3", text, who.upper(), n)
+                self.stamped2("review%d" % n, who)
+
+    def set_answer(self, cur):
+        self.env.record("FX3-record.md", self.with_answer(cur, base=open(self.path).read()))
+
+
+class TestSecondReview(RevBase):
+    def test_c1_both_second_reviews_after_a_first_unchanged_text_allowed(self):
+        self.flow(self.ans0, self.ans0)
+        self.assertAllow(self.msg(self.ans0))
+        self.assertAllow(self.msg(self.ans0), tool="mcp__ccd_session_mgmt__send_message")
+
+    def test_c1_text_the_second_review_saw_passes_whatever_the_first_saw(self):
+        second = self.edit(self.ans0, 2, "Constraint: one cache file per Bob session, state is never shared.")
+        self.flow(self.ans0, second)
+        self.assertAllow(self.msg(second))
+
+    def test_c2_one_changed_line_without_a_fix_check_is_denied_and_named(self):
+        cur = self.edit(self.ans0, 3, "Constraint: nothing is written outside the session folder or the temp folder.")
+        self.flow(self.ans0, self.ans0, cur)
+        why = self.assertDeny(self.msg(cur), "changed since the second review and has no cold fix check")
+        self.assertIn(bag.text_hash(bag.answer_lines(cur)[3]), why)
+        self.assertIn("Constraint: nothing is written outside the session folder or", why)
+        self.assertNotIn(bag.text_hash(bag.answer_lines(cur)[0]), why)         # the unchanged lines are not named
+
+    def test_c3_a_qualifying_fix_check_on_the_changed_line_allows(self):
+        new = "Constraint: nothing is written outside the session folder or the temp folder."
+        cur = self.edit(self.ans0, 3, new)
+        self.flow(self.ans0, self.ans0, cur, fix=[[new]])
+        self.assertAllow(self.msg(cur))
+
+    def test_c8_two_changed_lines_with_one_fix_check_denied_and_the_uncovered_one_named(self):
+        n1, n2 = "Reuse: the store's own read path, whole, with its lock.", "Builder note: settle the order of three writes within one turn."
+        cur = self.edit(self.edit(self.ans0, 1, n1), 5, n2)
+        self.flow(self.ans0, self.ans0, cur, fix=[[n1]])
+        why = self.assertDeny(self.msg(cur), "has no cold fix check")
+        self.assertIn(bag.text_hash(n2), why)
+        self.assertNotIn(bag.text_hash(n1), why)
+        self.flow(self.ans0, self.ans0, cur, fix=[[n1], [n2]])
+        self.assertAllow(self.msg(cur))
+        self.flow(self.ans0, self.ans0, cur, fix=[[n1, n2]])             # one agent may check both lines on one closing block
+        self.assertAllow(self.msg(cur))
+
+    def test_c8_what_counts_as_a_changed_line(self):
+        f = bag.lines_changed
+        base = ["a", "b", "c", "d"]
+        self.assertEqual(f(base, base), [])
+        self.assertEqual(f(base, ["a", "b", "X", "c", "d"]), ["X"])               # inserted
+        self.assertEqual(f(base, ["a", "B", "c", "d"]), ["B"])                    # replaced
+        self.assertIn("c", f(base, ["a", "c", "b", "d"]))                         # moved: a delete plus an insert
+        self.assertEqual(f(base, ["a", "c", "d"]), ["a", "c"])                    # deleted in the middle: both neighbours
+        self.assertEqual(f(base, ["a", "b", "c"]), ["c"])                         # deleted last
+        self.assertEqual(f(base, ["b", "c", "d"]), ["b"])                         # deleted first
+        self.assertEqual(f(base, []), [])
+        self.assertEqual(bag.answer_lines("a  \n\n\n b\n\n"), ["a", " b"])        # blank lines are not lines; trailing blanks trimmed
+
+    def test_c8_a_deleted_line_changes_its_neighbours_and_they_need_a_fix_check(self):
+        cur = self.drop_line(self.ans0, 2)
+        ls = bag.answer_lines(cur)
+        self.flow(self.ans0, self.ans0, cur)
+        why = self.assertDeny(self.msg(cur), "has no cold fix check")
+        self.assertIn(bag.text_hash(ls[1]), why); self.assertIn(bag.text_hash(ls[2]), why)
+        self.assertNotIn(bag.text_hash(ls[0]), why)
+        self.flow(self.ans0, self.ans0, cur, fix=[[ls[1], ls[2]]])
+        self.assertAllow(self.msg(cur))
+
+    def test_c8_a_fix_check_that_predates_the_second_review_does_not_cover(self):
+        new = "Constraint: nothing is written outside the session folder or the temp folder."
+        cur = self.edit(self.ans0, 3, new)
+        early = self.fix_line([new])                       # its agent starts before the reviews below
+        _, blocks, lines = self.flow(self.ans0, self.ans0, cur, write=False)
+        self.write(cur, blocks, lines + [early])
+        self.assertDeny(self.msg(cur), "has no cold fix check", bag.text_hash(new))
+
+    def test_c8_blank_line_edits_are_invisible(self):
+        cur = "\n\n" + "\n\n".join(bag.answer_lines(self.ans0)) + "   \n\n"
+        self.flow(self.ans0, self.ans0, cur)
+        self.assertAllow(self.msg(cur))
+
+    def test_c4_only_a_first_review_by_each_reviewer_is_denied(self):
+        cur, blocks, lines = self.flow(self.ans0, self.ans0, write=False)
+        self.write(cur, blocks, lines[:2])
+        self.assertDeny(self.msg(cur), "no `review2 compliance` line", "no `review2 redteam` line")
+
+    def test_c5_a_second_review_by_one_reviewer_only_is_denied(self):
+        cur, blocks, lines = self.flow(self.ans0, self.ans0, write=False)
+        for who, keep in (("redteam", lines[:3]), ("compliance", lines[:2] + lines[3:])):
+            self.write(cur, blocks, keep)
+            self.assertDeny(self.msg(cur), "no `review2 %s` line" % who)
+
+    def test_c5_the_same_agent_as_both_reviewers_second_review_is_denied(self):
+        c1, r1 = chk_review("T3", 1, "compliance", self.ans0), chk_review("T3", 1, "redteam", self.ans0)
+        both = self.env.make_agent("Review the whole answer. Its hash is %s." % self.H,
+                                   "Findings.\nT3 hash=%s COMPLIANCE: SECOND\nT3 hash=%s REDTEAM: SECOND" % (self.H, self.H))
+        ts = now_iso()
+        self.write(self.ans0, [reviewed("T3", self.ans0)], [c1, r1, "CHECK T3 review2 compliance %s sha=%s agent=%s" % (ts, self.H, both),
+                                                           "CHECK T3 review2 redteam %s sha=%s agent=%s" % (ts, self.H, both)])
+        self.assertDeny(self.msg(self.ans0), "different agents")
+
+    def test_c6_a_second_review_without_a_first_is_denied(self):
+        cur, blocks, lines = self.flow(self.ans0, self.ans0, write=False)
+        self.write(cur, blocks, lines[2:])
+        self.assertDeny(self.msg(cur), "no first review of the compliance checker before it")
+        self.write(cur, blocks, [lines[2], lines[3], lines[0], lines[1]])          # the first reviews are recorded AFTER the second
+        self.assertDeny(self.msg(cur), "no first review of the compliance checker before it")
+
+    def test_c6_the_first_review_must_be_another_agent_that_finished_before_the_second_started(self):
+        text2 = self.edit(self.ans0, 1, "Reuse: the store's own read path.")
+        h2 = bag.text_hash(text2)
+        # one agent carries the first review of text 1 and the second review of text 2 (its prompt holds both hashes)
+        both = self.env.make_agent("Review. Hashes %s and %s." % (self.H, h2),
+                                   "Findings.\nT3 hash=%s COMPLIANCE: FIRST\nT3 hash=%s COMPLIANCE: SECOND" % (self.H, h2))
+        r1, r2 = chk_review("T3", 1, "redteam", self.ans0), chk_review("T3", 2, "redteam", text2)
+        l1 = "CHECK T3 review1 compliance %s sha=%s agent=%s" % (now_iso(), self.H, both)
+        l2 = "CHECK T3 review2 compliance %s sha=%s agent=%s" % (now_iso(), h2, both)
+        self.write(text2, [reviewed("T3", self.ans0), reviewed("T3", text2)], [l1, r1, l2, r2])
+        self.assertDeny(self.msg(text2), "same agent")
+        # parallel reviews: the first review finished after the second started
+        c1 = chk_review("T3", 1, "compliance", self.ans0, agent_ts="2030-01-01T00:10:00Z")
+        r1 = chk_review("T3", 1, "redteam", self.ans0, agent_ts="2030-01-01T00:01:00Z")
+        c2 = chk_review("T3", 2, "compliance", self.ans0, agent_ts="2030-01-01T00:05:00Z")
+        r2 = chk_review("T3", 2, "redteam", self.ans0, agent_ts="2030-01-01T00:06:00Z")
+        self.write(self.ans0, [reviewed("T3", self.ans0)], [c1, r1, c2, r2])
+        why = self.assertDeny(self.msg(self.ans0), "before")
+        self.assertIn("compliance", why)
+
+    def test_c6_a_first_review_that_started_before_but_finished_after_the_second_started_is_denied(self):
+        # start and finish are different times of one agent: the order condition compares the first review's FINISH with the second's START
+        c1 = chk_review("T3", 1, "compliance", self.ans0, start_ts="2030-01-01T00:01:00Z", agent_ts="2030-01-01T00:10:00Z")
+        r1 = chk_review("T3", 1, "redteam", self.ans0, agent_ts="2030-01-01T00:02:00Z")
+        c2 = chk_review("T3", 2, "compliance", self.ans0, start_ts="2030-01-01T00:05:00Z", agent_ts="2030-01-01T00:06:00Z")
+        r2 = chk_review("T3", 2, "redteam", self.ans0, start_ts="2030-01-01T00:11:00Z", agent_ts="2030-01-01T00:12:00Z")
+        self.write(self.ans0, [reviewed("T3", self.ans0)], [c1, r1, c2, r2])
+        self.assertDeny(self.msg(self.ans0), "did not finish before the second review")
+        c1 = chk_review("T3", 1, "compliance", self.ans0, start_ts="2030-01-01T00:01:00Z", agent_ts="2030-01-01T00:04:00Z")
+        self.write(self.ans0, [reviewed("T3", self.ans0)], [c1, r1, c2, r2])
+        self.assertAllow(self.msg(self.ans0))
+
+    def test_c8_a_fix_check_that_started_before_the_second_review_finished_does_not_cover(self):
+        new = "Constraint: nothing is written outside the session folder or the temp folder."
+        cur = self.edit(self.ans0, 3, new)
+        lines = [chk_review("T3", 1, "compliance", self.ans0, agent_ts="2030-01-01T00:01:00Z"), chk_review("T3", 1, "redteam", self.ans0, agent_ts="2030-01-01T00:02:00Z"),
+                 chk_review("T3", 2, "compliance", self.ans0, start_ts="2030-01-01T00:05:00Z", agent_ts="2030-01-01T00:06:00Z"),
+                 chk_review("T3", 2, "redteam", self.ans0, start_ts="2030-01-01T00:05:00Z", agent_ts="2030-01-01T00:06:00Z")]
+        h = bag.text_hash(new)
+
+        def fix(start, finish):
+            a = self.fix_agent([new], start_ts=start, ts=finish)
+            return "CHECK T3 fixcheck %s lines=%s agent=%s" % (now_iso(), h, a)
+        blocks = [reviewed("T3", self.ans0)]
+        self.write(cur, blocks, lines + [fix("2030-01-01T00:05:30Z", "2030-01-01T00:20:00Z")])     # started before the review finished, ended after
+        self.assertDeny(self.msg(cur), "has no cold fix check", "started before the second review finished")
+        self.write(cur, blocks, lines + [fix("2030-01-01T00:07:00Z", "2030-01-01T00:20:00Z")])
+        self.assertAllow(self.msg(cur))
+
+    def test_m_a_forged_review_lines_do_not_count(self):
+        other_text = "Reuse: something else entirely, on another answer.\nConstraint: none."
+        oh = bag.text_hash(other_text)
+        c1, r1, r2 = (chk_review("T3", 1, "compliance", self.ans0), chk_review("T3", 1, "redteam", self.ans0), chk_review("T3", 2, "redteam", self.ans0))
+        elsewhere = rev_agent("T3", other_text, "COMPLIANCE", 2)               # a real agent, but it reviewed other text
+        other_id = self.env.make_agent("Review the whole answer. Its hash is %s." % self.H, "Findings.\nT4 hash=%s COMPLIANCE: SECOND" % self.H)
+        ts = now_iso()
+        blocks = [reviewed("T3", self.ans0)]
+        cases = {
+            "the agent qualified on another hash": ("CHECK T3 review2 compliance %s sha=%s agent=%s" % (ts, self.H, elsewhere), blocks, "prompt lacks the hash"),
+            "the closing line is another answer's id": ("CHECK T3 review2 compliance %s sha=%s agent=%s" % (ts, self.H, other_id), blocks, "has no `T3 hash="),
+            "the REVIEWED block does not hash to its sha": ("CHECK T3 review2 compliance %s sha=%s agent=%s" % (ts, self.H, chk_review("T3", 2, "compliance", self.ans0).split("agent=")[1]),
+                                                           ["REVIEWED T3 %s BEGIN\n%s\nREVIEWED T3 %s END" % (self.H, "Reuse: not the reviewed text.", self.H)], "does not hash to"),
+            "no REVIEWED block for the sha": ("CHECK T3 review2 compliance %s sha=%s agent=%s" % (ts, self.H, chk_review("T3", 2, "compliance", self.ans0).split("agent=")[1]),
+                                              [], "no `REVIEWED T3 %s BEGIN`" % self.H),
+        }
+        for name, (l2, blks, needle) in cases.items():
+            with self.subTest(name):
+                self.write(self.ans0, blks, [c1, r1, l2, r2])
+                self.assertDeny(self.msg(self.ans0), needle)
+
+    def test_m_a_a_review_of_unrelated_text_under_this_id_leaves_every_line_changed(self):
+        other_text = "Reuse: something else entirely.\nConstraint: none of it applies here."
+        cur, blocks, lines = self.flow(self.ans0, other_text, self.ans0, write=False)
+        self.write(cur, blocks, lines)
+        why = self.assertDeny(self.msg(cur), "has no cold fix check")
+        for l in self.lines0:
+            self.assertIn(bag.text_hash(l), why)
+
+    def test_c7_fix_check_agent_qualification_negatives(self):
+        new = "Constraint: nothing is written outside the session folder or the temp folder."
+        cur = self.edit(self.ans0, 3, new)
+        h = bag.text_hash(new)
+        _, blocks, lines = self.flow(self.ans0, self.ans0, cur, write=False)
+        good = lambda **kw: "CHECK T3 fixcheck %s lines=%s agent=%s" % (now_iso(), h, self.fix_agent([new], **kw))
+        cases = {
+            "a fork": (good(meta={"isFork": True}), "fork"),
+            "unfinished": (good(tool_tail=True), "unfinished"),
+            "input after the prompt": (good(inbound="coordinator"), "no longer the cold check"),
+            "REFUSED": (good(final=["REFUSED"]), "refused"),
+            "wrong closing line": (good(final=["T3 hash=%s COMPLIANCE: SECOND" % h]), "has no `T3 hash=%s FIXCHECK: PASS`" % h),
+            "hash not in the prompt": (good(prompt="Check these lines, no hashes."), "prompt lacks the hash"),
+            "the agent said FAIL": (good(verdicts={h: "FAIL"}), "has no `T3 hash=%s FIXCHECK: PASS`" % h),
+            "PASS and FAIL for one line": (good(final=["T3 hash=%s FIXCHECK: PASS" % h, "T3 hash=%s FIXCHECK: FAIL" % h]), "has no `T3 hash=%s FIXCHECK: PASS`" % h),
+            "closing line of another answer id": (good(final=["T4 hash=%s FIXCHECK: PASS" % h]), "has no `T3 hash=%s FIXCHECK: PASS`" % h),
+            "a bare line without an id": (good(final=["hash=%s FIXCHECK: PASS" % h]), "has no `T3 hash=%s FIXCHECK: PASS`" % h),
+            "nonexistent agent": ("CHECK T3 fixcheck %s lines=%s agent=a000000000000ff" % (now_iso(), h), "no agent transcript with id"),
+            "no agent id": ("CHECK T3 fixcheck %s lines=%s" % (now_iso(), h), "carries no agent id"),
+        }
+        for name, (fl, needle) in cases.items():
+            with self.subTest(name):
+                self.write(cur, blocks, lines + [fl])
+                self.assertDeny(self.msg(cur), "has no cold fix check", needle)
+
+    def test_c7_review_agent_qualification_negatives(self):
+        for n, who in ((1, "compliance"), (2, "compliance"), (2, "redteam")):
+            variants = {"a fork": dict(meta={"isFork": True}), "unfinished": dict(tool_tail=True), "input after the prompt": dict(inbound="queued"),
+                        "stop_reason max_tokens": dict(stop="max_tokens")}
+            for name, kw in variants.items():
+                with self.subTest(review=n, who=who, case=name):
+                    _, blocks, lines = self.flow(self.ans0, self.ans0, write=False)
+                    k = {(1, "compliance"): 0, (2, "compliance"): 2, (2, "redteam"): 3}[(n, who)]
+                    lines[k] = chk_review("T3", n, who, self.ans0, **kw)
+                    self.write(self.ans0, blocks, lines)
+                    self.assertDeny(self.msg(self.ans0))
+
+    def test_c9_an_old_format_record_is_rejected_with_a_message_saying_how_to_re_check(self):
+        a = rev_agent("T3", self.ans0, "COMPLIANCE", 2)
+        old = ["CHECK T3 compliance PASS %s sha=%s agent=%s" % (now_iso(), self.H, a), "CHECK T3 redteam CLEAN %s sha=%s agent=%s" % (now_iso(), self.H, a)]
+        self.env.record("FX3-record.md", self.before + "\n".join(old) + "\n")
+        why = self.assertDeny(self.msg(self.ans0), "old format", "review1", "review2", "fixcheck")
+        self.assertNotIn("malformed", why)
+        cur, blocks, lines = self.flow(self.ans0, self.ans0, write=False)           # old lines beside complete new evidence: allowed
+        self.write(cur, blocks, old + lines)
+        self.assertAllow(self.msg(cur))
+
+    def test_c11_a_body_that_differs_from_the_recorded_block_is_denied(self):
+        self.flow(self.ans0, self.ans0)
+        self.assertDeny(self.msg(self.ans0 + "\nAlso do X."), "does not equal the checked answer block")
+        self.assertDeny(self.msg(self.edit(self.ans0, 1, "Reuse: nothing.")), "does not equal the checked answer block")
+
+    def test_several_ids_in_one_record_file_are_each_judged_on_their_own_lines(self):
+        t4 = block_text(self.before, "T4")
+        t4_new_line = "Constraint: an export never overwrites an earlier one, even on a clash."
+        t4_cur = self.edit(t4, 3, t4_new_line)
+        _, b3, l3 = self.flow(self.ans0, self.ans0, write=False)
+        l4 = [chk_review("T4", n, who, t4) for n in (1, 2) for who in ("compliance", "redteam")]
+        blocks = b3 + [reviewed("T4", t4)]
+
+        def put(fix4):
+            base = self.with_answer(t4_cur, "T4")
+            self.env.record("FX3-record.md", base + "\n".join(blocks) + "\n" + "\n".join(l3 + l4 + fix4) + "\n")
+        body = "T3:\n%s\n\nT4:\n%s" % (bag.norm_text(self.ans0), bag.norm_text(t4_cur))
+        hdr = "GATE: ANSWER %s#T3,T4\n" % self.path
+        put([])
+        why = self.assertDeny(hdr + body, "FX3-record.md#T4", "has no cold fix check")
+        self.assertIn(bag.text_hash(t4_new_line), why)
+        self.assertNotIn("FX3-record.md#T3", why)
+        put([self.fix_line([t4_new_line], ident="T3")])        # a fix check whose closing lines name T3 does not cover T4
+        self.assertDeny(hdr + body, "FX3-record.md#T4", "has no cold fix check")
+        put([self.fix_line([t4_new_line], ident="T4")])
+        self.assertAllow(hdr + body)
+
+    # ---- behaviours the documentation says the hook does NOT enforce (pinned so the non-enforcement is a stated fact)
+    def test_not_enforced_the_owner_post_and_blocking_findings(self):
+        # The closing lines carry no verdict and the prose is not read: a second review that raised blocking findings in its prose still
+        # gives an allowed answer. Nothing checks that the answer went to the owner first (spec 6.4).
+        cur, blocks, lines = self.flow(self.ans0, self.ans0, write=False)
+        agents = [l.split("agent=")[1] for l in lines]
+        for a in agents:
+            p = glob.glob(os.path.join(self.env.subagents, "agent-%s.jsonl" % a))[0]
+            rows = open(p).read().rstrip("\n").split("\n")
+            last = json.loads(rows[-1])
+            last["message"]["content"][0]["text"] = "BLOCKING FINDING: this answer contradicts an owner line. It must go to the owner first.\n" + \
+                last["message"]["content"][0]["text"].split("\n", 1)[1]
+            rows[-1] = json.dumps(last)
+            open(p, "w").write("\n".join(rows) + "\n")
+        self.write(cur, blocks, lines)
+        self.assertAllow(self.msg(cur))
+
+    def test_not_enforced_how_many_full_reviews_ran(self):
+        # a third full review (a re-stamped second review of an edited text) simply becomes the latest second review: its snapshot is the new
+        # baseline, so lines edited before it need no fix check. Review counts are not enforced.
+        edited = self.edit(self.ans0, 4, "Builder note: settle whether an empty cache file counts as missing, and whether it is rebuilt.")
+        cur, blocks, lines = self.flow(self.ans0, self.ans0, edited, write=False)
+        again = [chk_review("T3", 2, who, edited) for who in ("compliance", "redteam")]
+        self.write(edited, blocks + [reviewed("T3", edited)], lines + again)
+        self.assertAllow(self.msg(edited))
+
+    def test_not_enforced_how_many_fix_attempts_ran(self):
+        new = "Constraint: nothing is written outside the session folder or the temp folder."
+        cur = self.edit(self.ans0, 3, new)
+        _, blocks, lines = self.flow(self.ans0, self.ans0, cur, write=False)
+        failed = self.fix_line([new], verdicts={bag.text_hash(new): "FAIL"})
+        passed = self.fix_line([new])
+        self.write(cur, blocks, lines + [failed, passed])         # FAIL by one agent, then PASS by another: any qualifying fix check suffices
+        self.assertAllow(self.msg(cur))
+
+    def test_c14_pass_and_fail_for_one_line_count_as_fail_but_another_agent_can_pass_it(self):
+        new = "Constraint: nothing is written outside the session folder or the temp folder."
+        cur = self.edit(self.ans0, 3, new)
+        h = bag.text_hash(new)
+        _, blocks, lines = self.flow(self.ans0, self.ans0, cur, write=False)
+        mixed = self.fix_line([new], final=["T3 hash=%s FIXCHECK: PASS" % h, "T3 hash=%s FIXCHECK: FAIL" % h])
+        self.write(cur, blocks, lines + [mixed])
+        self.assertDeny(self.msg(cur), "has no cold fix check")
+        self.write(cur, blocks, lines + [mixed, self.fix_line([new])])
+        self.assertAllow(self.msg(cur))
+
+    def test_m_a_a_missing_start_time_fails_closed(self):
+        cur, blocks, lines = self.flow(self.ans0, self.ans0, write=False)
+        self.write(cur, blocks, lines)
+        self.assertAllow(self.msg(cur))
+        p = glob.glob(os.path.join(self.env.subagents, "agent-%s.jsonl" % lines[2].split("agent=")[1]))[0]      # the second compliance review
+        rows = open(p).read().rstrip("\n").split("\n")
+        first = json.loads(rows[0])
+        del first["timestamp"]
+        rows[0] = json.dumps(first)
+        open(p, "w").write("\n".join(rows) + "\n")
+        self.assertDeny(self.msg(cur), "start time")
+
+    def test_the_default_record_limit_holds_at_the_stated_maxima(self):
+        # worst case of the derivation in the module: 20 ids, each an answer of 30 lines / 3000 bytes, 4 distinct REVIEWED blocks, 4 review
+        # lines, 2 x 30 fix-check lines and a trio, every field at its grammar maximum
+        ident, agent, ts = "I" * 41, "A" * 40, "2026-11-18T10:15:21.123456+05:30"
+        ans = "\n".join(("%02d " % i) + "x" * 96 for i in range(30))                 # 30 lines of 99 bytes (+ newlines) is below 3000
+        one = ["ANSWER %s BEGIN" % ident, ans, "ANSWER %s END" % ident]
+        for k in range(4):
+            h = "%016x" % k
+            one += ["REVIEWED %s %s BEGIN" % (ident, h), ans, "REVIEWED %s %s END" % (ident, h)]
+        one += ["CHECK %s review2 compliance %s sha=%s agent=%s" % (ident, ts, "f" * 16, agent)] * 4
+        one += ["CHECK %s fixcheck %s lines=%s agent=%s" % (ident, ts, "e" * 16, agent)] * 60
+        one += ["TRIO Tq BEGIN", ans, "TRIO Tq END", "CHECK %s trio DONE %s sha=%s agents=%s" % (ident, ts, "f" * 16, ",".join([agent] * 3))]
+        size = len("\n".join(one).encode()) + 1
+        self.assertLessEqual(size, bag.RECORD_BYTES_PER_ID)
+        self.assertLessEqual(20 * size, bag.DEFAULT_MAX_RECORD_BYTES)
+        self.assertEqual(json.load(open(os.path.join(HERE, "build_answer_gate.config.example.json")))["max_record_bytes"], bag.DEFAULT_MAX_RECORD_BYTES)
+        self.assertEqual(bag.load_config(self._cfg_without_limit())["max_record_bytes"], bag.DEFAULT_MAX_RECORD_BYTES)
+
+    def _cfg_without_limit(self):
+        c = dict(self.env.cfg)
+        del c["max_record_bytes"]
+        p = os.path.join(self.env.root, "config-nolimit.json")
+        with open(p, "w") as f:
+            json.dump(c, f)
+        return p
+
+
+class TestReviewStamp(RevBase):
+    def test_review1_and_review2_write_the_block_once_and_the_lines(self):
+        self.stamp_reviews(self.ans0, ns=(1,))
+        t = open(self.path).read()
+        self.assertEqual(t.count("REVIEWED T3 %s BEGIN" % self.H), 1)                    # both reviewers saw the same text: one block
+        rec = bag.parse_record(t)
+        l1 = rec["checks"][("T3", "review1")]
+        self.assertEqual([c["who"] for c in l1], ["compliance", "redteam"])
+        self.assertTrue(all(c["sha"] == self.H and c["agent"] for c in l1))
+        self.stamp_reviews(self.ans0, ns=(2,))
+        self.assertEqual(open(self.path).read().count("REVIEWED T3 %s BEGIN" % self.H), 1)   # the second review reuses the verified block
+        self.assertAllow(self.msg(self.ans0))
+
+    def test_stamp_refuses_without_a_qualifying_agent(self):
+        self.refused2("review1", "compliance", needles=("no qualifying cold agent", self.H))
+        cases = {"a fork": dict(meta={"isFork": True}), "unfinished": dict(tool_tail=True), "input after the prompt": dict(inbound="coordinator")}
+        for name, kw in cases.items():
+            with self.subTest(name):
+                a = rev_agent("T3", self.ans0, "COMPLIANCE", 1, **kw)
+                self.refused2("review1", "compliance", needles=("no qualifying cold agent",))
+                self.drop(a)
+        a = rev_agent("T3", "some other text", "COMPLIANCE", 1)
+        self.refused2("review1", "compliance", needles=("no qualifying cold agent",))      # its prompt holds another hash
+        self.env.make_agent("Review. Hash %s." % self.H, "T3 hash=%s COMPLIANCE: FIRST\nand then some prose" % self.H)
+        self.refused2("review1", "compliance", needles=("no qualifying cold agent",))      # the closing line is not last
+
+    def test_review2_is_refused_when_the_record_has_no_first_review_of_that_reviewer(self):
+        rev_agent("T3", self.ans0, "COMPLIANCE", 2)
+        self.refused2("review2", "compliance", needles=("first review",))
+        rev_agent("T3", self.ans0, "REDTEAM", 1)
+        self.stamped2("review1", "redteam")
+        self.refused2("review2", "compliance", needles=("first review",))                  # the other reviewer's first review does not count
+
+    def test_review2_applies_the_send_checks_ordering_and_distinct_agent_conditions(self):
+        # the first review finished after the second started
+        rev_agent("T3", self.ans0, "COMPLIANCE", 2, ts="2030-01-01T00:05:00Z")
+        rev_agent("T3", self.ans0, "COMPLIANCE", 1, ts="2030-01-01T00:10:00Z")
+        self.stamped2("review1", "compliance")
+        self.refused2("review2", "compliance", needles=("before",))
+        # one agent for both reviewers' second reviews
+        self.drop(*[os.path.basename(p)[len("agent-"):-len(".jsonl")] for p in glob.glob(os.path.join(self.env.subagents, "agent-*.jsonl"))])
+        self.env.record("FX3-record.md", src="FX3-record.md")
+        rev_agent("T3", self.ans0, "COMPLIANCE", 1); self.stamped2("review1", "compliance")
+        rev_agent("T3", self.ans0, "REDTEAM", 1); self.stamped2("review1", "redteam")
+        both = self.env.make_agent("Review. Hash %s." % self.H, "T3 hash=%s COMPLIANCE: SECOND\nT3 hash=%s REDTEAM: SECOND" % (self.H, self.H))
+        self.stamped2("review2", "compliance")
+        self.refused2("review2", "redteam", needles=("different agent",))
+        self.assertIn(both, open(self.path).read())
+
+    def test_the_old_kinds_are_refused_naming_the_new_ones(self):
+        for kind, res in (("compliance", "PASS"), ("redteam", "CLEAN")):
+            self.refused2(kind, res, needles=("review1", "review2", "fixcheck"))
+
+    def test_fixcheck_writes_one_line_per_agent_and_the_hook_allows_the_record(self):
+        self.stamp_reviews(self.ans0)
+        n1, n2 = "Constraint: nothing is written outside the session folder or the temp folder.", "Builder note: settle the order of three writes within one turn."
+        cur = self.edit(self.edit(self.ans0, 3, n1), 5, n2)
+        self.set_answer(cur)
+        rc, out = self.sha_changed()
+        self.assertEqual((rc, sorted(out.split("\n"))), (0, sorted(["%s %s" % (bag.text_hash(n), n) for n in (n1, n2)])))
+        self.refused2("fixcheck", needles=(bag.text_hash(n1), "no qualifying cold fix check"))      # no fix agent yet: nothing is written
+        a = self.fix_agent([n1, n2])
+        out = self.stamped2("fixcheck")
+        self.assertIn("lines=", out); self.assertIn("agent=%s" % a, out)
+        self.assertEqual(open(self.path).read().count(" fixcheck "), 1)
+        self.assertAllow(self.msg(cur))
+
+    def test_fixcheck_refusals(self):
+        self.refused2("fixcheck", needles=("no review line",))                           # no review yet
+        self.stamp_reviews(self.ans0)
+        self.refused2("fixcheck", needles=("nothing changed",))
+        new = "Constraint: nothing is written outside the session folder or the temp folder."
+        self.set_answer(self.edit(self.ans0, 3, new))
+        h = bag.text_hash(new)
+        self.fix_agent([new], verdicts={h: "FAIL"})
+        self.refused2("fixcheck", needles=(h, "FAIL"))
+        early = self.env.make_agent("Check. Line hash %s." % h, "T3 hash=%s FIXCHECK: PASS" % h, ts="2020-01-01T00:00:00Z")      # started before the review finished
+        self.refused2("fixcheck", needles=(h,))
+        self.fix_agent([new], ident="T4")                                                # closing line of another answer
+        self.refused2("fixcheck", needles=(h,))
+        self.drop(early)
+        self.fix_agent([new])
+        self.stamped2("fixcheck")
+
+    def test_fixcheck_before_the_second_review_diffs_against_the_first(self):
+        self.stamp_reviews(self.ans0, ns=(1,))
+        new = "Reuse: the store's own read path, whole, with its lock."
+        self.set_answer(self.edit(self.ans0, 1, new))
+        rc, out = self.sha_changed()
+        self.assertEqual(out, "%s %s" % (bag.text_hash(new), new))
+        self.fix_agent([new])
+        self.stamped2("fixcheck")
+
+    def test_sha_changed_lists_what_the_hook_counts_and_errors_without_a_review(self):
+        rc, out = self.sha_changed()
+        self.assertEqual(rc, 1)
+        self.assertIn("review", out)
+        self.stamp_reviews(self.ans0)
+        self.assertEqual(self.sha_changed(), (0, "none"))
+        new = "Constraint: nothing is written outside the session folder or the temp folder."
+        cur = self.edit(self.ans0, 3, new)
+        self.set_answer(cur)
+        why = self.assertDeny(self.msg(cur), "has no cold fix check")
+        rc, out = self.sha_changed()
+        self.assertEqual(out, "%s %s" % (bag.text_hash(new), new))
+        self.assertIn(out.split(" ")[0], why)
+
+    def test_stamp_refuses_to_append_past_the_record_limit(self):
+        rev_agent("T3", self.ans0, "COMPLIANCE", 1)
+        self.env.cfg["max_record_bytes"] = len(self.before.encode()) + 100
+        self.env.write_config()
+        self.refused2("review1", "compliance", needles=("max_record_bytes", "new record file"))
+
+    def test_a_record_built_only_through_stamp_is_allowed_end_to_end(self):
+        self.stamp_reviews(self.ans0, ns=(1,))
+        new = "Reuse: the store's own read path, whole, with its lock."
+        self.set_answer(self.edit(self.ans0, 1, new))
+        self.stamp_reviews(self.edit(self.ans0, 1, new), ns=(2,))
+        cur = self.edit(self.edit(self.ans0, 1, new), 5, "Builder note: settle the order of three writes within one turn.")
+        self.set_answer(cur)
+        self.fix_agent([bag.answer_lines(cur)[5]])
+        self.stamped2("fixcheck")
+        self.assertAllow(self.msg(cur))
 
 
 # =============================================================================== replay and speed
