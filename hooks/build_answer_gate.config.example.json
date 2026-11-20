@@ -18,6 +18,6 @@
     "~/.claude/plans"
   ],
   "transcript_glob": "~/.claude/projects/<project-slug>/*.jsonl",
-  "max_record_bytes": 25000,
+  "max_record_bytes": 597800,
   "ruling_scan_budget_s": 20
 }

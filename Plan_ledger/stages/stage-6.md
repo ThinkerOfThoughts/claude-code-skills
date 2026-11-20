@@ -1,7 +1,7 @@
 # Stage 6 — Exit gate: cold drift check, then hand-off
 
 **Precondition:** invariants doc `status` is REVIEWED (owner has approved its lines); sheet approved at its
-current version; stage 5 clean.
+current version; stage 5 has run.
 
 Spawn ONE fresh cold agent (sonnet, same reasoning as stage 5) with `stages/common.md` verbatim plus
 `stages/role-drift.md`. Inputs: the ledger (the sheet with its quotes is the owner record), the
@@ -25,15 +25,11 @@ Owner statements section and any it finds in the answered-messages file that the
 item 6). It also lists every "good to go" style confirmation in the Approvals section and checks that nothing written
 after it introduced a mechanism the approved text did not state.
 
-**Route:** any finding on an owner line, an invariant, or an adjacent goal → owner (paste the finding, not a
-summary). A disagreement between the spec and an owner statement goes to the owner too, before the hand-off, in
-the form item 6 of the role file gives, and the owner's answer is recorded on the entry; a statement the section
-lacks is added to it and the check re-run, not sent to the owner. Findings only on DERIVED lines → fix and re-run. Clean → hand off. A finding that an owner line
-has no answered message is fixed by adding the message and re-running, not sent to the owner.
+**Route:** as `stages/review-order.md` says. A disagreement between the spec and an owner statement is not fixed by Planning (`stages/review-order.md`, "What blocks"): it goes to the owner as a question before the hand-off (paste the finding, not a summary), in the form item 6 of the role file gives, and the owner's answer is recorded on the entry; a statement the section lacks is added to it, not sent to the owner. A finding that an owner line has no answered message is fixed by adding the message and re-running, not sent to the owner.
 
 **Hand-off** to the build lane / guarded-change: the approved sheet version, the spec, the ledger path,
 and one line stating that build-time questions which change a mechanism class come back as stage-7 forks.
 Record the hand-off in the ledger with the spec's hash or commit. Do not narrate the hand-off to the
 owner beyond one line.
 
-> **Cascade mode** (only in cascade mode): also give the agent `stages/role-review-cascade.md`, the principles sheet (required: the pass is invalid without it) and `stages/cascade-method.md`, and tell it to treat a `[RULE:…]` line as a provenance record, as `stages/cascade-method.md` "Derived lines" explains, while judging every line against every principle itself (its CLEAN means the sheet and spec meet every principle and prior decision); the precondition "sheet approved" means the principles sheet is approved and every level's batch has its Approvals entry, and a finding on a RULE line alone routes like one on a DERIVED line. Each finding of this stage that goes to the owner (the Route above, a disagreement with an owner statement included) is a cold agent's own text: it gets one pass of both cold checks; it is recorded as one `ANSWER` block of its own and stamped as "Record, stamp, post" in step e of `stages/cascade-levels.md` says, is never edited (the agent that wrote it is never re-run), and is posted verbatim as the agent wrote it, followed by a section headed "Check note:" listing every finding of the checks if they found anything.
+> **Cascade mode** (only in cascade mode): also give the agent `stages/role-review-cascade.md`, the principles sheet (required: the pass is invalid without it) and `stages/cascade-method.md`, and tell it to treat a `[RULE:…]` line as a provenance record, as `stages/cascade-method.md` "Derived lines" explains, while judging each line itself; the precondition "sheet approved" means the principles sheet is approved and every level's batch has its Approvals entry. A finding that a blocking second review sends to the owner is the notice of `stages/review-order.md` ("The order", step 6), which is neither a question nor a batch: it gets no review and lists every blocking finding, each in plain words. A disagreement between the spec and an owner statement is the question of Route above: it is reviewed as `stages/review-order.md` says for text put to the owner ("Text put to the owner") before it is posted verbatim.

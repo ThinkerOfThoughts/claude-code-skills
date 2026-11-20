@@ -1,6 +1,6 @@
 ---
 name: plan-ledger
-description: A recording-and-gating discipline for human-led design conversations — every decision in a spec carries provenance (the owner's own words, or a tagged proposal awaiting confirmation), direction-carrying choices are confirmed as full sentences, mechanism-class forks are always posed, the spec is checked against the project's design invariants, and nothing hands off to a build until a cold contradiction pass and a cold drift check are clean. Use whenever planning or specifying a change with a human owner (before guarded-change builds it). Sibling of guarded-change (build), dragonfly (diagnose), data-distiller (distill).
+description: A recording-and-gating discipline for human-led design conversations — every decision in a spec carries provenance (the owner's own words, or a tagged proposal awaiting confirmation), direction-carrying choices are confirmed as full sentences, mechanism-class forks are always posed, the spec is checked against the project's design invariants, and nothing hands off to a build until a cold contradiction pass and a cold drift check have completed the review order. Use whenever planning or specifying a change with a human owner (before guarded-change builds it). Sibling of guarded-change (build), dragonfly (diagnose), data-distiller (distill).
 ---
 
 # Plan Ledger
@@ -44,8 +44,8 @@ material update. Stage numbers are canonical (ledger, METHODOLOGY, decisions log
 | **2** | Forks: mechanism-class choices are posed, never narrated | `stages/stage-2.md` |
 | **3** | Sheet: the decision sheet is pasted in chat verbatim and approved by version | `stages/stage-3.md` |
 | **4** | Spec: derived from the approved sheet; current design only; changelog separate | `stages/stage-4.md` |
-| **5** | Cold contradiction pass on sheet + spec + invariants | `stages/stage-5.md` (+ `stages/common.md`, `stages/role-contradiction.md`) |
-| **6** | Exit gate: cold drift check, then hand-off to the build | `stages/stage-6.md` (+ `stages/common.md`, `stages/role-drift.md`) |
+| **5** | Cold contradiction pass on sheet + spec + invariants | `stages/stage-5.md` (+ `stages/common.md`, `stages/role-contradiction.md`; routes: `stages/review-order.md`) |
+| **6** | Exit gate: cold drift check, then hand-off to the build | `stages/stage-6.md` (+ `stages/common.md`, `stages/role-drift.md`; routes: `stages/review-order.md`) |
 | **7** | During build: teammate questions route back through the ledger | `stages/stage-7.md` |
 | **8** | Close: as-built line, ledger `status: CLOSED` | `stages/stage-8.md` |
 
@@ -89,15 +89,15 @@ material update. Stage numbers are canonical (ledger, METHODOLOGY, decisions log
 Owner questions get their own message, answer first, data not summary. Relay and status traffic with
 sibling lanes goes in the ledger's Coordination log, never in owner-facing messages. Questions to the
 owner go through AskUserQuestion, one question per call, options written as full sentences with the
-current default stated and a "none of these" option. In cascade mode, owner batch text and text put to the owner at once are checked, recorded and stamped before they are posted, as step e of `stages/cascade-levels.md` ("Record, stamp, post") says.
+current default stated and a "none of these" option. In cascade mode, a question or batch put to the owner is reviewed before it is posted, as `stages/review-order.md` ("Text put to the owner") says.
 
 ## Stop-for-human
 
 Stop and ask when: a mechanism-class fork is open (stage 2); the sheet needs approval (stage 3); the
-contradiction pass or the drift check returns a finding that touches an owner line or an invariant
-(stages 5 and 6; a clean pass auto-advances; a finding that an owner line has no answered message is fixed
+contradiction pass or the drift check returns a finding that `stages/review-order.md` sends to the owner
+(stages 5 and 6; a finding that an owner line has no answered message is fixed
 by adding the message, `stages/stage-6.md`); the invariants doc is missing or unreviewed; config is
-missing; a logged disagreement with an owner statement is open when its topic wraps up (stage 1) or the drift check finds one (stage 6); or a teammate's build question changes a mechanism class (stage 7). Refuse to resolve any of
+missing; a logged disagreement with an owner statement is open when its topic wraps up (stage 1) or the drift check finds one (stage 6); or a teammate's build question changes a mechanism class (stage 7). In cascade mode, work on a topic also stops at its picture post until the owner confirms or corrects it (`stages/cascade-method.md` "The picture check"). Refuse to resolve any of
 these by inference, including "the owner would obviously want X".
 
 ## Cascade mode
@@ -106,7 +106,7 @@ This mode is called **cascade**; the ordinary mode is **normal**. The mode is ch
 
 Skip the rest of this section in normal mode; plan-ledger then behaves exactly as described above (the answered-messages file of stages 1 and 6 reads `cascade.owner_transcripts` and the first-use Extract step in either mode).
 
-Purpose: a few owner rules, stated once in a principles sheet, settle most fine-grained decisions. The planner derives each design line from a rule and cites it (that records where the line came from), a cold agent checks that the line meets every principle and prior decision, three cold judges settle the non-obvious ones by majority, and only what the rules cannot settle goes to the owner, in one batch per level. The principles are a test an answer must pass, never a justification for it: a pass means the artifact meets every principle and prior decision, and a cited rule never makes it pass. The same full procedure, including the red-team, answers the builder's questions at stage 7. Definitions and procedures: `stages/cascade-method.md` (section "Compliance" holds the pass rule). Before an owner batch or an at-once item is posted, its text gets the two cold checks, a record and a stamp, as step e of `stages/cascade-levels.md` ("Record, stamp, post") says.
+Purpose: a few owner rules, stated once in a principles sheet, settle most fine-grained decisions. The planner derives each design line from a rule and cites it (that records where the line came from), a cold agent checks each line (`stages/review-order.md`), three cold judges settle the non-obvious ones by majority, and only what the rules cannot settle goes to the owner, in one batch per level; each topic, and each builder question no spec line answers, starts with the picture check (`stages/cascade-method.md` "The picture check"). The principles are a test an answer must pass, never a justification for the answer, and a cited rule never makes the answer pass. Definitions and procedures: `stages/cascade-method.md`.
 
 Cold-start in this mode: also read the principles sheet in full and the ledger's Cascade block; resume from Open forks, the Cascade block and the open Owner questions.
 
@@ -115,17 +115,17 @@ Cold-start in this mode: also read the principles sheet in full and the ledger's
 | 0 setup; first use builds the principles sheet | `stages/cascade-first-use.md` (sheet template: `stages/principles-sheet-template.md`) |
 | 1 capture, 2 forks | `stages/cascade-method.md`, `stages/cascade-levels.md` |
 | 3 sheet approval | `stages/cascade-levels.md` (the owner batch) |
-| 5, 6 cold passes | the principles sheet (required), `stages/role-review-cascade.md`, with the hook text in those stages |
-| 7 build questions | `stages/cascade-build.md` (the full level procedure, no reduced path) |
+| 5, 6 cold passes | the principles sheet (required), `stages/role-review-cascade.md`, with the clause on text put to the owner in those stages |
+| 7 build questions | `stages/cascade-build.md` |
 | the level loop (draft, trio, compliance check, red-team, batch) | `stages/cascade-levels.md` |
 
-How the rules above read in this mode: a `[RULE:…]` line is derived, never an OWNER line; in rule 3 "posed" means put through `stages/cascade-method.md` "Order of work", and a fork reaches the owner only when the gap rule or the always-to-owner list sends it there; in rule 4 the owner approves the principles sheet once and each level's batch, and derived lines the owner is not asked about stand on the owner's approval of the rules plus a PASS from the compliance check, and are shown in the batch for objection; in rule 5 "checked" extends to the principles: the Cascade block carries a Principles check table (one row per principle on the sheet: meets / violates / conflict / n.a., with the line that shows it) beside the invariants table, and a cold pass reports per principle and per prior decision, any `violates` failing the artifact and any unsettled `conflict` holding it for the owner; the stop-for-human on a mechanism-class fork or build question applies only to what the gap rule or the always-to-owner list sends to the owner, except that rule 6 reads the same in this mode: a surfaced owner-statement disagreement is a contact of its own at the topic's wrap-up, never held for a level's batch; the batch is pasted text in a turn with no question call, which is the exception to the one-question-per-call sentence and to stage 2's "never bundle forks".
+How the rules above read in this mode: a `[RULE:…]` line is derived, never an OWNER line; in rule 3 "posed" means put through `stages/cascade-method.md` "Order of work", and a fork reaches the owner only when the gap rule or the always-to-owner list sends it there; in rule 4 the owner approves the principles sheet once and each level's batch, and derived lines the owner is not asked about stand on the owner's approval of the rules and count as `stages/review-order.md` says ("What a full review returns"), and are shown in the batch for objection; in rule 5 "checked" extends to the principles: the Cascade block carries a Principles check table beside the invariants table (`stages/ledger-template.md`, "Principles check"), and a cold pass reports as `stages/review-order.md` says ("What a full review returns"); the stop-for-human on a mechanism-class fork or build question applies only to what the gap rule or the always-to-owner list sends to the owner (the picture check is a route beside them), except that rule 6 reads the same in this mode: a surfaced owner-statement disagreement is a contact of its own at the topic's wrap-up, never held for a level's batch; the batch is pasted text in a turn with no question call, which is the exception to the one-question-per-call sentence and to stage 2's "never bundle forks".
 
-Dispatch: cascade agents read `stages/common.md`, `stages/cascade-common.md` and their role file (`stages/role-*.md` for the sift, trio, compliance check and level red-team); the trio judge, compliance checker and level red-team also read `stages/cascade-method.md`. The stage-5 and stage-6 agents read `stages/common.md`, their role file, `stages/role-review-cascade.md` and `stages/cascade-method.md`, not `stages/cascade-common.md`. Every one of these roles signs off on the same thing: the artifact meets every principle and prior decision. One exception, stated: a first-use question put to the owner (`stages/cascade-first-use.md`, an item the quote check marked WEAK or CONTRADICTED) is checked before an approved principles sheet exists, so it is tested only for facts, scope, attribution and own data, and its sign-off means only that it meets the rules that exist so far (`stages/cascade-method.md` "Compliance").
+Dispatch: cascade agents read `stages/common.md`, `stages/cascade-common.md` and their role file (`stages/role-*.md` for the sift, trio, compliance check and level red-team); the trio judge, compliance checker and level red-team also read `stages/cascade-method.md`. The stage-5 and stage-6 agents read `stages/common.md`, their role file, `stages/role-review-cascade.md` and `stages/cascade-method.md`, not `stages/cascade-common.md`.
 
 ## Self-check
 
-The skill's own files are prompts (position-sensitive); non-trivial edits take the guarded-change loop.
+The skill's own files are prompts (position-sensitive); non-trivial edits take the guarded-change loop, and what comes before it depends on the kind of change. A change to the skill's text that only writes down a rule the owner has already stated in their own words goes straight to guarded-change with no ledger; anything else is planned in normal mode first; cascade mode is never run on the skill itself; Planning judges which kind a change is. Every proposed patch to the skill states which error the owner caught, with its date, the patch would have caught, and which existing rule it removes or replaces, or that it removes none and why; a patch naming no such error is not built.
 Standing criteria: installed copy == repo copy (`diff`); SKILL ↔ METHODOLOGY ↔ stage files consistent
 on every shared rule; `stages/common.md` is included verbatim by every dispatched agent and role files
 never restate a common rule.
