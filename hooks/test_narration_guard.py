@@ -14,7 +14,8 @@ sys.path.insert(0, HERE)
 import narration_guard as ng  # noqa: E402
 
 S1 = ("overnight: nobody is reading; put owner items on the morning list in the handoff doc "
-      "(another lane: send them to the owner lane) and end the turn with nothing")
+      "(another lane: send them to the owner lane) and end the turn with the placeholder line "
+      "and nothing else: " + ng.PLACEHOLDER)
 
 
 def user(text, kind="human", **extra):
@@ -261,6 +262,156 @@ class TestHook(Base):
         self.assertEqual((p.returncode, p.stdout), (0, ""))
 
 
+def app_prompt():
+    """The app's "no visible output" prompt: isMeta user entry, no origin (facts-span D4)."""
+    return user("[Your previous response had no visible output. Please continue and produce a "
+                "user-visible response.]", kind=None, isMeta=True)
+
+
+def hook_feedback():
+    """The hook's own block, as the transcript records it: isMeta user entry, no origin."""
+    return user("Stop hook feedback:\n" + ng.S1, kind=None, isMeta=True)
+
+
+def asst_mixed(text, other):
+    return {"type": "assistant", "message": {"role": "assistant", "content": [
+        {"type": "thinking", "thinking": "hmm"}, {"type": "text", "text": text},
+        {"type": "tool_use", "id": "t2", "name": other, "input": {}}]}}
+
+
+class TestPlaceholder(Base):
+    """Skills issue 29: an unattended turn ends with the placeholder line alone."""
+    PH = ng.PLACEHOLDER
+
+    def setUp(self):
+        super().setUp()
+        self.marker()
+
+    def test_s1_derived_from_constant(self):
+        self.assertEqual(ng.PLACEHOLDER, "[overnight-run placeholder]")
+        self.assertIn(ng.PLACEHOLDER, ng.S1)
+        self.assertTrue(ng.S1.endswith(ng.PLACEHOLDER))
+        self.assertEqual(ng.S1, S1)
+
+    def test_common_md_c1_contains_constant(self):
+        path = os.path.join(HERE, "..", "Overnight_run", "stages", "common.md")
+        if not os.path.isfile(path):
+            self.skipTest("run from the skills repo checkout: Overnight_run/stages/common.md is not beside hooks/")
+        with open(path) as f:
+            c1 = [ln for ln in f if ln.startswith("- C1 ")]
+        self.assertEqual(len(c1), 1)
+        self.assertIn(ng.PLACEHOLDER, c1[0])
+
+    def test_has_text_agrees_with_texts(self):
+        shapes = [asst_text("x"), asst_text("  \n"), asst_tool(), asst_mixed("y", "Bash"), user("hi"),
+                  {"type": "assistant", "message": {"role": "assistant", "content": "plain"}},
+                  {"type": "assistant", "message": {"role": "assistant", "content": [{"type": "text", "text": 5}]}},
+                  {"type": "assistant"}]
+        for d in shapes:
+            self.assertEqual(ng._has_text(d), bool(ng._texts(d)), d)
+
+    # K1: allowed
+    def test_last_message_only_allowed(self):
+        self.write([peer("go"), asst_tool(), tool_result()])
+        self.assertAllow(self.run_hook(self.PH))
+
+    def test_transcript_only_allowed(self):
+        self.write([peer("go"), asst_tool(), tool_result(), asst_text(self.PH)])
+        self.assertAllow(self.run_hook(""))
+
+    def test_both_transcript_and_last_message_allowed(self):
+        self.write([peer("go"), asst_tool(), tool_result(), asst_text(self.PH)])
+        self.assertAllow(self.run_hook(self.PH))
+
+    def test_surrounding_whitespace_allowed(self):
+        self.write([peer("go"), asst_text("  " + self.PH + "\n")])
+        self.assertAllow(self.run_hook(self.PH + "\n"))
+        self.write([peer("go"), asst_tool()])
+        self.assertAllow(self.run_hook("\n\t " + self.PH + " \n\n"))
+
+    def test_two_messages_allowed(self):
+        self.write([peer("go"), asst_text(self.PH), asst_tool(), tool_result(), asst_text(self.PH)])
+        self.assertAllow(self.run_hook(self.PH))
+
+    def test_string_content_assistant_entry_allowed(self):
+        e = {"type": "assistant", "message": {"role": "assistant", "content": self.PH}}
+        self.write([peer("go"), e])
+        self.assertAllow(self.run_hook(""))
+
+    def test_placeholder_beside_thinking_and_tool_use_allowed(self):
+        self.write([peer("go"), asst_mixed(self.PH, "Bash")])
+        self.assertAllow(self.run_hook(""))
+
+    def test_whitespace_only_block_beside_placeholder_allowed(self):
+        e = asst_text(self.PH)
+        e["message"]["content"].append({"type": "text", "text": " \n "})
+        self.write([peer("go"), e])
+        self.assertAllow(self.run_hook(self.PH))
+
+    def test_sidechain_other_text_ignored_allowed(self):
+        e = asst_text("sub-agent text")
+        e["isSidechain"] = True
+        self.write([peer("go"), e, asst_text(self.PH)])
+        self.assertAllow(self.run_hook(self.PH))
+
+    # K2: blocked (regression guards: base also blocks these)
+    def test_placeholder_plus_other_text_one_block_blocks(self):
+        self.write([peer("go"), asst_text("status\n" + self.PH)])
+        self.assertBlock(self.run_hook(""))
+        self.write([peer("go"), asst_tool()])
+        self.assertBlock(self.run_hook(self.PH + "\nstatus"))
+
+    def test_two_placeholders_in_one_block_block(self):
+        # not an accepted edge: the comparison is per text block
+        self.write([peer("go"), asst_text(self.PH + "\n" + self.PH)])
+        self.assertBlock(self.run_hook(""))
+
+    def test_case_and_punctuation_variants_block(self):
+        for v in (self.PH.upper(), "[Overnight-run placeholder]", self.PH + ".", self.PH[1:-1],
+                  "[overnight-run  placeholder]", "." + self.PH):
+            self.write([peer("go"), asst_text(v)])
+            self.assertBlock(self.run_hook(""))
+            self.write([peer("go"), asst_tool()])
+            self.assertBlock(self.run_hook(v))
+
+    def test_placeholder_in_one_message_other_text_in_another_blocks(self):
+        self.write([peer("go"), asst_text(self.PH), asst_text("narration")])
+        self.assertBlock(self.run_hook(self.PH))
+        self.write([peer("go"), asst_text(self.PH), asst_tool(), tool_result(), asst_text("narration")])
+        self.assertBlock(self.run_hook(self.PH))
+        self.write([peer("go"), asst_text("narration"), asst_tool(), tool_result(), asst_text(self.PH)])
+        self.assertBlock(self.run_hook(self.PH))
+
+    def test_last_message_vs_span_mismatch_blocks_both_ways(self):
+        self.write([peer("go"), asst_text("narration")])
+        self.assertBlock(self.run_hook(self.PH))
+        self.write([peer("go"), asst_text(self.PH)])
+        self.assertBlock(self.run_hook("narration"))
+
+    # K3: sequences
+    # Sequence A and the flag-true half of C pass through the existing stop_hook_active allow, which
+    # returns before the transcript is read (regression guards, spec L1-7); B and the flag-false half
+    # of C exercise the span logic.
+    def test_seq_a_continuation_after_block_allowed(self):
+        self.write([peer("go"), asst_text("narration"), hook_feedback(), asst_tool(), tool_result(),
+                    asst_text(self.PH)])
+        self.assertAllow(self.run_hook(self.PH, active=True))
+
+    def test_seq_b_fresh_turn_narration_then_placeholder_blocks(self):
+        self.write([peer("go"), asst_text("narration"), asst_tool(), tool_result(), asst_text(self.PH)])
+        self.assertBlock(self.run_hook(self.PH, active=False))
+
+    def test_seq_c_no_text_end_then_app_prompt_then_placeholder(self):
+        self.write([peer("go"), asst_text("narration"), hook_feedback(), asst_tool(), tool_result(),
+                    app_prompt(), asst_text(self.PH)])
+        self.assertAllow(self.run_hook(self.PH, active=True))
+        self.assertBlock(self.run_hook(self.PH, active=False))
+
+    def test_owner_turns_unchanged(self):
+        self.write([user("do it"), asst_text("working")])
+        self.assertAllow(self.run_hook("anything"))
+
+
 class TestReader(Base):
     def test_small_chunks_and_long_line(self):
         lines = ["a", "b" * 50, "c", "d" * 7]
@@ -280,7 +431,7 @@ class TestReader(Base):
 
     def test_no_trailing_newline_and_scan_small_chunk(self):
         self.write([peer("go"), asst_text("z" * 300)])
-        self.assertEqual(ng.scan_turn(self.tr, lambda d: None, chunk=16), (True, False, False, True))
+        self.assertEqual(ng.scan_turn(self.tr, lambda d: None, chunk=16), (True, False, False, ["z" * 300]))
 
 
 if __name__ == "__main__":

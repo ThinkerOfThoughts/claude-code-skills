@@ -3,15 +3,21 @@
 
 Reads the Stop hook event as JSON on stdin. While the presence marker
 ~/.claude/hooks-state/overnight-run-active exists, it blocks the stop once (the reason
-is S1 below) when the turn wrote any text and neither the turn's starting prompt nor a
-message that arrived during the turn was typed by the owner. In any other case it
-prints nothing and exits 0 (allows the stop). On any error it also allows the stop.
+is S1 below) when the turn wrote any text other than the placeholder line (PLACEHOLDER
+below) and neither the turn's starting prompt nor a message that arrived during the turn
+was typed by the owner. An unattended turn ends with that one fixed line and nothing else,
+so the app sees visible output and does not send its "no visible output" prompt. In any
+other case it prints nothing and exits 0 (allows the stop). On any error it also allows
+the stop.
 
 Turn start: the last `user` entry that is a prompt (origin human, peer or
 task-notification; not a tool result, not a skill load or other isMeta entry that is
 not a peer message, not a compaction summary). The final message is taken from the
 hook input's `last_assistant_message` (the transcript may not hold it yet at Stop time);
-the turn's earlier text comes from the transcript. The transcript is read backwards in
+the turn's earlier text comes from the transcript. Every non-blank text block found
+(the transcript span back to the turn start, and `last_assistant_message`) is compared
+with PLACEHOLDER after trimming surrounding whitespace; the turn is allowed only when
+all of them equal it. The transcript is read backwards in
 fixed-size chunks until the turn's start is found, because it can be over 100 MB and
 this runs on every Stop.
 
@@ -36,6 +42,9 @@ Accepted edges (owner, L2-13):
   earlier turn's start.
 - A user entry that has no `origin` at all and carries a text prompt is treated as a
   turn start typed by the owner (fails open).
+- The placeholder is allowed in any number of messages and at any position in a turn, which the skill's rule (common.md C1) forbids but this hook does not enforce.
+- A turn that ends with no text is still allowed, so an agent that breaks the rule by
+  ending with no text brings the app's "no visible output" message back.
 """
 import json
 import os
@@ -48,9 +57,14 @@ if HERE not in sys.path:
 MARKER = "~/.claude/hooks-state/overnight-run-active"
 CHUNK = 64 * 1024
 
+# The one fixed line an unattended turn ends with (skills issue 29). common.md C1 quotes it;
+# test_narration_guard.py checks that it does.
+PLACEHOLDER = "[overnight-run placeholder]"
+
 # S1 (overnight-run skill L3-6): the block reason, verbatim.
 S1 = ("overnight: nobody is reading; put owner items on the morning list in the handoff doc "
-      "(another lane: send them to the owner lane) and end the turn with nothing")
+      "(another lane: send them to the owner lane) and end the turn with the placeholder line "
+      "and nothing else: " + PLACEHOLDER)
 
 
 def read_back_lines(path, chunk=CHUNK):
@@ -79,14 +93,20 @@ def _content(d):
     return m.get("content") if isinstance(m, dict) else None
 
 
-def _has_text(d):
+def _texts(d):
+    """The non-blank text blocks of an entry (a string content counts as one block). The one
+    place that decides what counts as text."""
     c = _content(d)
     if isinstance(c, str):
-        return bool(c.strip())
+        return [c] if c.strip() else []
     if isinstance(c, list):
-        return any(isinstance(b, dict) and b.get("type") == "text"
-                   and isinstance(b.get("text"), str) and b["text"].strip() for b in c)
-    return False
+        return [b["text"] for b in c if isinstance(b, dict) and b.get("type") == "text"
+                and isinstance(b.get("text"), str) and b["text"].strip()]
+    return []
+
+
+def _has_text(d):
+    return bool(_texts(d))
 
 
 def _is_tool_result(d):
@@ -149,9 +169,10 @@ def is_mid_turn_owner_message(d):
 
 def scan_turn(path, owner_typed, chunk=CHUNK):
     """Walk the transcript backwards to the turn's start. Returns (start_found,
-    start_owner_typed, mid_turn_owner, wrote_text)."""
+    start_owner_typed, mid_turn_owner, texts): texts is the list of the turn's non-blank
+    assistant text blocks (newest entry first)."""
     mid_owner = False
-    wrote = False
+    texts = []
     for raw in read_back_lines(path, chunk):
         try:
             d = json.loads(raw)
@@ -161,8 +182,7 @@ def scan_turn(path, owner_typed, chunk=CHUNK):
             continue
         t = d.get("type")
         if t == "assistant" and not d.get("isSidechain"):
-            if _has_text(d):
-                wrote = True
+            texts.extend(_texts(d))
         elif t == "attachment":
             if is_mid_turn_owner_message(d):
                 mid_owner = True
@@ -171,8 +191,8 @@ def scan_turn(path, owner_typed, chunk=CHUNK):
                 typed = True
             else:
                 typed = owner_typed(d) is not None and not _has_relay_wrapper(d)
-            return True, typed, mid_owner, wrote
-    return False, False, mid_owner, wrote
+            return True, typed, mid_owner, texts
+    return False, False, mid_owner, texts
 
 
 def main():
@@ -188,13 +208,19 @@ def main():
     if not isinstance(path, str) or not os.path.isfile(path):
         return 0
     from build_answer_gate import plain_human_text
-    found, start_owner, mid_owner, wrote = scan_turn(path, plain_human_text)
+    found, start_owner, mid_owner, texts = scan_turn(path, plain_human_text)
     if not found:
         return 0
     last = data.get("last_assistant_message")
     if isinstance(last, str) and last.strip():
-        wrote = True
-    if wrote and not start_owner and not mid_owner:
+        texts.append(last)
+    # One comparison: the turn is quiet when every text block is the placeholder line.
+    # Accepted edges (commit message and docstring list them too): the placeholder is allowed
+    # in any number of messages and at any position in a turn, though C1 forbids it; a turn
+    # that ends with no text is still allowed, so an agent breaking C1 that way brings the
+    # app's "no visible output" message back.
+    loud = any(t.strip() != PLACEHOLDER for t in texts)
+    if loud and not start_owner and not mid_owner:
         print(json.dumps({"decision": "block", "reason": S1}))
     return 0
 

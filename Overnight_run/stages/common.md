@@ -3,7 +3,7 @@
 Each rule is stated once here; the role files add to it and never repeat it. The strings S2 to S6 are the
 fixed messages the run sends; S6 sits inside C8.
 
-- C1 (failure 1, L2-3): "Overnight, nobody reads the chat. A turn the owner did not start or type into writes no text at all, between tool calls or at the end. Owner items go on the morning list."
+- C1 (failure 1, L2-3): "Overnight, nobody reads the chat. A turn the owner did not start or type into writes no text between tool calls, and ends with the line [overnight-run placeholder] and nothing else. Owner items go on the morning list." (The app sends its own "no visible output" message after a turn that ends with no text, and the hook blocks the reply to it; the fixed line gives the app visible output, and the hook allows it. Issue 29.)
 - C2 (failure 2, L2-3): "A question carries its own data: the facts, numbers or text it depends on are in the question itself, never a pointer to an earlier message."
 - C3 (failures 5 and 12, L2-5): "When an owner message concerns another lane in the run, relay it at once with GATE: OWNER-RULING, through the existing relay that wakes an idle lane and needs its ack." (format: plan-ledger `stages/cascade-build.md` "Gate record format"; a short ruling such as "yes" carries its `re:` line)
 - C4 (failure 10, L2-6): "Bring the handoff doc current at each milestone and before any long wait."

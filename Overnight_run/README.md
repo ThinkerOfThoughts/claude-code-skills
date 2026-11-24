@@ -1,7 +1,7 @@
 # Overnight Run: keeping a multi-lane unattended run honest
 
 A Claude Code skill for the stretch where the owner starts several lanes (separate sessions) on work and
-goes away. Nobody reads the chat overnight, so the run keeps chat empty, keeps one record, and wakes itself
+goes away. Nobody reads the chat overnight, so the run keeps chat to one fixed placeholder line per turn (rule C1), keeps one record, and wakes itself
 when usage resets. Sibling of [Plan_ledger](../Plan_ledger/) and [Guarded_change](../Guarded_change/),
 laid out the same way: a router `SKILL.md`, rules in `stages/`, a per-project config.
 
@@ -78,5 +78,10 @@ Accepted edges, each recorded as a comment where it lives and in the commit log:
 8. While the marker exists, any unrelated session that starts or resumes is told to invoke the skill.
 9. Each narration block costs one model call.
 10. No hook reads usage or context use; the usage figure comes from the owner.
+11. The narration hook allows the placeholder line in any number of messages and at any
+    position in a turn, which rule C1 forbids but the hook does not enforce.
+12. The narration hook still allows a turn that ends with no text, so a lane that breaks C1 that way brings
+    the app's "no visible output" message back. Whether the placeholder line stops that message is checked
+    on the first overnight run after install, not proven by the build.
 
 Not verified by the build: live firing of the frontmatter hook needs a real session.

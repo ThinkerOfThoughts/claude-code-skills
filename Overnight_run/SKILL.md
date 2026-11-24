@@ -11,7 +11,7 @@ hooks:
 
 # Overnight Run
 
-Purpose: **while the owner is away, nobody reads the chat, so the run keeps chat empty, keeps one record
+Purpose: **while the owner is away, nobody reads the chat, so the run keeps chat to one fixed placeholder line per turn (C1), keeps one record
 of where everything stands, and wakes itself when usage resets.** The failures it prevents: narration into
 an unread chat, a question that points at an earlier message, an owner instruction that never reaches the
 other lanes, a handoff doc that is not current, a usage reset nobody wakes for, and a failed login found
